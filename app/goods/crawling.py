@@ -6,164 +6,167 @@ from selenium.common.exceptions import NoSuchElementException
 
 def get_data():
     from selenium import webdriver
+    from goods.models import Category
+    from goods.models import Type
     driver = webdriver.Chrome('/Users/mac/projects/ChromeWebDriver/chromedriver')
 
     detail_page_list = [
-        ['https://www.kurly.com/shop/goods/goods_view.php?goodsno=26448',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=49246',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=27232',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=70',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=96',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=53498',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=54657',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=31395',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=54661',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=97',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=50692',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=69',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=37789',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=50690',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=54660',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=333',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=27233',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=26450',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=43350',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=31100',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=37654',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=49635',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=37314',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=50691',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=49253',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=44270',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=49841',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=3440',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=36963',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=54671',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=53298',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=52615',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=51486',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=3110',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=50694',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=3115',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=50693',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=38031',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=49840',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=36964',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=51700',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=50696',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=52614',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=49264',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=54662',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=27165',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=48526',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=48527',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=38029',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=38028',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=3328',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=50698',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=55707',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=30768',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=42159',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=51487',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=41303',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=37987',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=48555',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=41304',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=52391',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=36499',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=55380',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=47869',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=38032',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=41305',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=38030',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=48281',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=55377',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=41302',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=55379',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=55378',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=43408',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=48007'],
-        ['https://www.kurly.com/shop/goods/goods_view.php?goodsno=1385',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=6200',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=48835',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=98',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=1366',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=45384',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=48845',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=647',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=1074',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=252',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=102',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=1079',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=32142',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=34133',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=177',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=36965',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=30612',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=1072',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=27319',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=50252',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=48834',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=51953',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=48833',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=38267',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=2718',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=37934',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=1078',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=30610',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=1076',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=5755',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=36662',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=42332',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=48838',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=334',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=36689',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=1733',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=1075',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=11437',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=36687',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=27169',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=522',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=56655',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=42158',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=42154',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=151',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=7334',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=50305',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=36688',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=35520',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=7878',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=1073',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=34456',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=50884',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=53055',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=50883',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=7301',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=9561',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=4176',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=34461',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=7299',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=34278',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=52398',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=48837',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=13278',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=3320',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=2658',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=34455',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=454',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=31369',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=36690',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=48840',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=5160',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=45387',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=48836',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=36607',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=45386',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=26811',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=48842',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=48844',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=36691',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=9214'],
+        [
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=26448',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=49246',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=27232',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=70',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=96',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=53498',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=54657',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=31395',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=54661',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=97',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=50692',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=69',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=37789',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=50690',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=54660',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=333',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=27233',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=26450',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=43350',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=31100',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=37654',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=49635',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=37314',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=50691',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=49253',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=44270',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=49841',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=3440',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=36963',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=54671',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=53298',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=52615',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=51486',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=3110',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=50694',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=3115',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=50693',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=38031',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=49840',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=36964',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=51700',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=50696',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=52614',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=49264',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=54662',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=27165',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=48526',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=48527',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=38029',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=38028',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=3328',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=50698',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=55707',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=30768',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=42159',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=51487',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=41303',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=37987',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=48555',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=41304',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=52391',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=36499',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=55380',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=47869',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=38032',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=41305',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=38030',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=48281',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=55377',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=41302',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=55379',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=55378',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=43408',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=48007'],
+        [
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=1385',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=48835',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=98',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=1366',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=45384',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=48845',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=647',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=1074',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=252',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=102',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=1079',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=32142',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=34133',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=177',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=36965',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=30612',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=1072',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=27319',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=50252',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=48834',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=51953',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=48833',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=38267',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=2718',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=37934',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=1078',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=30610',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=1076',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=5755',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=36662',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=42332',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=48838',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=334',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=36689',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=1733',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=1075',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=11437',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=36687',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=27169',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=522',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=56655',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=42158',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=42154',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=151',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=7334',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=50305',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=36688',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=35520',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=7878',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=1073',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=34456',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=50884',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=53055',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=50883',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=7301',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=9561',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=4176',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=34461',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=7299',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=34278',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=52398',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=48837',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=13278',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=3320',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=2658',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=34455',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=454',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=31369',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=36690',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=48840',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=5160',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=45387',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=48836',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=36607',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=45386',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=26811',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=48842',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=48844',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=36691',
+            'https://www.kurly.com/shop/goods/goods_view.php?goodsno=9214'],
         ['https://www.kurly.com/shop/goods/goods_view.php?goodsno=1364',
          'https://www.kurly.com/shop/goods/goods_view.php?goodsno=37313',
          'https://www.kurly.com/shop/goods/goods_view.php?goodsno=1083',
@@ -285,8 +288,12 @@ def get_data():
 
     type_name_list = ['기본채소', '쌈·샐러드·간편채소', '브로콜리·특수채소', '콩나물·버섯류', '시금치·부추·나물', '양파·마늘·생강·파', '파프리카·피망·고추']
     category_name = '채소'
+    category_ins, __ = Category.objects.create(name=category_name)
     from goods.models import Goods
     for lst, type_name in zip(detail_page_list, type_name_list):
+        type_name_ins, __ = Type.objects.get_or_create(
+            name=type_name
+        )
         for url in lst:
             driver.get(url)
             time.sleep(1)
@@ -347,49 +354,90 @@ def get_data():
                 print('transfer', transfer)
             elif '포장타입' in transfer_innerText:
                 packing = driver.find_element_by_xpath(
-                    '/html/body/div/div[2]/div[2]/div/div[2]/div[2]/div/div[2]/dl[3]/dd/').get_attribute('innerText')
+                    '/html/body/div/div[2]/div[2]/div/div[2]/div[2]/div/div[2]/dl[3]').get_attribute('innerText')
                 print('packing', packing)
 
             goods_origin_innerText = driver.find_element_by_xpath(
                 '/html/body/div/div[2]/div[2]/div/div[2]/div[2]/div/div[2]/dl[4]/dt').get_attribute('innerText')
-            print(goods_origin_innerText)
+            # print(goods_origin_innerText)
             if '원산지' in goods_origin_innerText:
                 goods_origin = driver.find_element_by_xpath(
                     '/html/body/div/div[2]/div[2]/div/div[2]/div[2]/div/div[2]/dl[4]/dd').get_attribute('innerText')
                 print('goods_origin', goods_origin)
             elif '포장타입' in goods_origin_innerText:
-                transfer = driver.find_element_by_xpath(
+                packing = driver.find_element_by_xpath(
                     '/html/body/div/div[2]/div[2]/div/div[2]/div[2]/div/div[2]/dl[4]/dd').get_attribute('innerText')
-                print('transfer', transfer)
+                print('transfer', packing)
 
             # 포장 정보 또는 알레르기
-            goods_packing_innerText = driver.find_element_by_xpath(
-                '/html/body/div/div[2]/div[2]/div/div[2]/div[2]/div/div[2]/dl[5]/dt').get_attribute('innerText')
-            if '포장' in goods_packing_innerText:
-                packing = driver.find_element_by_xpath(
-                    '/html/body/div/div[2]/div[2]/div/div[2]/div[2]/div/div[2]/dl[5]/dd').get_attribute('innerText')
-                print('packing', packing)
-            elif '알레르기' in goods_packing_innerText:
-                allergy = driver.find_element_by_xath(
-                    '/html/body/div/div[2]/div[2]/div/div[2]/div[2]/div/div[2]/dl[5]/dd').get_attribute('innerText')
-                print('allergy', allergy)
+            try:
+                goods_packing_innerText = driver.find_element_by_xpath(
+                    '/html/body/div/div[2]/div[2]/div/div[2]/div[2]/div/div[2]/dl[5]/dt').get_attribute('innerText')
+                if '포장' in goods_packing_innerText:
+                    packing = driver.find_element_by_xpath(
+                        '/html/body/div/div[2]/div[2]/div/div[2]/div[2]/div/div[2]/dl[5]/dd').get_attribute('innerText')
+                    print('packing', packing)
+                elif '알레르기' in goods_packing_innerText:
+                    allergy = driver.find_element_by_xpath(
+                        '/html/body/div/div[2]/div[2]/div/div[2]/div[2]/div/div[2]/dl[5]/dd').get_attribute('innerText')
+                    print('allergy', allergy)
+            except NoSuchElementException:
+                packing = None
+                allergy = None
 
             # 안내사항, 유통기한, 안내사항
+            try:
 
-            goods_info_innerText = driver.find_element_by_xpath(
-                '/html/body/div/div[2]/div[2]/div/div[2]/div[2]/div/div[2]/dl[6]/dt').get_attribute('innerText')
-            if '안내' in goods_info_innerText:
-                info = driver.find_element_by_xpath(
-                    '/html/body/div/div[2]/div[2]/div/div[2]/div[2]/div/div[2]/dl[6]/dd').get_attribute('innerText')
-                print('info', info)
-            elif '유통기한' in goods_info_innerText:
-                limit = driver.find_element_by_xpath(
-                    '/html/body/div/div[2]/div[2]/div/div[2]/div[2]/div/div[2]/dl[6]/dd').get_attribute('innerText')
-                print('limit', limit)
-            elif '알레르기정보' in goods_info_innerText:
-                allergy = driver.find_element_by_xpath(
-                    '/html/body/div/div[2]/div[2]/div/div[2]/div[2]/div/div[2]/dl[6]/dd').get_attribute('innerText')
-                print('allergy', allergy)
+                goods_info_innerText = driver.find_element_by_xpath(
+                    '/html/body/div/div[2]/div[2]/div/div[2]/div[2]/div/div[2]/dl[6]/dt').get_attribute('innerText')
+                if '안내' in goods_info_innerText:
+                    info = driver.find_element_by_xpath(
+                        '/html/body/div/div[2]/div[2]/div/div[2]/div[2]/div/div[2]/dl[6]/dd').get_attribute('innerText')
+                    print('info', info)
+                elif '유통기한' in goods_info_innerText:
+                    expiration = driver.find_element_by_xpath(
+                        '/html/body/div/div[2]/div[2]/div/div[2]/div[2]/div/div[2]/dl[6]/dd').get_attribute('innerText')
+                    print('expiration', expiration)
+                elif '알레르기정보' in goods_info_innerText:
+                    allergy = driver.find_element_by_xpath(
+                        '/html/body/div/div[2]/div[2]/div/div[2]/div[2]/div/div[2]/dl[6]/dd').get_attribute('innerText')
+                    print('allergy', allergy)
+            except NoSuchElementException:
+                info = None
+                expiration = None
+                allergy = None
+
+            image_one = driver.find_element_by_xpath(
+                '/html/body/div/div[2]/div[2]/div/div[3]/div/div[1]/div/div/div[1]/img').get_attribute('src')
+            print('image_one', image_one)
+
+            text_one_title = driver.find_element_by_xpath(
+                '//*[@id="goods-description"]/div/div[1]/div[2]/h3/small').get_attribute('innerText')
+            print('text_one_title', text_one_title)
+
+            text_one_context_dummy = driver.find_element_by_xpath(
+                '//*[@id="goods-description"]/div/div[1]/div[2]/h3').get_attribute('innerText')
+
+            text_one_context_dummy = text_one_context_dummy.split('\n')
+            text_one_context = ''
+            for i in text_one_context_dummy[1:]:
+                text_one_context += i + ' '
+            print('text_one_context', text_one_context)
+
+            text_one_description = driver.find_element_by_xpath(
+                '//*[@id="goods-description"]/div/div[1]/div[2]/p').get_attribute('innerText')
+            print('text_one_description', text_one_description)
+
+            try:
+                check_point_image = driver.find_element_by_xpath(
+                    '//*[@id="goods-description"]/div/div/div/div/img').get_attribute('src')
+                print('check_point_image', check_point_image)
+            except NoSuchElementException:
+                check_point_image = None
+
+            info_image = driver.find_element_by_xpath(
+                '/html/body/div/div[2]/div[2]/div/div[3]/div/div[2]/div/p/img').get_attribute('src')
+            print('info_image', info_image)
 
 
 def crawling():

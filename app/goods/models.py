@@ -7,6 +7,7 @@ from goods.crawling import crawling
 
 class Goods(models.Model):
     img = models.ImageField(upload_to='goods')
+    info_img = models.ImageField(upload_to='infoImage')
     title = models.CharField(max_length=30)
     short_desc = models.CharField(max_length=50)
     price = models.IntegerField()
@@ -19,6 +20,30 @@ class Goods(models.Model):
     info = models.CharField(max_length=126, null=True, )
     limit = models.CharField(max_length=64, null=True, )
 
+    category = models.ForeignKey(
+        'Category',
+        on_delete=models.CASCADE,
+    )
+
     @staticmethod
     def get_crawling():
         crawling()
+
+
+class Type(models.Model):
+    name = models.CharField(max_length=30)
+
+
+class Category(models.Model):
+    name = models.CharField(max_length=30)
+
+
+class GoodsType(models.Model):
+    type = models.ForeignKey(
+        Type,
+        on_delete=models.CASCADE,
+    )
+    goods = models.ForeignKey(
+        Goods,
+        on_delete=models.CASCADE,
+    )

@@ -35,6 +35,12 @@ CreateBucketConfiguration={
 )
 ```
 
+
+/html/body/div/div[2]/div[2]/div/div[3]/div/div[1]/div/div/h3/span
+/html/body/div/div[2]/div[2]/div/div[3]/div/div[1]/div/div/h3/span
+
+
+
 - AWS S3 GUI에서 작성을 원한다면 [해당링크](MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')를 참고 
 
