@@ -5,6 +5,14 @@
 - [지연 시간](https://codechacha.com/ko/selenium-explicit-implicit-wait/)
 - [단축키](https://tariat.tistory.com/656)
 - [셀레니움 참고 링크](https://seyul.tistory.com/45)
+- find_element_by_id 요소의 속성 id로 찾는 오브젝트를 찾습니다. 
+- find_element_by_class_name 요소의 속성 class가 포함된 오브젝트를 찾습니다. 
+- find_element_by_name 요소의 속성 name로 찾는 오브젝트를 찾습니다. 
+- find_element_by_xpath xpath를 이용해서 오브젝트를 찾습니다. 
+- find_element_by_link_text 하이퍼 링크의 텍스트로 오브젝트를 찾습니다.(완전 일치) - 탐색이 잘 안됩니다. 
+- find_element_by_partial_link_text 하이퍼 링크의 텍스트로 오브젝트를 찾습니다.(포함) - 탐색이 잘 안됩니다. 
+- find_element_by_tag_name 요소의 태그 이름으로 찾습니다. 
+- find_element_by_css_selector css selector(sizzle)로 오브젝트를 찾습니다.
 
 ### s3 연동
 - [media files 설정](https://wayhome25.github.io/django/2017/05/10/media-file/)
