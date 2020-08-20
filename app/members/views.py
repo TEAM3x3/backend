@@ -5,27 +5,15 @@ from rest_framework.authtoken.models import Token
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
-from members.serializers import UserSerializers
+
+from members.serializers import UserSerializer
 
 User = get_user_model()
 
 
 class UserViewSet(ModelViewSet):
     queryset = User.objects.all()
-    serializer_class = UserSerializers
-
-    # def create(self, request, *args, **kwargs):
-    #     serializer = self.get_serializer(data=request.data)
-    #     serializer.is_valid(raise_exception=True)
-    #     self.perform_create(serializer)
-    #     headers = self.get_success_headers(serializer.data)
-    #
-    #     data = request.data
-    #
-    #     if data['password'] != data['password_check']:
-    #         return Response(status=status.HTTP_400_BAD_REQUEST)
-    #
-    #     return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+    serializer_class = UserSerializer
 
     @action(detail=False, methods=['post'])
     def login(self, request):
@@ -42,4 +30,4 @@ class UserViewSet(ModelViewSet):
     def logout(self, request):
         user = request.user
         user.auth_token.delete()
-        return Response({"detail": "logged out."}, status=status.HTTP_200_OK)
+        return Response({"clear"}, status=status.HTTP_200_OK)

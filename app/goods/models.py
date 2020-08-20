@@ -49,7 +49,8 @@ class Goods(models.Model):
 
     @staticmethod
     def get_crawling():
-        crawling()
+        pass
+        # crawling()
 
 
 class GoodsDetail(models.Model):

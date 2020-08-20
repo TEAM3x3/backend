@@ -4,25 +4,17 @@ from django.db import models
 
 class User(AbstractUser):
     GENDER_CHOICES = (
-        ('M', 'Homme'),
-        ('F', 'Femme'),
+        ('M', 'Male'),
+        ('F', 'Female'),
+        ('N', 'None'),
     )
-    img_profile = models.ImageField(upload_to='user', blank=True)
-    password = models.CharField(max_length=15, blank=False, null=False)
-    phone = models.CharField(max_length=11, blank=False, null=False)
+    gender = models.CharField('성별', max_length=1, choices=GENDER_CHOICES)
+
+    phone = models.CharField('핸드폰 번호', max_length=15)
     email = models.EmailField(unique=True, blank=False)
+    address = models.CharField(max_length=200)
     nickname = models.CharField(max_length=20, blank=True)
-    # birthday = models.DateField(max_length=11, null=True)
-    address = models.TextField(null=False)
-    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, null=False)
+    birthday = models.DateField(max_length=11, null=True)
 
     date_joined = models.DateTimeField(auto_now_add=True, verbose_name='가입일')
 
-    # password_check = models.CharField(max_length=15, blank=False, null=False)
-
-    # def save(self, *args, **kwargs):
-    #     super().save(*args, **kwargs)
-    #     if self.is_superuser == False:
-    #         print(self.password)
-    #         self.set_password(self.password)
-    #         self.save()
