@@ -11,6 +11,7 @@ from rest_framework.test import APITestCase
 
 User = get_user_model()
 
+
 class UserTestCase(APITestCase):
     def setUp(self) -> None:
         # 1

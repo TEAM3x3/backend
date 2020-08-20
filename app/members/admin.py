@@ -6,7 +6,7 @@ User = get_user_model()
 
 # Register your models here.
 class UserAdmin(admin.ModelAdmin):
-    list_display = ['id', 'username','email', 'phone', 'nicname']
+    list_display = ['id', 'username', 'email', 'phone', 'nickname']
 
 
 admin.site.register(User, UserAdmin)

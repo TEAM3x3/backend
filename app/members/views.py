@@ -14,7 +14,6 @@ class UserViewSet(ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializers
 
-
     @action(detail=False, methods=['post'])
     def login(self, request):
         user = User.objects.get(username=request.data.get('username'))
