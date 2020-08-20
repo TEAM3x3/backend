@@ -2,6 +2,8 @@ from model_bakery import baker
 from rest_framework import status
 from rest_framework.test import APITestCase
 
+from members.models import User
+
 
 class UserTestCase(APITestCase):
     def setUp(self) -> None:
@@ -24,7 +26,8 @@ class UserTestCase(APITestCase):
             "username": "bababababa",
             "password": "1111",
             "email": "jan@nam.net",
-            "phone": "01011112222"
+            "phone": "01011112222",
+            "gender": "F"
         }
         response = self.client.post('/api/users', data=data)
 
@@ -51,7 +54,14 @@ class UserTestCase(APITestCase):
         self.assertEqual(response.data['email'], data['email'])
         self.assertNotEqual(instance.email, response.data['email'])
 
-    # def test_user_delete(self):
-    #     instance = self.users[0]
-    #     self.client.force_authenticate(user=)
-    #     self.fail()
+    def test_user_delete(self):
+        user = self.users[0]
+        self.client.force_authenticate(user=user)
+        response = self.client.delete(f'/api/users/{user.pk}')
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertFalse(response.data)
+
+        pk = User.objects.filter(id=user.id).count()
+        self.assertEqual(pk, 0)
+
