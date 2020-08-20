@@ -5,10 +5,25 @@ import goods
 from goods.crawling import crawling
 
 
+def goods_img_path(instance, filename):
+    filename = filename.split('media/')
+    return filename[1]
+
+
+def goods_info_img_path(instance, filename):
+    filename = filename.split('media/')
+    return filename[1]
+
+
+def goods_img_1_path(instance, filename):
+    filename = filename.split('media/')
+    return filename[1]
+
+
 class Goods(models.Model):
     # 디테일 상위
-    img = models.ImageField('메인이미지', upload_to='goods')
-    info_img = models.ImageField('상품 이미지', upload_to='infoImage')
+    img = models.ImageField('메인이미지', upload_to=goods_img_path)
+    info_img = models.ImageField('상품 이미지', upload_to=goods_info_img_path)
     title = models.CharField('상품 명', max_length=30)
     short_desc = models.CharField('간단 설명', max_length=50)
     price = models.IntegerField('가격')
@@ -22,7 +37,7 @@ class Goods(models.Model):
     expiration = models.CharField('유통기한', max_length=64, null=True, )
 
     # 디테일 중반
-    img_1 = models.ImageField('디테일 이미지1', upload_to='goods')
+    img_1 = models.ImageField('디테일 이미지1', upload_to=goods_img_1_path)
     text_1_title = models.CharField('첫 텍스트', max_length=64)
     text_1_context = models.CharField('첫 문맥', max_length=128)
     text_1_description = models.CharField('설명', max_length=512)

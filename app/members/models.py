@@ -11,8 +11,8 @@ class User(AbstractUser):
     password = models.CharField(max_length=15, blank=False, null=False)
     phone = models.CharField(max_length=11, blank=False, null=False)
     email = models.EmailField(unique=True, blank=False)
-    nicname = models.CharField(max_length=20, blank=True)
-    birthdate = models.DateField(max_length=11, null=True)
+    nickname = models.CharField(max_length=20, blank=True)
+    # birthday = models.DateField(max_length=11, null=True)
     address = models.TextField(null=False)
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, null=False)
 

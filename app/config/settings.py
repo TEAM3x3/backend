@@ -30,7 +30,6 @@ ALLOWED_HOSTS = []
 
 # Application definition
 INSTALLED_APPS = [
-    'config',
     'core',
     'goods',
     'members',
@@ -137,7 +136,6 @@ AWS_SECRET_ACCESS_KEY = ''
 AWS_STORAGE_BUCKET_NAME = 'pbs-13-s3'
 AWS_AUTO_CREATE_BUCKET = True
 AWS_S3_REGION_NAME = 'ap-northeast-2'
-
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
