@@ -42,14 +42,19 @@ class Goods(models.Model):
     text_1_context = models.CharField('첫 문맥', max_length=128)
     text_1_description = models.CharField('설명', max_length=512)
 
+    # 재고물량?
+
     category = models.ForeignKey(
         'Category',
         on_delete=models.CASCADE,
     )
 
+
+
     @staticmethod
     def get_crawling():
-        crawling()
+        pass
+        # crawling()
 
 
 class GoodsDetail(models.Model):
