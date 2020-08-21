@@ -6,7 +6,7 @@ import urllib
 from django.core.files import File
 from selenium.common.exceptions import NoSuchElementException
 
-from config.settings import MEDIA_ROOT
+from config.settings.base import MEDIA_ROOT
 
 
 def get_data():
@@ -20,7 +20,7 @@ def get_data():
     detail_page_list = []
 
     type_name_list = []
-    category_name = '국 반찬 메인요리 할 차'
+    category_name = '국 반찬 메인요리 할 차례'
     category_ins, __ = Category.objects.get_or_create(name=category_name)
     from goods.models import Goods
     for lst, type_name in zip(detail_page_list, type_name_list):

@@ -15,6 +15,13 @@ class UserViewSet(ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
+    @action(detail=False)
+    def check_username(self, request):
+        id = User.objects.filter(username=request.data['username']).exists()
+        if not id:
+            return Response({"message": "사용 가능한 ID입니다."}, status=status.HTTP_200_OK)
+        return Response({"message": "이미 존재하는 ID입니다."}, status=status.HTTP_400_BAD_REQUEST)
+
     @action(detail=False, methods=['post'])
     def login(self, request):
         user = User.objects.get(username=request.data.get('username'))
