@@ -8,6 +8,7 @@ __pycache__/
 
 .idea/
 app/media/
+media/
 # Distribution / packaging
 .Python
 build/
