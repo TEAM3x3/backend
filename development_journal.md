@@ -38,8 +38,7 @@ CreateBucketConfiguration={
 
 
 
-- AWS S3 GUI에서 작성을 원한다면 [해당링크](MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')를 참고 
+- AWS S3 GUI에서 작성을 원한다면 [해당링크](https://siner308.github.io/2019/07/17/django-aws-s3/)를 참고 
 
 
 

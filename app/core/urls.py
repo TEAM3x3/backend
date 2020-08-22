@@ -5,7 +5,6 @@ from members.views import UserViewSet
 
 router = routers.SimpleRouter(trailing_slash=False)
 router.register('users', UserViewSet)
-
 users_router = routers.NestedSimpleRouter(router, 'users')
 
 urlpatterns = (
