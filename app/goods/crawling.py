@@ -1,12 +1,11 @@
 import os
 import re
-import time
 import urllib
 
 from django.core.files import File
 from selenium.common.exceptions import NoSuchElementException
 
-from config.settings import MEDIA_ROOT
+from config.settings.base import MEDIA_ROOT
 
 
 def get_data():
@@ -15,12 +14,14 @@ def get_data():
     from goods.models import Type
     from goods.models import GoodsType
     from goods.models import GoodsDetail
+    from goods.models import GoodsExplain
+
     driver = webdriver.Chrome('/Users/mac/projects/ChromeWebDriver/chromedriver')
 
-    detail_page_list = []
+    detail_page_list = get_urls()
 
-    type_name_list = []
-    category_name = '국 반찬 메인요리 할 차'
+    type_name_list = get_categories()
+    category_name = '수산·해산·건어물'
     category_ins, __ = Category.objects.get_or_create(name=category_name)
     from goods.models import Goods
     for lst, type_name in zip(detail_page_list, type_name_list):
@@ -162,22 +163,22 @@ def get_data():
                 print('----------------------건너 뜁니다!!!')
                 continue
 
-            text_one_title = driver.find_element_by_xpath(
+            text__title = driver.find_element_by_xpath(
                 '//*[@id="goods-description"]/div/div[1]/div[2]/h3/small').get_attribute('innerText')
-            # print('text_one_title', text_one_title)
+            # print('text__title', text__title)
 
-            text_one_context_dummy = driver.find_element_by_xpath(
+            text__context_dummy = driver.find_element_by_xpath(
                 '//*[@id="goods-description"]/div/div[1]/div[2]/h3').get_attribute('innerText')
 
-            text_one_context_dummy = text_one_context_dummy.split('\n')
-            text_one_context = ''
-            for i in text_one_context_dummy[1:]:
-                text_one_context += i + ' '
-            # print('text_one_context', text_one_context)
+            text__context_dummy = text__context_dummy.split('\n')
+            text__context = ''
+            for i in text__context_dummy[1:]:
+                text__context += i + ' '
+            # print('text__context', text__context)
 
-            text_one_description = driver.find_element_by_xpath(
+            text__description = driver.find_element_by_xpath(
                 '//*[@id="goods-description"]/div/div[1]/div[2]/p').get_attribute('innerText')
-            # print('text_one_description', text_one_description)
+            # print('text__description', text__description)
             try:
                 check_point_image = driver.find_element_by_xpath(
                     '//*[@id="goods-description"]/div/div/div/div/img').get_attribute('src')
@@ -189,25 +190,25 @@ def get_data():
                 '//*[@id="goods_pi"]/p/img').get_attribute('src')
             # print('info_image', info_image)
 
-            print(goods_image[1])
-            print(info_image)
-            print(goods_title)
-            print(short_desc)
-            print(result)
-            print(goods_each)
-            print(goods_each_weight)
-            print(transfer)
-            print(packing)
-            print(goods_origin)
-            print(allergy)
-            print(info)
-            print(expiration)
-
-            print(image_one)
-            print(text_one_title)
-            print(text_one_context)
-            print(text_one_description)
-            print(category_ins)
+            # print(goods_image[1])
+            # print(info_image)
+            # print(goods_title)
+            # print(short_desc)
+            # print(result)
+            # print(goods_each)
+            # print(goods_each_weight)
+            # print(transfer)
+            # print(packing)
+            # print(goods_origin)
+            # print(allergy)
+            # print(info)
+            # print(expiration)
+            #
+            # print(image_one)
+            # print(text__title)
+            # print(text__context)
+            # print(text__description)
+            # print(category_ins)
 
             # 이미지 생성
             try:
@@ -217,24 +218,24 @@ def get_data():
                 image_save_name = os.path.join(GOODS_IMAGE_DIR, f'{goods_title}_goods_image.jpg')
                 urllib.request.urlretrieve(goods_image[1], image_save_name)
 
-                f = open(os.path.join(GOODS_IMAGE_DIR, f'{image_save_name}'), 'rb')
+                main_image = open(os.path.join(GOODS_IMAGE_DIR, f'{image_save_name}'), 'rb')
 
                 image_save_name2 = os.path.join(GOODS_IMAGE_DIR, f'{goods_title}_info_image.jpg')
                 urllib.request.urlretrieve(info_image, image_save_name2)
 
-                f2 = open(os.path.join(GOODS_IMAGE_DIR, f'{image_save_name2}'), 'rb')
+                info_image = open(os.path.join(GOODS_IMAGE_DIR, f'{image_save_name2}'), 'rb')
 
                 image_save_name3 = os.path.join(GOODS_IMAGE_DIR, f'{goods_title}_image_one.jpg')
                 urllib.request.urlretrieve(image_one, image_save_name3)
 
-                f3 = open(os.path.join(GOODS_IMAGE_DIR, f'{image_save_name3}'), 'rb')
+                extra_image = open(os.path.join(GOODS_IMAGE_DIR, f'{image_save_name3}'), 'rb')
             except FileNotFoundError:
                 print(' 건너 뜁니다 !_________________________________________________')
                 continue
 
             goods_ins, created = Goods.objects.get_or_create(
-                img=File(f),
-                info_img=File(f2),
+                img=File(main_image),
+                info_img=File(info_image),
                 title=goods_title,
                 short_desc=short_desc,
                 price=result,
@@ -247,79 +248,73 @@ def get_data():
                 info=info,
                 expiration=expiration,
 
-                img_1=File(f3),
-                text_1_title=text_one_title,
-                text_1_context=text_one_context,
-                text_1_description=text_one_description,
                 category=category_ins,
             )
             print(goods_ins, created)
 
+            goods_explain, created = GoodsExplain.objects.get_or_create(
+                img=File(extra_image),
+                text_title=text__title,
+                text_context=text__context,
+                text_description=text__description,
+
+                goods=goods_ins,
+            )
+            print('goods_explain, created', goods_explain, created)
+
             # 디테일 정보
             var_titles = driver.find_elements_by_xpath('//*[@id="goods-infomation"]/table/tbody/tr/th')
             var_descs = driver.find_elements_by_xpath('//*[@id="goods-infomation"]/table/tbody/tr/td')
-
-            # for index, desc in enumerate(var_descs):
-            #     title = var_titles[index].get_attribute('innerText')
-            # print(title)
-            # print(desc.get_attribute('innerText'), '\n')
-            # print(len(var_titles))
-            if len(var_titles) == 0:
-                pass
-            elif len(var_titles) == 8:
-                goods_detail_ins, created = GoodsDetail.objects.get_or_create(
-                    goods=goods_ins,
-                    var_1_title=var_titles[0].get_attribute('innerText'),
-                    var_1_desc=var_descs[0].get_attribute('innerText'),
-                    var_2_title=var_titles[1].get_attribute('innerText'),
-                    var_2_desc=var_descs[1].get_attribute('innerText'),
-                    var_3_title=var_titles[2].get_attribute('innerText'),
-                    var_3_desc=var_descs[2].get_attribute('innerText'),
-                    var_4_title=var_titles[3].get_attribute('innerText'),
-                    var_4_desc=var_descs[3].get_attribute('innerText'),
-                    var_5_title=var_titles[4].get_attribute('innerText'),
-                    var_5_desc=var_descs[4].get_attribute('innerText'),
-                    var_6_title=var_titles[5].get_attribute('innerText'),
-                    var_6_desc=var_descs[5].get_attribute('innerText'),
-                    var_7_title=var_titles[6].get_attribute('innerText'),
-                    var_7_desc=var_descs[6].get_attribute('innerText'),
-                    var_8_title=var_titles[7].get_attribute('innerText'),
-                    var_8_desc=var_descs[7].get_attribute('innerText'),
-                )
-
-            elif len(var_titles) == 10:
-                GoodsDetail.objects.get_or_create(
-                    goods=goods_ins,
-                    var_1_title=var_titles[0].get_attribute('innerText'),
-                    var_1_desc=var_descs[0].get_attribute('innerText'),
-                    var_2_title=var_titles[1].get_attribute('innerText'),
-                    var_2_desc=var_descs[1].get_attribute('innerText'),
-                    var_3_title=var_titles[2].get_attribute('innerText'),
-                    var_3_desc=var_descs[2].get_attribute('innerText'),
-                    var_4_title=var_titles[3].get_attribute('innerText'),
-                    var_4_desc=var_descs[3].get_attribute('innerText'),
-                    var_5_title=var_titles[4].get_attribute('innerText'),
-                    var_5_desc=var_descs[4].get_attribute('innerText'),
-                    var_6_title=var_titles[5].get_attribute('innerText'),
-                    var_6_desc=var_descs[5].get_attribute('innerText'),
-                    var_7_title=var_titles[6].get_attribute('innerText'),
-                    var_7_desc=var_descs[6].get_attribute('innerText'),
-                    var_8_title=var_titles[7].get_attribute('innerText'),
-                    var_8_desc=var_descs[7].get_attribute('innerText'),
-                    var_9_title=var_titles[8].get_attribute('innerText'),
-                    var_9_desc=var_descs[8].get_attribute('innerText'),
-                    var_10_title=var_titles[9].get_attribute('innerText'),
-                    var_10_desc=var_descs[9].get_attribute('innerText'),
-                )
-            # else:
-            # for index in range(len(var_titles)):
-
+            # print('var_titles>>>>>>>>>>>>>>>>>.', var_titles)
+            # print('var_descs >>>>>>>>>>>>>>>>>>', var_descs)
+            if len(var_titles) >= 1:
+                for var_detail_title, var_detail_desc in zip(var_titles, var_descs):
+                    # print(var_detail_title.get_attribute('innerText'))
+                    # print(var_detail_desc.get_attribute('innerText'), '\n')
+                    detail_ins, created = GoodsDetail.objects.get_or_create(
+                        detail_title=var_detail_title.get_attribute('innerText'),
+                        detail_desc=var_detail_desc.get_attribute('innerText'),
+                        goods=goods_ins,
+                    )
+                    # print('goods_detail_ins, created', detail_ins, created)
             # 타입 명시
-            print(type_name_ins)
-            print(goods_ins)
+            # print(type_name_ins)
+            # print(goods_ins)
             goodstype_ins, created = GoodsType.objects.get_or_create(type=type_name_ins, goods=goods_ins)
-            print(goodstype_ins, created)
+            # print(goodstype_ins, created)
 
 
 def crawling():
     get_data()
+
+
+def get_categories():
+    category_list = [
+        '채소',
+        '과일·견과·쌀',
+        '수산·해산·건어물',
+        '정육·계란',
+        '국·반찬·메인요리',
+        '샐러드·간편식',
+        '면·양념·오일',
+        '음료·우유·떡·간식',
+        '베이커리·치즈·델리',
+        '건강식품',
+        '생활용품·리빙',
+        '뷰티·바디케어',
+        '주방용품',
+        '가전제품',
+        '베이비·키즈',
+        '반려동물'
+    ]
+    return category_list
+
+
+def get_type():
+    type_list = []
+    return type_list
+
+
+def get_urls():
+    url_list = []
+    return url_list
