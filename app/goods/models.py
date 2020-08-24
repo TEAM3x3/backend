@@ -7,11 +7,13 @@ from goods.crawling import crawling
 
 def goods_img_path(instance, filename):
     filename = filename.split('media/')
+    print(filename[1])
     return filename[1]
 
 
 def goods_info_img_path(instance, filename):
     filename = filename.split('media/')
+    print('print(filename[1])', print(filename[1]))
     return filename[1]
 
 
@@ -79,8 +81,12 @@ class GoodsType(models.Model):
     type = models.ForeignKey(
         'Type',
         on_delete=models.CASCADE,
+        related_name='types',
+        related_query_name='types',
     )
     goods = models.ForeignKey(
         'Goods',
         on_delete=models.CASCADE,
+        related_name='types',
+        related_query_name='types'
     )
