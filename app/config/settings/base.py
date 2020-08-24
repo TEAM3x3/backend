@@ -111,7 +111,7 @@ STATIC_URL = '/static/'
 # FileSystemStorage로 지정 하였을 때 에만 사용.
 STATIC_ROOT = 'static/'
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = os.path.join(ROOT_DIR, 'media')
 
 # s3
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'

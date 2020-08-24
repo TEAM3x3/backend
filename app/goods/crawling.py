@@ -18,112 +18,10 @@ def get_data():
 
     driver = webdriver.Chrome('/Users/mac/projects/ChromeWebDriver/chromedriver')
 
-    detail_page_list = [
-        ['https://www.kurly.com/shop/goods/goods_view.php?goodsno=38256',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=27611',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=6495',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=38123',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=26097',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=52556',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=27228',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=3877',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=8772',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=52555',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=55694',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=6426',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=3690',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=56856'],
-        ['https://www.kurly.com/shop/goods/goods_view.php?goodsno=53164',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=99',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=29438',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=38256',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=51900',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=30766',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=6495',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=38123',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=3380',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=29437',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=49265',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=56454',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=26097',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=52556',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=100',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=53495'],
-        ['https://www.kurly.com/shop/goods/goods_view.php?goodsno=491',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=31441',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=267',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=36748',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=31882',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=330',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=31443',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=27611',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=79',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=31442',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=49846',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=35693',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=49628',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=35954',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=30849',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=11538'],
-        ['https://www.kurly.com/shop/goods/goods_view.php?goodsno=3389',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=3393',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=54840',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=39670',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=4182',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=3644',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=49256',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=51353',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=4824',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=54884',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=41357',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=35702',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=45840',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=54843',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=54842',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=11319'],
-        ['https://www.kurly.com/shop/goods/goods_view.php?goodsno=54492',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=54490',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=54491',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=27971',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=36934',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=54494',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=54496',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=9502',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=50258',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=52368',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=51672',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=54497',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=37513',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=54498',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=27970',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=54493'],
-        ['https://www.kurly.com/shop/goods/goods_view.php?goodsno=3173',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=48802',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=25578',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=4278',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=1363',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=31424',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=1248',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=51034',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=1358',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=7002',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=37790',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=51036',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=1646',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=51037',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=45661',
-         'https://www.kurly.com/shop/goods/goods_view.php?goodsno=49132']
-    ]
+    detail_page_list = get_urls()
 
-    type_name_list = [
-        '제철과일',
-        '국산과일',
-        '수입과일',
-        '냉동·건과일',
-        '견과류',
-        '쌀·잡곡'
-    ]
-    category_name = '과일·견과·쌀'
+    type_name_list = get_categories()
+    category_name = '수산·해산·건어물'
     category_ins, __ = Category.objects.get_or_create(name=category_name)
     from goods.models import Goods
     for lst, type_name in zip(detail_page_list, type_name_list):
@@ -292,25 +190,25 @@ def get_data():
                 '//*[@id="goods_pi"]/p/img').get_attribute('src')
             # print('info_image', info_image)
 
-            print(goods_image[1])
-            print(info_image)
-            print(goods_title)
-            print(short_desc)
-            print(result)
-            print(goods_each)
-            print(goods_each_weight)
-            print(transfer)
-            print(packing)
-            print(goods_origin)
-            print(allergy)
-            print(info)
-            print(expiration)
-
-            print(image_one)
-            print(text__title)
-            print(text__context)
-            print(text__description)
-            print(category_ins)
+            # print(goods_image[1])
+            # print(info_image)
+            # print(goods_title)
+            # print(short_desc)
+            # print(result)
+            # print(goods_each)
+            # print(goods_each_weight)
+            # print(transfer)
+            # print(packing)
+            # print(goods_origin)
+            # print(allergy)
+            # print(info)
+            # print(expiration)
+            #
+            # print(image_one)
+            # print(text__title)
+            # print(text__context)
+            # print(text__description)
+            # print(category_ins)
 
             # 이미지 생성
             try:
@@ -367,18 +265,18 @@ def get_data():
             # 디테일 정보
             var_titles = driver.find_elements_by_xpath('//*[@id="goods-infomation"]/table/tbody/tr/th')
             var_descs = driver.find_elements_by_xpath('//*[@id="goods-infomation"]/table/tbody/tr/td')
-            print('var_titles>>>>>>>>>>>>>>>>>.', var_titles)
-            print('var_descs >>>>>>>>>>>>>>>>>>', var_descs)
+            # print('var_titles>>>>>>>>>>>>>>>>>.', var_titles)
+            # print('var_descs >>>>>>>>>>>>>>>>>>', var_descs)
             if len(var_titles) >= 1:
                 for var_detail_title, var_detail_desc in zip(var_titles, var_descs):
-                    print(var_detail_title.get_attribute('innerText'))
-                    print(var_detail_desc.get_attribute('innerText'), '\n')
+                    # print(var_detail_title.get_attribute('innerText'))
+                    # print(var_detail_desc.get_attribute('innerText'), '\n')
                     detail_ins, created = GoodsDetail.objects.get_or_create(
                         detail_title=var_detail_title.get_attribute('innerText'),
                         detail_desc=var_detail_desc.get_attribute('innerText'),
                         goods=goods_ins,
                     )
-                    print('goods_detail_ins, created', detail_ins, created)
+                    # print('goods_detail_ins, created', detail_ins, created)
             # 타입 명시
             # print(type_name_ins)
             # print(goods_ins)
@@ -388,3 +286,35 @@ def get_data():
 
 def crawling():
     get_data()
+
+
+def get_categories():
+    category_list = [
+        '채소',
+        '과일·견과·쌀',
+        '수산·해산·건어물',
+        '정육·계란',
+        '국·반찬·메인요리',
+        '샐러드·간편식',
+        '면·양념·오일',
+        '음료·우유·떡·간식',
+        '베이커리·치즈·델리',
+        '건강식품',
+        '생활용품·리빙',
+        '뷰티·바디케어',
+        '주방용품',
+        '가전제품',
+        '베이비·키즈',
+        '반려동물'
+    ]
+    return category_list
+
+
+def get_type():
+    type_list = []
+    return type_list
+
+
+def get_urls():
+    url_list = []
+    return url_list

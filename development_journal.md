@@ -60,3 +60,10 @@ CreateBucketConfiguration={
 
 ## 0820 
 ##### [sqlite -> postgresql](https://gustjd887.tistory.com/26)
+
+
+## 0824
+##### [readme 작성 ](https://bulldogjob.com/news/449-how-to-write-a-good-readme-for-your-github-project)
+
+### 배포
+1. EC2 생성.
