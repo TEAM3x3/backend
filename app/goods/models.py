@@ -2,7 +2,7 @@ from django.db import models
 
 # Create your models here.
 import goods
-from goods.crawling import crawling
+# from goods.crawling import crawling
 
 
 def goods_img_path(instance, filename):
