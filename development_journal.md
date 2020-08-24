@@ -64,6 +64,8 @@ CreateBucketConfiguration={
 
 ## 0824
 ##### [readme 작성 ](https://bulldogjob.com/news/449-how-to-write-a-good-readme-for-your-github-project)
-
+	
 ### 배포
-1. EC2 생성.
+1. EC2 생성
+2. Elastic IP 생성
+3. RDS 생성  - 로컬 개발환경이랑, RDS 랑 연동
