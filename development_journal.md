@@ -38,8 +38,7 @@ CreateBucketConfiguration={
 
 
 
-- AWS S3 GUI에서 작성을 원한다면 [해당링크](MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')를 참고 
+- AWS S3 GUI에서 작성을 원한다면 [해당링크](https://siner308.github.io/2019/07/17/django-aws-s3/)를 참고 
 
 
 
@@ -52,3 +51,21 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')를 참고
 또는
 일정 시간이 지나고 난 뒤에는 정상 작동 한다.
 
+##### sqlite3를 사용하지 않는 이유
+- [참고 링크](http://egloos.zum.com/sweeper/v/3052951)
+- [sqlite vs mysql vs postgresql](https://ko.bccrwp.org/compare/sqlite-vs-mysql-vs-postgresql-a-comparison-of-relational-database-management-systems-8f2704/)
+
+
+##### [포스트맨 문서](https://velog.io/@jinee/TIL-Postman%EC%9C%BC%EB%A1%9C-API%EB%AC%B8%EC%84%9C-%EB%A7%8C%EB%93%A4%EA%B8%B0-l4k5mj31rl)
+
+## 0820 
+##### [sqlite -> postgresql](https://gustjd887.tistory.com/26)
+
+
+## 0824
+##### [readme 작성 ](https://bulldogjob.com/news/449-how-to-write-a-good-readme-for-your-github-project)
+	
+### 배포
+1. EC2 생성
+2. Elastic IP 생성
+3. RDS 생성  - 로컬 개발환경이랑, RDS 랑 연동
