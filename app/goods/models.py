@@ -122,4 +122,5 @@ class DeliveryInfoImage(models.Model):
     info = models.ForeignKey(
         'goods.DeliveryInfo',
         on_delete=models.CASCADE,
+        related_name='images'
     )

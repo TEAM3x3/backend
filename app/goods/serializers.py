@@ -1,7 +1,7 @@
 from action_serializer import ModelActionSerializer
 from rest_framework.serializers import ModelSerializer
 
-from goods.models import Goods, GoodsExplain, GoodsDetail, Category
+from goods.models import Goods, GoodsExplain, GoodsDetail, Category, DeliveryInfo, DeliveryInfoImage
 
 
 class CategorySerializers(ModelSerializer):
@@ -48,3 +48,19 @@ class GoodsSerializers(ModelActionSerializer):
         action_fields = {
             'list': {'fields': ('id', 'title', 'short_desc', 'price', 'img',)}
         }
+
+
+class DeliveryInfoImageSerializers(ModelSerializer):
+    class Meta:
+        model = DeliveryInfoImage
+        fields = (
+            'image',
+        )
+
+
+class DeliveryInfoSerializers(ModelSerializer):
+    images = DeliveryInfoImageSerializers(many=True)
+
+    class Meta:
+        model = DeliveryInfo
+        fields = ('address_img','images')
