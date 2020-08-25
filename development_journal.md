@@ -72,5 +72,9 @@ CreateBucketConfiguration={
 
 ### [postman 예제 저장하기](https://velog.io/@jinee/TIL-Postman%EC%9C%BC%EB%A1%9C-API%EB%AC%B8%EC%84%9C-%EB%A7%8C%EB%93%A4%EA%B8%B0-l4k5mj31rl)
 
+## 0826
 ### develop
 extreme progmming , scrum
+
+## 0827
+파일 병합 시 migrations 파일 충돌을 해결하는 방법

@@ -2,12 +2,11 @@ from django.db import models
 
 # Create your models here.
 import goods
-from goods.crawling import crawling
+from goods.crawling import crawling, get_delivery
 
 
 def goods_img_path(instance, filename):
     filename = filename.split('media/')
-    print(filename[1])
     return filename[1]
 
 
@@ -17,6 +16,11 @@ def goods_info_img_path(instance, filename):
 
 
 def goods_img_1_path(instance, filename):
+    filename = filename.split('media/')
+    return filename[1]
+
+
+def delivery_img(instance, filename):
     filename = filename.split('media/')
     return filename[1]
 
@@ -44,6 +48,10 @@ class Goods(models.Model):
     @staticmethod
     def get_crawling():
         crawling()
+
+    @staticmethod
+    def get_delivery():
+        get_delivery()
 
 
 class GoodsExplain(models.Model):
@@ -103,4 +111,15 @@ class GoodsType(models.Model):
 
 
 class DeliveryInfo(models.Model):
-    pass
+    address_img = models.ImageField(upload_to='delivery_img', null=True)
+
+
+class DeliveryInfoImage(models.Model):
+    image = models.ImageField(
+        upload_to='delivery_img',
+        null=True,
+    )
+    info = models.ForeignKey(
+        'goods.DeliveryInfo',
+        on_delete=models.CASCADE,
+    )
