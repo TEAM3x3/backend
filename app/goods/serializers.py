@@ -1,3 +1,4 @@
+from action_serializer import ModelActionSerializer
 from rest_framework.serializers import ModelSerializer
 
 from goods.models import Goods, GoodsExplain, GoodsDetail, Category
@@ -21,7 +22,7 @@ class GoodsDetailSerializers(ModelSerializer):
         fields = ('detail_title', 'detail_desc')
 
 
-class GoodsSerializers(ModelSerializer):
+class GoodsSerializers(ModelActionSerializer):
     explains = GoodsExplainSerializers(many=True)
     details = GoodsDetailSerializers(many=True, )
 
@@ -44,3 +45,6 @@ class GoodsSerializers(ModelSerializer):
                   'explains',
                   'details',
                   )
+        action_fields = {
+            'list': {'fields': ('id', 'title', 'short_desc', 'price', 'img',)}
+        }

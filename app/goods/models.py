@@ -13,7 +13,6 @@ def goods_img_path(instance, filename):
 
 def goods_info_img_path(instance, filename):
     filename = filename.split('media/')
-    print('print(filename[1])', print(filename[1]))
     return filename[1]
 
 
@@ -38,7 +37,7 @@ class Goods(models.Model):
     expiration = models.CharField('유통기한', max_length=512, null=True, )
 
     category = models.ForeignKey(
-        'Category',
+        'goods.Category',
         on_delete=models.CASCADE,
     )
 
@@ -53,24 +52,35 @@ class GoodsExplain(models.Model):
     text_context = models.CharField('상품 문맥', max_length=128)
     text_description = models.CharField('설명', max_length=512)
     goods = models.ForeignKey(
-        'Goods',
+        'goods.Goods',
         on_delete=models.CASCADE,
         related_name='explains',
     )
 
 
 class GoodsDetail(models.Model):
-    detail_title = models.CharField(max_length=128)
+    detail_title = models.ForeignKey(
+        'goods.GoodsDetailTitle',
+        on_delete=models.CASCADE,
+    )
     detail_desc = models.CharField(max_length=512)
     goods = models.ForeignKey(
-        'Goods',
+        'goods.Goods',
         on_delete=models.CASCADE,
         related_name='details'
     )
 
 
+class GoodsDetailTitle(models.Model):
+    title = models.CharField(max_length=128)
+
+
 class Type(models.Model):
     name = models.CharField(max_length=30)
+    category = models.ForeignKey(
+        'goods.Category',
+        on_delete=models.CASCADE,
+    )
 
 
 class Category(models.Model):
@@ -79,14 +89,18 @@ class Category(models.Model):
 
 class GoodsType(models.Model):
     type = models.ForeignKey(
-        'Type',
+        'goods.Type',
         on_delete=models.CASCADE,
         related_name='types',
         related_query_name='types',
     )
     goods = models.ForeignKey(
-        'Goods',
+        'goods.Goods',
         on_delete=models.CASCADE,
         related_name='types',
         related_query_name='types'
     )
+
+
+class DeliveryInfo(models.Model):
+    pass

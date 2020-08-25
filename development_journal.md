@@ -69,3 +69,8 @@ CreateBucketConfiguration={
 1. EC2 생성
 2. Elastic IP 생성
 3. RDS 생성  - 로컬 개발환경이랑, RDS 랑 연동
+
+### [postman 예제 저장하기](https://velog.io/@jinee/TIL-Postman%EC%9C%BC%EB%A1%9C-API%EB%AC%B8%EC%84%9C-%EB%A7%8C%EB%93%A4%EA%B8%B0-l4k5mj31rl)
+
+### develop
+extreme progmming , scrum

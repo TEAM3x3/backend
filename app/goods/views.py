@@ -10,7 +10,6 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
     serializer_class = GoodsSerializers
 
     def get_queryset(self):
-
         if self.request.query_params.get('category'):
             category = self.request.query_params['category']
             qs = Goods.objects.filter(category__name=category)
@@ -18,7 +17,6 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
             type_name = self.request.query_params['type']
             type_ins = Type.objects.filter(name=type_name)[0]
             qs = Goods.objects.filter(types__type__pk=type_ins.pk)
-        else:
-            qs = super().get_queryset()
+        elif self.kwargs['pk']:
+            qs = Goods.objects.filter(pk=self.kwargs['pk'])
         return qs
-
