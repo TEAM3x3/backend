@@ -1,11 +1,11 @@
 import os
 from pathlib import Path
-
 import environ
 
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 ROOT_DIR = os.path.dirname(os.path.dirname(BASE_DIR))
 env_file = ROOT_DIR + '/.env'
+
 
 environ.Env.read_env(env_file=env_file)
 
@@ -23,7 +23,7 @@ INSTALLED_APPS = [
     'core',
     'goods',
     'members',
-    'cart',
+    'carts',
 
     'rest_framework',
     'rest_framework.authtoken',
@@ -37,6 +37,9 @@ INSTALLED_APPS = [
 
     'django_extensions',
 ]
+
+
+CART_SESSION_ID = 'cart'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -62,6 +65,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'cart.context_processor.cart_total_amount',
             ],
         },
     },
@@ -71,7 +75,6 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators

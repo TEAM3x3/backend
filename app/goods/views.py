@@ -21,7 +21,7 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
             type_ins = Type.objects.filter(name=type_name)[0]
             qs = Goods.objects.filter(types__type__pk=type_ins.pk)
         else:
-            qs = super().get_queryset()
+            qs = None
         return qs
 
 

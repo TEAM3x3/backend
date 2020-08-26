@@ -7,6 +7,7 @@ from django.test import TestCase
 from model_bakery import baker
 from munch import Munch
 from rest_framework import status
+from rest_framework.authtoken.models import Token
 from rest_framework.test import APITestCase
 
 User = get_user_model()
@@ -28,7 +29,7 @@ class UserTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         for user_response, user in zip(response.data, self.users):
             self.assertEqual(user_response['id'], user.id)
-            self.assertEqual(user_response['name'], user.name)
+            self.assertEqual(user_response['username'], user.username)
 
     def test_create(self):
         data = {
@@ -67,6 +68,27 @@ class UserTestCase(APITestCase):
         user_response = Munch(response.data)
         self.assertTrue(user_response.username)
         self.assertEqual(user_response.username, data['username'])
-        self.assertNotEquals(user_response.user, prev_username)
+        self.assertNotEquals(user_response.username, prev_username)
 
-        self.fail()
+
+    def test_destroy(self):
+        test_user = self.users[0]
+        self.client.force_authenticate(user=test_user)
+        response = self.client.delete(f'/api/users/{test_user.id}')
+        self.assertTrue(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertFalse(User.objects.filter(id=test_user.id).exists())
+
+
+    def test_login(self):
+        password = '1111'
+        self.test_user = User(username='test_user', email='test_user@email.com', password=password)
+        self.test_user.set_password(self.test_user.password)
+        self.test_user.save()
+
+        data = {
+            'username': self.test_user.username,
+            'password': password
+        }
+        response = self.client.post(f'/api/users/login', data=data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertTrue(response.data.get('token'))
