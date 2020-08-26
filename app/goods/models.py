@@ -91,6 +91,7 @@ class Type(models.Model):
     category = models.ForeignKey(
         'goods.Category',
         on_delete=models.CASCADE,
+        related_name='types'
     )
 
 

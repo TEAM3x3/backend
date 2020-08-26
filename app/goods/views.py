@@ -3,8 +3,8 @@ from rest_framework import mixins
 from rest_framework.decorators import action
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
 
-from goods.models import Goods, Type, DeliveryInfo
-from goods.serializers import GoodsSerializers, DeliveryInfoSerializers
+from goods.models import Goods, Type, DeliveryInfo, Category
+from goods.serializers import GoodsSerializers, DeliveryInfoSerializers, CategoriesSerializers
 
 
 class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericViewSet):
@@ -28,3 +28,8 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
 class DeliveryViewSet(mixins.ListModelMixin, GenericViewSet):
     queryset = DeliveryInfo.objects.all()
     serializer_class = DeliveryInfoSerializers
+
+
+class CategoryViewSet(mixins.ListModelMixin, GenericViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategoriesSerializers
