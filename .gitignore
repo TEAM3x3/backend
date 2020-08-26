@@ -6,8 +6,11 @@ __pycache__/
 # C extensions
 *.so
 
+# migrate file
+migrations/
+
 .idea/
-app/media/
+media/
 # Distribution / packaging
 .Python
 build/
