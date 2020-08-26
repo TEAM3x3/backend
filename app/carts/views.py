@@ -1,11 +1,23 @@
-from django.shortcuts import render
+from django.contrib.auth import get_user_model
+from rest_framework import mixins
 
-from rest_framework.viewsets import ModelViewSet
-from carts.models import CartItem, Cart
-from carts.serializers import CartSerializer
-from goods.models import Goods
+from rest_framework.viewsets import GenericViewSet
+from carts.models import CartItem
+from carts.serializers import CartItemSerializer
+
+User = get_user_model()
 
 
-class CartViewSet(ModelViewSet):
-    queryset = Cart.objects.all()
-    serializer_class = CartSerializer
+class CartViewSet(mixins.CreateModelMixin,
+                  mixins.RetrieveModelMixin,
+                  mixins.UpdateModelMixin,
+                  mixins.DestroyModelMixin,
+                  mixins.ListModelMixin,
+                  GenericViewSet):
+    queryset = CartItem.objects.all()
+    serializer_class = CartItemSerializer
+
+    def get_queryset(self):
+        if self.action == 'list':
+            user = User.objects.first()
+            return CartItem.objects.filter(user=user)

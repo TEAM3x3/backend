@@ -6,24 +6,17 @@ from goods.models import Goods
 
 User = get_user_model()
 
-class Cart(models.Model):
-    cart_id = models.CharField(max_length=250, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        db_table = 'Cart'
-        ordering = ['created_at']
-
 
 class CartItem(models.Model):
-    user = models.ForeignKey(User, on_delete=CASCADE)
-    goods = models.ForeignKey(Goods, on_delete=CASCADE)
     quantity = models.IntegerField(default=1,
                                    validators=[MinValueValidator(1), MaxValueValidator(50)])
 
-    class Meta:
-        db_table = 'CartItem'
+    user = models.ForeignKey(User, on_delete=CASCADE)
+    goods = models.ForeignKey(
+        'goods.Goods',
+        on_delete=models.CASCADE,
+        related_query_name='cartitems',
+    )
 
-    # 장바구니 합계
     def sub_total(self):
         return self.goods.price * self.quantity

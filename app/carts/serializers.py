@@ -1,14 +1,16 @@
-from rest_framework.serializers import ModelSerializer
-from carts.models import CartItem, Cart
+from rest_framework import serializers
+
+from carts.models import CartItem
+from goods.serializers import GoodsSerializers
 
 
-class CartSerializer(ModelSerializer):
-    class Meta:
-        model = Cart
-        fields = ('cart_id', 'created_at',)
+class CartItemSerializer(serializers.ModelSerializer):
+    goods = GoodsSerializers()
+    price = serializers.SerializerMethodField()
 
-
-class CartSerializer(ModelSerializer):
     class Meta:
         model = CartItem
-        fields = ('user', 'goods', 'quantity',)
+        fields = ('goods', 'quantity', 'price',)
+
+    def get_price(self, obj):
+        return (obj.goods.price * obj.quantity)
