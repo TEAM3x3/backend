@@ -6,6 +6,10 @@ __pycache__/
 # C extensions
 *.so
 
+# migrate file
+app/goods/migrations/
+app/members/migrations/
+
 .idea/
 media/
 # Distribution / packaging

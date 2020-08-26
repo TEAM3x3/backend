@@ -8,9 +8,11 @@ User = get_user_model()
 class UserSerializer(ModelActionSerializer):
     class Meta:
         model = User
+
         fields = ('id', 'username', 'password', 'email', 'phone', 'nickname', 'address', 'gender',
                   # 'birthday'
                   )
+
         action_fields = {
             'login': {'fields': ('username', 'password')},
             'check_username': {'fields': ('username', )},
