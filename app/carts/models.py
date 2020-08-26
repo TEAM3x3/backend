@@ -12,7 +12,7 @@ class Cart(models.Model):
 
     class Meta:
         db_table = 'Cart'
-        ordering = ['created_at',]
+        ordering = ['created_at']
 
 
 class CartItem(models.Model):
