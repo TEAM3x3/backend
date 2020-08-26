@@ -10,3 +10,4 @@ DATABASES = {
         'PORT': os.environ['DB_DEPLOY_PORT'],
     }
 }
+
