@@ -1,6 +1,8 @@
+from action_serializer import ModelActionSerializer
 from rest_framework.serializers import ModelSerializer
 
-from goods.models import Goods, GoodsExplain, GoodsDetail, Category
+from goods.models import Goods, GoodsExplain, GoodsDetail, Category, DeliveryInfo, DeliveryInfoImage, GoodsDetailTitle, \
+    Type
 
 
 class CategorySerializers(ModelSerializer):
@@ -15,13 +17,21 @@ class GoodsExplainSerializers(ModelSerializer):
         fields = ('img', 'text_title', 'text_context', 'text_description')
 
 
+class GoodsDetailTitleSerializers(ModelSerializer):
+    class Meta:
+        model = GoodsDetailTitle
+        fields = ('title',)
+
+
 class GoodsDetailSerializers(ModelSerializer):
+    detail_title = GoodsDetailTitleSerializers()
+
     class Meta:
         model = GoodsDetail
         fields = ('detail_title', 'detail_desc')
 
 
-class GoodsSerializers(ModelSerializer):
+class GoodsSerializers(ModelActionSerializer):
     explains = GoodsExplainSerializers(many=True)
     details = GoodsDetailSerializers(many=True, )
 
@@ -44,3 +54,36 @@ class GoodsSerializers(ModelSerializer):
                   'explains',
                   'details',
                   )
+        action_fields = {
+            'list': {'fields': ('id', 'title', 'short_desc', 'price', 'img',)}
+        }
+
+
+class DeliveryInfoImageSerializers(ModelSerializer):
+    class Meta:
+        model = DeliveryInfoImage
+        fields = (
+            'image',
+        )
+
+
+class DeliveryInfoSerializers(ModelSerializer):
+    images = DeliveryInfoImageSerializers(many=True)
+
+    class Meta:
+        model = DeliveryInfo
+        fields = ('address_img', 'images')
+
+
+class TypeSerializers(ModelSerializer):
+    class Meta:
+        model = Type
+        fields = ('name',)
+
+
+class CategoriesSerializers(ModelSerializer):
+    types = TypeSerializers(many=True, )
+
+    class Meta:
+        model = Category
+        fields = ('name', 'types')
