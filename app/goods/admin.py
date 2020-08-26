@@ -1,6 +1,4 @@
 from django.contrib import admin
-
-# Register your models here.
 from goods.models import Goods, GoodsDetail, Type, Category, GoodsType, GoodsExplain, DeliveryInfo, DeliveryInfoImage
 
 

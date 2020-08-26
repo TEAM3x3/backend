@@ -10,3 +10,5 @@ DATABASES = {
         'PORT': os.environ['DB_DEPLOY_PORT'],
     }
 }
+
+MIDDLEWARE += ['whitenoise.middleware.WhiteNoiseMiddleware', ]

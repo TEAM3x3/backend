@@ -1,8 +1,7 @@
 from django.db import models
-
-# Create your models here.
 import goods
 from goods.crawling import crawling, get_delivery
+
 
 
 def goods_img_path(instance, filename):
