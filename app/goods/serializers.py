@@ -1,7 +1,7 @@
 from action_serializer import ModelActionSerializer
 from rest_framework.serializers import ModelSerializer
 
-from goods.models import Goods, GoodsExplain, GoodsDetail, Category, DeliveryInfo, DeliveryInfoImage, GoodsDetailTitle, \
+from goods.models import Category, GoodsExplain, GoodsDetailTitle, GoodsDetail, Goods, DeliveryInfoImage, DeliveryInfo, \
     Type
 
 
