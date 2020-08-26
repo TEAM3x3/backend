@@ -1,20 +1,19 @@
 from django.conf.urls import url
-from django.urls import include
+from django.urls import include, path
 from rest_framework_nested import routers
 
-from cart.views import CartViewSet, CartItemViewSet
-from goods.views import GoodsViewSet
+from goods.views import GoodsViewSet, DeliveryViewSet, CategoryViewSet
 from members.views import UserViewSet
 
 router = routers.SimpleRouter(trailing_slash=False)
 router.register('users', UserViewSet)
 router.register('goods', GoodsViewSet)
-router.register('cart', CartViewSet)
-router.register('cartitem', CartItemViewSet)
+
+router.register('delivery', DeliveryViewSet)
+router.register('category', CategoryViewSet)
 
 users_router = routers.NestedSimpleRouter(router, 'users')
 goods_router = routers.NestedSimpleRouter(router, 'goods')
-cart_router = routers.NestedSimpleRouter(router, 'cart')
 
 urlpatterns = (
     url('', include(router.urls)),
