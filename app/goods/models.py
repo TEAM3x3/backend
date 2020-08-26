@@ -33,7 +33,7 @@ class Goods(models.Model):
     each = models.CharField('판매 단위', max_length=64, null=True, )
     weight = models.CharField('중량/용량', max_length=64, null=True, )
     transfer = models.CharField('배송 구분', max_length=64, null=True, )
-    packing = models.CharField('포장 타입', max_length=128, null=True, )
+    packing = models.CharField('포장 타입', max_length=255, null=True, )
     origin = models.CharField('원산지', max_length=48, null=True, )
     allergy = models.CharField('알레르기 정보', max_length=512, null=True, )
     info = models.CharField('제품 정보', max_length=512, null=True, )
@@ -56,7 +56,7 @@ class Goods(models.Model):
 class GoodsExplain(models.Model):
     img = models.ImageField('상품 설명 이미지', upload_to=goods_img_1_path)
     text_title = models.CharField(max_length=64)
-    text_context = models.CharField('상품 문맥', max_length=128)
+    text_context = models.CharField('상품 문맥', max_length=255)
     text_description = models.CharField('설명', max_length=512)
     goods = models.ForeignKey(
         'goods.Goods',
@@ -79,7 +79,7 @@ class GoodsDetail(models.Model):
 
 
 class GoodsDetailTitle(models.Model):
-    title = models.CharField(max_length=128)
+    title = models.CharField(max_length=255)
 
     def __str__(self):
         return self.title
