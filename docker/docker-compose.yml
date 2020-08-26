@@ -13,7 +13,7 @@ services:
     ports:
       - 5432:5432
     environment:
-      POSTGRES_DB: heestagram
+      POSTGRES_DB: fc-13final
       POSTGRES_HOST_AUTH_METHOD: trust
 
 volumes:

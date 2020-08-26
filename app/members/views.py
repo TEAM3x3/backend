@@ -7,7 +7,6 @@ from rest_framework.authtoken.models import Token
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
-
 from members.serializers import UserSerializer
 
 User = get_user_model()

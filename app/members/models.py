@@ -18,7 +18,7 @@ class User(AbstractUser):
     date_joined = models.DateTimeField(auto_now_add=True, verbose_name='가입일')
     # point 고려
 
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS = ['email']
 
 
 # class Profile(models.Model):
