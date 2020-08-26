@@ -12,6 +12,7 @@ router = routers.SimpleRouter(trailing_slash=False)
 router.register('users', UserViewSet)
 router.register('goods', GoodsViewSet)
 router.register('carts', CartViewSet)
+
 router.register('delivery', DeliveryViewSet)
 router.register('category', CategoryViewSet)
 
