@@ -3,30 +3,37 @@ import goods
 from goods.crawling import crawling, get_delivery
 
 
-
 def goods_img_path(instance, filename):
-    filename = filename.split('media/')
-    return filename[1]
+    if 'media/' in filename:
+        filename = filename.split('media/')
+        return filename[1]
+    return filename
 
 
 def goods_info_img_path(instance, filename):
-    filename = filename.split('media/')
-    return filename[1]
+    if 'media/' in filename:
+        filename = filename.split('media/')
+        return filename[1]
+    return filename
 
 
 def goods_img_1_path(instance, filename):
-    filename = filename.split('media/')
-    return filename[1]
+    if 'media/' in filename:
+        filename = filename.split('media/')
+        return filename[1]
+    return filename
 
 
 def delivery_img(instance, filename):
-    filename = filename.split('media/')
-    return filename[1]
+    if 'media/' in filename:
+        filename = filename.split('media/')
+        return filename[1]
+    return filename
 
 
 class Goods(models.Model):
     img = models.ImageField('메인이미지', upload_to=goods_img_path)
-    info_img = models.ImageField('상품 이미지', upload_to=goods_info_img_path)
+    info_img = models.ImageField('상품 이미지', upload_to=goods_info_img_path, null=True)
     title = models.CharField('상품 명', max_length=60)
     short_desc = models.CharField('간단 설명', max_length=100)
     price = models.IntegerField('가격')
@@ -42,6 +49,7 @@ class Goods(models.Model):
     category = models.ForeignKey(
         'goods.Category',
         on_delete=models.CASCADE,
+        null=True,
     )
 
     @staticmethod
