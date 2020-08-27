@@ -77,4 +77,10 @@ CreateBucketConfiguration={
 extreme progmming , scrum
 
 ## 0827
+**시리얼라이저의 중복을 최소화 할 수 있을까?**
+
 파일 병합 시 migrations 파일 충돌을 해결하는 방법
+
+[django haystack](https://django-haystack.readthedocs.io/en/master/)
+
+[django filter- goods](https://brownbears.tistory.com/96)
