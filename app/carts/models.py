@@ -10,7 +10,6 @@ User = get_user_model()
 class CartItem(models.Model):
     quantity = models.IntegerField(default=1,
                                    validators=[MinValueValidator(1), MaxValueValidator(50)])
-
     user = models.ForeignKey(User, on_delete=CASCADE)
     goods = models.ForeignKey(
         'goods.Goods',
