@@ -20,6 +20,8 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
             type_name = self.request.query_params['type']
             type_ins = Type.objects.filter(name=type_name)[0]
             qs = Goods.objects.filter(types__type__pk=type_ins.pk)
+        # elif self.kwargs['pk']:
+        #     qs = Goods.objects.filter(pk=self.kwargs['pk'])
         else:
             qs = None
         return qs
