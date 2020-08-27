@@ -18,7 +18,7 @@ class User(AbstractUser):
     date_joined = models.DateTimeField(auto_now_add=True, verbose_name='가입일')
     # point 고려
 
-    REQUIRED_FIELDS = ['email']
+    # REQUIRED_FIELDS = ['email']
 
 
 # class Profile(models.Model):
@@ -31,9 +31,6 @@ class User(AbstractUser):
 #     coupon = models.CharField('쿠폰', max_length=1, choices=COUPON_CHOICES)
 #     accumulated_money = models.IntegerField('적립금', default=0)
 #     point = models.IntegerField('포인트', default=0)
-#
-#
-
 
 
 
