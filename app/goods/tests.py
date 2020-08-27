@@ -4,7 +4,6 @@ from django.test import TestCase
 # Create your tests here.
 from model_bakery import baker
 from rest_framework.test import APITestCase
-
 from goods.models import Goods, GoodsExplain, GoodsDetail
 
 User = get_user_model()

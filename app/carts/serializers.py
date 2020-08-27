@@ -17,12 +17,17 @@ class CartItemListSerializer(serializers.ModelSerializer):
 
 
 
-
 class CartItemCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = CartItem
-        fields = ('goods', 'quantity', 'user')
-
+        fields = ('goods', 'user', 'quantity')
+        validators = [
+            serializers.UniqueTogetherValidator(
+                queryset=CartItem.objects.all(),
+                fields=('goods', 'user'),
+                message=("이미 장바구니에 있는 상품입니다.")
+            )
+        ]
 
 class CartItemUpdateSerializer(serializers.ModelSerializer):
     class Meta:

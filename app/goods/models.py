@@ -3,25 +3,32 @@ import goods
 from goods.crawling import crawling, get_delivery
 
 
-
 def goods_img_path(instance, filename):
-    filename = filename.split('media/')
-    return filename[1]
+    if 'media/' in filename:
+        filename = filename.split('media/')
+        return filename[1]
+    return filename
 
 
 def goods_info_img_path(instance, filename):
-    filename = filename.split('media/')
-    return filename[1]
+    if 'media/' in filename:
+        filename = filename.split('media/')
+        return filename[1]
+    return filename
 
 
 def goods_img_1_path(instance, filename):
-    filename = filename.split('media/')
-    return filename[1]
+    if 'media/' in filename:
+        filename = filename.split('media/')
+        return filename[1]
+    return filename
 
 
 def delivery_img(instance, filename):
-    filename = filename.split('media/')
-    return filename[1]
+    if 'media/' in filename:
+        filename = filename.split('media/')
+        return filename[1]
+    return filename
 
 
 class Goods(models.Model):
@@ -42,6 +49,7 @@ class Goods(models.Model):
     category = models.ForeignKey(
         'goods.Category',
         on_delete=models.CASCADE,
+        null=True
     )
 
     @staticmethod
