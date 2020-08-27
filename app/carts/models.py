@@ -6,14 +6,6 @@ from goods.models import Goods
 
 User = get_user_model()
 
-class Cart(models.Model):
-    cart_id = models.CharField(max_length=250, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        db_table = 'Cart'
-        ordering = ['created_at']
-
 
 class CartItem(models.Model):
     user = models.ForeignKey(User, on_delete=CASCADE)
