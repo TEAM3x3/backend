@@ -11,3 +11,4 @@ DATABASES = {
     }
 }
 
+MIDDLEWARE += ['whitenoise.middleware.WhiteNoiseMiddleware', ]
