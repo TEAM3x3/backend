@@ -1,7 +1,6 @@
 from django.contrib.auth import get_user_model
 from rest_framework import mixins
-
-from rest_framework.viewsets import GenericViewSet
+from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from carts.models import CartItem
 from carts.serializers import CartItemSerializer
 
@@ -21,3 +20,8 @@ class CartViewSet(mixins.CreateModelMixin,
         if self.action == 'list':
             user = User.objects.first()
             return CartItem.objects.filter(user=user)
+
+
+class CartItemViewSet(ModelViewSet):
+    queryset = CartItem.objects.all()
+    serializer_class = CartItemSerializer

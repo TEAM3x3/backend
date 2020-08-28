@@ -6,7 +6,6 @@ BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 ROOT_DIR = os.path.dirname(os.path.dirname(BASE_DIR))
 env_file = ROOT_DIR + '/.env'
 
-
 environ.Env.read_env(env_file=env_file)
 
 SECRET_KEY = 'vr@i_7k(=y!cy_w#@d=oat*!pff8%oow3cuotxch30mgbu+%e-'
@@ -38,6 +37,7 @@ INSTALLED_APPS = [
     'django_extensions',
 ]
 
+CART_SESSION_ID = 'cart'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

@@ -3,37 +3,44 @@ import goods
 from goods.crawling import crawling, get_delivery
 
 
-
 def goods_img_path(instance, filename):
-    filename = filename.split('media/')
-    return filename[1]
+    if 'media/' in filename:
+        filename = filename.split('media/')
+        return filename[1]
+    return filename
 
 
 def goods_info_img_path(instance, filename):
-    filename = filename.split('media/')
-    return filename[1]
+    if 'media/' in filename:
+        filename = filename.split('media/')
+        return filename[1]
+    return filename
 
 
 def goods_img_1_path(instance, filename):
-    filename = filename.split('media/')
-    return filename[1]
+    if 'media/' in filename:
+        filename = filename.split('media/')
+        return filename[1]
+    return filename
 
 
 def delivery_img(instance, filename):
-    filename = filename.split('media/')
-    return filename[1]
+    if 'media/' in filename:
+        filename = filename.split('media/')
+        return filename[1]
+    return filename
 
 
 class Goods(models.Model):
     img = models.ImageField('메인이미지', upload_to=goods_img_path)
-    info_img = models.ImageField('상품 이미지', upload_to=goods_info_img_path)
+    info_img = models.ImageField('상품 이미지', upload_to=goods_info_img_path, null=True)
     title = models.CharField('상품 명', max_length=60)
     short_desc = models.CharField('간단 설명', max_length=100)
     price = models.IntegerField('가격')
     each = models.CharField('판매 단위', max_length=64, null=True, )
     weight = models.CharField('중량/용량', max_length=64, null=True, )
     transfer = models.CharField('배송 구분', max_length=64, null=True, )
-    packing = models.CharField('포장 타입', max_length=128, null=True, )
+    packing = models.CharField('포장 타입', max_length=255, null=True, )
     origin = models.CharField('원산지', max_length=48, null=True, )
     allergy = models.CharField('알레르기 정보', max_length=512, null=True, )
     info = models.CharField('제품 정보', max_length=512, null=True, )
@@ -42,6 +49,7 @@ class Goods(models.Model):
     category = models.ForeignKey(
         'goods.Category',
         on_delete=models.CASCADE,
+        null=True,
     )
 
     @staticmethod
@@ -56,7 +64,7 @@ class Goods(models.Model):
 class GoodsExplain(models.Model):
     img = models.ImageField('상품 설명 이미지', upload_to=goods_img_1_path)
     text_title = models.CharField(max_length=64)
-    text_context = models.CharField('상품 문맥', max_length=128)
+    text_context = models.CharField('상품 문맥', max_length=255)
     text_description = models.CharField('설명', max_length=512)
     goods = models.ForeignKey(
         'goods.Goods',
@@ -79,7 +87,7 @@ class GoodsDetail(models.Model):
 
 
 class GoodsDetailTitle(models.Model):
-    title = models.CharField(max_length=128)
+    title = models.CharField(max_length=255)
 
     def __str__(self):
         return self.title
