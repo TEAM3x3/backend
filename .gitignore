@@ -7,8 +7,11 @@ __pycache__/
 *.so
 
 # migrate file
+<<<<<<< HEAD
+=======
 app/goods/migrations/
 app/members/migrations/
+>>>>>>> d9900fd93dad9ebf9c86222548d943d5a44f57e6
 migrations/
 
 .idea/
