@@ -9,6 +9,7 @@ __pycache__/
 # migrate file
 app/goods/migrations/
 app/members/migrations/
+migrations/
 
 .idea/
 media/
