@@ -1,15 +1,42 @@
+import os
 from django.contrib.auth import get_user_model
-from django.test import TestCase
-
-# Create your tests here.
 from rest_framework.test import APITestCase
+from django.core.files.uploadedfile import SimpleUploadedFile
+from config import settings
+from config.settings.base import ROOT_DIR
+from goods.models import Goods
 
 User = get_user_model()
 
 
-class CartTest(APITestCase):
-    def setUp(self) -> None:
-        user = User.objects.create_user(username='testUser', password='1111')
+class CartTestCase(APITestCase):
 
-    def test_list(self):
-        self.fail()
+    def setUp(self) -> None:
+        self.user = User(username='test_user', password='1111', email='test_user@test.com')
+        self.user.set_password(self.user.password)
+        self.user.save()
+
+        image = settings.base.MEDIA_ROOT + '/pycharm.png'
+
+        for i in range(5):
+            test_file = SimpleUploadedFile(name='test_image.jpeg', content=open(image, 'rb', ).read(),
+                                           content_type="image/jpeg"
+                                           )
+            test_file2 = SimpleUploadedFile(name='test_image.jpeg', content=open(image, 'rb', ).read(),
+                                            content_type="image/jpeg"
+                                            )
+
+            self.goods = Goods.objects.create(img=test_file, info_img=test_file2, title='상품명',
+                                              short_desc='간단설명', price='555')
+
+    def test_cart_create(self):
+        test_user = self.user
+        goods = Goods.objects.first()
+        data = {
+            "goods": goods.pk,
+            "quantity": 1,
+            "user": test_user.pk,
+        }
+
+        response = self.client.post(f'/api/carts', data=data)
+

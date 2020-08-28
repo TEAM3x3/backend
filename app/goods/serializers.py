@@ -1,6 +1,7 @@
-from action_serializer import ModelActionSerializer
+from action_serializer import ModelActionSerializer, serializers
 from rest_framework.serializers import ModelSerializer
 
+from carts.models import CartItem
 from goods.models import Category, GoodsExplain, GoodsDetailTitle, GoodsDetail, Goods, DeliveryInfoImage, DeliveryInfo, \
     Type
 
@@ -29,6 +30,13 @@ class GoodsDetailSerializers(ModelSerializer):
     class Meta:
         model = GoodsDetail
         fields = ('detail_title', 'detail_desc')
+
+
+class MinimumGoodsSerializers(ModelSerializer):
+    class Meta:
+        model = Goods
+        fields = ('id', 'title', 'img', 'price')
+
 
 
 class GoodsSerializers(ModelActionSerializer):
