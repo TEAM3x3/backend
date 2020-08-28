@@ -38,7 +38,6 @@ class MinimumGoodsSerializers(ModelSerializer):
         fields = ('id', 'title', 'img', 'price')
 
 
-
 class GoodsSerializers(ModelActionSerializer):
     explains = GoodsExplainSerializers(many=True)
     details = GoodsDetailSerializers(many=True, )
