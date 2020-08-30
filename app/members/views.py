@@ -58,6 +58,3 @@ class UserViewSet(ModelViewSet):
         user.auth_token.delete()
         return Response({"clear"}, status=status.HTTP_200_OK)
 
-
-
-

@@ -7,7 +7,7 @@ from rest_framework.test import APITestCase
 User = get_user_model()
 
 
-class CartTest(APITestCase):
+class CartItemTest(APITestCase):
     def setUp(self) -> None:
         user = User.objects.create_user(username='testUser', password='1111')
 
