@@ -22,13 +22,10 @@ class Cart(models.Model):
 
 
 class CartItem(models.Model):
-    cart = models.ForeignKey(Cart, on_delete=CASCADE, related_name='item')
+    cart = models.ForeignKey(Cart, on_delete=CASCADE, related_name='item', null=True)
     goods = models.ForeignKey(Goods, on_delete=CASCADE)
     quantity = models.IntegerField(default=1,
                                    validators=[MinValueValidator(1), MaxValueValidator(50)])
-
-    class Meta:
-        db_table = 'CartItem'
 
     # 장바구니 합계
     def sub_total(self):

@@ -10,7 +10,7 @@ class User(AbstractUser):
     )
 
     nickname = models.CharField(max_length=20, blank=True)
-    email = models.EmailField(unique=True, blank=False)
+    email = models.EmailField(unique=True)
     phone = models.CharField('핸드폰 번호', max_length=15)
     address = models.CharField(max_length=200)
     gender = models.CharField('성별', max_length=1, choices=GENDER_CHOICES)
