@@ -41,6 +41,7 @@ class Goods(models.Model):
     weight = models.CharField('중량/용량', max_length=64, null=True, )
     transfer = models.CharField('배송 구분', max_length=64, null=True, )
     packing = models.CharField('포장 타입', max_length=255, null=True, )
+    packing_status = models.CharField('포장 상태', max_length=48, null=True)
     origin = models.CharField('원산지', max_length=48, null=True, )
     allergy = models.CharField('알레르기 정보', max_length=512, null=True, )
     info = models.CharField('제품 정보', max_length=512, null=True, )
@@ -121,11 +122,11 @@ class GoodsType(models.Model):
     )
 
 
-class DeliveryInfo(models.Model):
+class DeliveryInfoImageFile(models.Model):
     address_img = models.ImageField(upload_to='delivery_img', null=True)
 
 
-class DeliveryInfoImage(models.Model):
+class DeliveryInfoImageImageFile(models.Model):
     image = models.ImageField(
         upload_to='delivery_img',
         null=True,
