@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from django.urls import include, path
+from django.urls import include
 from rest_framework_nested import routers
 
 from carts.views import CartItemViewSet, CartViewSet
@@ -17,7 +17,9 @@ router.register('delivery', DeliveryViewSet)
 router.register('category', CategoryViewSet)
 
 users_router = routers.NestedSimpleRouter(router, 'users')
+
 goods_router = routers.NestedSimpleRouter(router, 'goods')
+
 carts_router = routers.NestedSimpleRouter(router, 'carts')
 
 urlpatterns = (
