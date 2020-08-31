@@ -7,12 +7,29 @@ from goods.models import Goods
 User = get_user_model()
 
 
+class Cart(models.Model):
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+    )
+
+    @property
+    def total_pay(self):
+        payment = 0
+        for ins in self.item.all():
+            payment += ins.sub_total()
+        return payment
+
+
 class CartItem(models.Model):
+    cart = models.ForeignKey(Cart, on_delete=CASCADE, related_name='item')
+    goods = models.ForeignKey(Goods, on_delete=CASCADE)
     quantity = models.IntegerField(default=1,
                                    validators=[MinValueValidator(1), MaxValueValidator(50)])
 
-    user = models.ForeignKey(User, on_delete=CASCADE)
-    goods = models.ForeignKey('goods.Goods', on_delete=models.CASCADE, related_query_name='cartitems', )
+    class Meta:
+        db_table = 'CartItem'
 
+    # 장바구니 합계
     def sub_total(self):
         return self.goods.price * self.quantity
