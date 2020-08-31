@@ -17,6 +17,8 @@ class CartItemViewSet(mixins.CreateModelMixin,
 
     serializer_class = CartItemSerializer
 
+    def perform_create(self, serializer):
+        serializer.save(cart=self.request.user.cart)
 
 class CartViewSet(ModelViewSet):
     queryset = Cart.objects.all()
