@@ -39,5 +39,4 @@ class Cart_test(APITestCase):
         }
 
         response = self.client.post(f'/api/carts', data=data)
-
         self.fail()

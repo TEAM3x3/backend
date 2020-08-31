@@ -7,6 +7,20 @@ from goods.models import Goods
 User = get_user_model()
 
 
+class Cart(models.Model):
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+    )
+
+    @property
+    def total_pay(self):
+        payment = 0
+        for ins in self.item.all():
+            payment += ins.sub_total()
+        return payment
+
+
 class CartItem(models.Model):
     quantity = models.IntegerField(default=1,
                                    validators=[MinValueValidator(1), MaxValueValidator(50)])

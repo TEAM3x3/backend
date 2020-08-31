@@ -1,34 +1,26 @@
 from rest_framework import serializers
-from carts.models import CartItem
-from goods.serializers import MinimumGoodsSerializers
+from rest_framework.serializers import ModelSerializer
+from carts.models import CartItem, Cart
 
 
-class CartItemListSerializer(serializers.ModelSerializer):
-    goods = MinimumGoodsSerializers(read_only=True)
-    price = serializers.SerializerMethodField()
+class CartItemSerializer(ModelSerializer):
+    sub_total = serializers.SerializerMethodField()
 
     class Meta:
         model = CartItem
-        fields = ('id', 'goods', 'quantity', 'price',)
+        fields = ('id', 'cart', 'goods', 'quantity', 'sub_total')
 
-    def get_price(self, obj):
-        return (obj.goods.price * obj.quantity)
+    def get_sub_total(self, obj):
+        return obj.sub_total()
 
 
-class CartItemCreateSerializer(serializers.ModelSerializer):
+class CartSerializer(ModelSerializer):
+    item = CartItemSerializer(many=True)
+    total_pay = serializers.SerializerMethodField()
+
     class Meta:
-        model = CartItem
-        fields = ('goods', 'quantity', 'user')
-        validators = [
-            serializers.UniqueTogetherValidator(
-                queryset=CartItem.objects.all(),
-                fields=('goods', 'user'),
-                message=("already exists instanace.")
-            )
-        ]
+        model = Cart
+        fields = ('id', 'item', 'total_pay')
 
-
-class CartItemUpdateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CartItem
-        fields = ('quantity',)
+    def get_total_pay(self, obj):
+        return obj.total_pay
