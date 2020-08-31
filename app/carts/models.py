@@ -12,11 +12,7 @@ class CartItem(models.Model):
                                    validators=[MinValueValidator(1), MaxValueValidator(50)])
 
     user = models.ForeignKey(User, on_delete=CASCADE)
-    goods = models.ForeignKey(
-        'goods.Goods',
-        on_delete=models.CASCADE,
-        related_query_name='cartitems',
-    )
+    goods = models.ForeignKey('goods.Goods', on_delete=models.CASCADE, related_query_name='cartitems', )
 
     def sub_total(self):
         return self.goods.price * self.quantity
