@@ -24,8 +24,6 @@ class User(AbstractUser):
             Cart.objects.create(user=self)
         else:
             super().save(*args, **kwargs)
-    # point 고려
-
     # REQUIRED_FIELDS = ['email']
 
 # class Profile(models.Model):

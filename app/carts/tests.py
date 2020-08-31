@@ -1,7 +1,10 @@
 import os
 from django.contrib.auth import get_user_model
+from rest_framework import status
 from rest_framework.test import APITestCase
 from django.core.files.uploadedfile import SimpleUploadedFile
+
+from carts.models import CartItem
 from config import settings
 from config.settings.base import ROOT_DIR
 from goods.models import Goods
@@ -39,4 +42,22 @@ class Cart_test(APITestCase):
         }
 
         response = self.client.post(f'/api/carts', data=data)
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data['goods'], data['goods'])
+
+    def test_cart_list(self):
+        user = self.user
+        test_goods = Goods.objects.all()
+
+        for i in test_goods:
+            self.carts = CartItem.objects.create(goods=i, user=user, quantity=4)
+
+        response = self.client.get(f'/api/carts')
+        print('yyyy',response.data(len()))
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # self.assertEqual(response.data(len()), status.HTTP_200_OK)
+
+
         self.fail()

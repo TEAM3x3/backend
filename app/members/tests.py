@@ -44,7 +44,6 @@ class UserTestCase(APITestCase):
             "name": "test"
         }
         response = self.client.post('/api/users', data=data)
-        print(response)
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         user_response = Munch(response.data)
@@ -55,7 +54,6 @@ class UserTestCase(APITestCase):
         test_user = self.users[0]
         self.client.force_authenticate(user=self.users[0])
         response = self.client.get(f'/api/users/{self.users[0].pk}')
-        print(response)
         self.assertEqual(response.data['username'], test_user.username)
 
     def test_partial_update(self):
