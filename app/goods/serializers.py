@@ -35,8 +35,7 @@ class GoodsDetailSerializers(ModelSerializer):
 class MinimumGoodsSerializers(ModelSerializer):
     class Meta:
         model = Goods
-        fields = ('id', 'title', 'img', 'price')
-
+        fields = ('id', 'title', 'img', 'price', 'packing_status')
 
 
 class GoodsSerializers(ModelActionSerializer):

@@ -77,4 +77,42 @@ CreateBucketConfiguration={
 extreme progmming , scrum
 
 ## 0827
+**시리얼라이저의 중복을 최소화 할 수 있을까?**
+
+
 파일 병합 시 migrations 파일 충돌을 해결하는 방법
+
+[django haystack](https://django-haystack.readthedocs.io/en/master/)
+
+[django filter- goods](https://brownbears.tistory.com/96)
+
+
+## 0831 wsgi app server
+
+### 개념정리
+[블로그 글 1](https://brownbears.tistory.com/350)
+- 웹 서버 : 클라이언트가 HTTP request를 통해 리소스를 요청하면 그 리소스를 그대로 보여주는 것이 웹 서버의 역할이다. (html, css, image등../static)
+- CGI(Common Gateway Interface) : 웹 서버에서 앱을 작동시키기 위한 인터페이스)
+
+### two scoop django
+
+늘 장고는 wsgi와 함께 배포한다. 
+
+이 파일은 장고 프로젝트를 wsgi 서버에 배포할 때 필요한 기본 설정 사항을 담고 있다. 
+
+uWSGI와 구니콘은 장고 개발자들이 웹 서버에서 최대한 성능을 뽑아 내는데 자주 사용한다.
+
+현재 uWSGI가 좀 더 많은 설정을 제공하지만, 구니콘 또만 매우 많은 설정을 제공하며, 설정이 좀 더 쉽다. 
+
+#### wsgi 가 필요한 이유
+[https://ossian.tistory.com/110의 글](https://ossian.tistory.com/110)
+- Django의 runserver는 단일 쓰레드로 작동하여 테스트 용도에서는 적당하나,Request 요청이 많아지는 경우, 현저히 능력이 떨어지므로, product환경에서는 적당하지 않다. 
+#### wsgi 에서 사용하는 server의 종류
+[블로그 정리 글 1](https://paphopu.tistory.com/entry/WSGI%EC%97%90-%EB%8C%80%ED%95%9C-%EC%84%A4%EB%AA%85-WSGI%EB%9E%80-%EB%AC%B4%EC%97%87%EC%9D%B8%EA%B0%80)
+
+- wsgi server는 많은 Request를 다룰 수 있도록 설계가 되었다. 
+framework들은 스스로 수천개의 request들을 실행하고 최고의 방법으로 처리할 수 있도록 설계가 되어있지 않다. -> Django는 manage.py runserver로 배포를 하면 안된다는 소리이다. 
+
+- wsgi는 python web 개발 속도를 올려준다. 이유는 wsgi 의 기초적인 것들만 알아도, 사용하는데 아무런 문제가 없다는 뜻 이다. 너가 TurboGears, Django, cherryPy를 사용한다면, 너의 framework가 wsgi 표준을 어떻게 사용하는지 굳이 알 필요는 없다. 하지만 확실히 wsgi에 대해 안다면 도움이 된다.
+
+
