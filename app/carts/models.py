@@ -27,6 +27,5 @@ class CartItem(models.Model):
     quantity = models.IntegerField(default=1,
                                    validators=[MinValueValidator(1), MaxValueValidator(50)])
 
-    # 장바구니 합계
     def sub_total(self):
         return self.goods.price * self.quantity
