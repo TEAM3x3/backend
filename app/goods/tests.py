@@ -49,4 +49,3 @@ class GoodsTest(APITestCase):
     def test_retrieve_category(self):
         response = self.client.get('/api/goods/?category=채소')
         goods = Goods.objects.filter(category__name='채소')
-
