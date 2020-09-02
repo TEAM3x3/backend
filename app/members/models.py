@@ -10,16 +10,21 @@ class User(AbstractUser):
     )
 
     nickname = models.CharField(max_length=20, blank=True)
-    email = models.EmailField(unique=True, blank=False)
+    email = models.EmailField(unique=True)
     phone = models.CharField('핸드폰 번호', max_length=15)
     address = models.CharField(max_length=200)
     gender = models.CharField('성별', max_length=1, choices=GENDER_CHOICES)
     birthday = models.DateField(max_length=11, null=True)
     date_joined = models.DateTimeField(auto_now_add=True, verbose_name='가입일')
-    # point 고려
 
-    REQUIRED_FIELDS = ['email']
-
+    def save(self, *args, **kwargs):
+        from carts.models import Cart
+        if self.pk is None:
+            super().save(*args, **kwargs)
+            Cart.objects.create(user=self)
+        else:
+            super().save(*args, **kwargs)
+    # REQUIRED_FIELDS = ['email']
 
 # class Profile(models.Model):
 #     COUPON_CHOICES = (
@@ -31,9 +36,3 @@ class User(AbstractUser):
 #     coupon = models.CharField('쿠폰', max_length=1, choices=COUPON_CHOICES)
 #     accumulated_money = models.IntegerField('적립금', default=0)
 #     point = models.IntegerField('포인트', default=0)
-#
-#
-
-
-
-
