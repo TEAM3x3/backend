@@ -3,6 +3,7 @@ from django.urls import include
 from rest_framework_nested import routers
 
 from carts.views import CartViewSet, CartItemViewSet
+from event.views import EventAPIView
 from goods.views import GoodsViewSet, DeliveryViewSet, CategoryViewSet
 
 from members.views import UserViewSet
@@ -13,6 +14,7 @@ router.register('goods', GoodsViewSet)
 router.register('cart', CartViewSet)
 router.register('delivery', DeliveryViewSet)
 router.register('category', CategoryViewSet)
+router.register('event', EventAPIView)
 
 # /users
 users_router = routers.NestedSimpleRouter(router, 'users', lookup='user')

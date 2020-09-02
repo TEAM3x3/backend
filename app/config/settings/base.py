@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     'goods',
     'members',
     'carts',
+    'event',
 
     'rest_framework',
     'rest_framework.authtoken',
