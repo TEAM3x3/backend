@@ -1,9 +1,8 @@
-from action_serializer import ModelActionSerializer, serializers
+from action_serializer import ModelActionSerializer
 from rest_framework.serializers import ModelSerializer
 
-from carts.models import CartItem
-from goods.models import Category, GoodsExplain, GoodsDetailTitle, GoodsDetail, Goods, DeliveryInfoImage, DeliveryInfo, \
-    Type
+from goods.models import Category, GoodsExplain, GoodsDetailTitle, GoodsDetail, Goods, DeliveryInfoImageFile, \
+    DeliveryInfoImageImageFile, Type
 
 
 class CategorySerializers(ModelSerializer):
@@ -68,7 +67,7 @@ class GoodsSerializers(ModelActionSerializer):
 
 class DeliveryInfoImageSerializers(ModelSerializer):
     class Meta:
-        model = DeliveryInfoImage
+        model = DeliveryInfoImageFile
         fields = (
             'image',
         )
@@ -78,7 +77,7 @@ class DeliveryInfoSerializers(ModelSerializer):
     images = DeliveryInfoImageSerializers(many=True)
 
     class Meta:
-        model = DeliveryInfo
+        model = DeliveryInfoImageImageFile
         fields = ('address_img', 'images')
 
 

@@ -3,7 +3,7 @@ from rest_framework.filters import OrderingFilter
 from rest_framework.viewsets import GenericViewSet
 
 from goods.filters import GoodsFilter
-from goods.models import Goods, Type, DeliveryInfo, Category
+from goods.models import Goods, Type, Category, DeliveryInfoImageFile
 from goods.serializers import GoodsSerializers, DeliveryInfoSerializers, CategoriesSerializers
 from django_filters.rest_framework import DjangoFilterBackend
 
@@ -33,7 +33,7 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
 
 
 class DeliveryViewSet(mixins.ListModelMixin, GenericViewSet):
-    queryset = DeliveryInfo.objects.all()
+    queryset = DeliveryInfoImageFile.objects.all()
     serializer_class = DeliveryInfoSerializers
 
 
