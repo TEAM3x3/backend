@@ -9,4 +9,4 @@ class EventSerializers(ModelSerializer):
 
     class Meta:
         model = Event
-        fields = ('id', 'title', 'goods')
+        fields = ('id', 'title', 'image', 'goods')
