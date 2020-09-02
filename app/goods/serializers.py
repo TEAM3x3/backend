@@ -1,6 +1,6 @@
 from action_serializer import ModelActionSerializer, serializers
 from rest_framework.serializers import ModelSerializer
-from goods.models import Category, GoodsExplain, GoodsDetailTitle, GoodsDetail, Goods, DeliveryInfoImageFile, \
+ from goods.models import Category, GoodsExplain, GoodsDetailTitle, GoodsDetail, Goods, DeliveryInfoImageFile, \
     DeliveryInfoImageImageFile, Type
 
 

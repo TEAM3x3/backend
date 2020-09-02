@@ -20,7 +20,6 @@ class CartTestCase(APITestCase):
         self.user.save()
 
         image = settings.base.MEDIA_ROOT + '/pycharm.png'
-
         for i in range(5):
             test_file = SimpleUploadedFile(name='test_image.jpeg', content=open(image, 'rb', ).read(),
                                            content_type="image/jpeg"
@@ -78,16 +77,3 @@ class CartTestCase(APITestCase):
 
         response2 = self.client.patch(f'/api/cart/{test_user.pk}/item/{goods1.pk}', data=data2)
         self.assertEqual(response2.status_code, status.HTTP_200_OK)
-
-
-
-
-
-
-
-
-
-
-
-
-

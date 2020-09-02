@@ -1,6 +1,7 @@
 from django.db import models
-import goods
-from goods.crawling import crawling, get_delivery
+
+from goods.crawling.event import evenvt_crawling
+from goods.crawling.goods import crawling
 
 
 def goods_img_path(instance, filename):
@@ -52,21 +53,27 @@ class Goods(models.Model):
         on_delete=models.CASCADE,
         null=True,
     )
+    event = models.ForeignKey(
+        'event.Event',
+        on_delete=models.CASCADE,
+        null=True,
+        related_name='goods',
+    )
 
     @staticmethod
     def get_crawling():
         crawling()
 
     @staticmethod
-    def get_delivery():
-        get_delivery()
+    def get_event():
+        evenvt_crawling()
 
 
 class GoodsExplain(models.Model):
     img = models.ImageField('상품 설명 이미지', upload_to=goods_img_1_path)
     text_title = models.CharField(max_length=64)
     text_context = models.CharField('상품 문맥', max_length=255)
-    text_description = models.CharField('설명', max_length=512)
+    text_description = models.CharField('설명', max_length=1024)
     goods = models.ForeignKey(
         'goods.Goods',
         on_delete=models.CASCADE,

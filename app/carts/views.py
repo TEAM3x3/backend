@@ -29,4 +29,4 @@ class CartItemViewSet(mixins.CreateModelMixin,
 class CartViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, GenericViewSet):
     queryset = Cart.objects.all()
     serializer_class = CartSerializer
-    permission_classes = (CartIsOwnerOrReadOnly,)
+    permission_classes = (CartIsOwnerOrReadOnly, )
