@@ -90,3 +90,14 @@ class UserTestCase(APITestCase):
         response = self.client.post(f'/api/users/login', data=data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertTrue(response.data.get('token'))
+
+    def test_logout(self):
+        test_user = self.users[0]
+        token = Token.objects.create(user=test_user)
+        response = self.client.delete(f'/api/users/logout',
+                                      HTTP_AUTHORIZATION='Token ' + token.key)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertFalse(Token.objects.filter(user=self.user).exists())
+
+
+

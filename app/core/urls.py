@@ -1,7 +1,6 @@
 from django.conf.urls import url
 from django.urls import include
 from rest_framework_nested import routers
-
 from carts.views import CartViewSet, CartItemViewSet
 from event.views import EventAPIView
 from goods.views import GoodsViewSet, DeliveryViewSet, CategoryViewSet
