@@ -37,7 +37,7 @@ class MinimumGoodsSerializers(ModelSerializer):
 
 class GoodsSerializers(ModelActionSerializer):
     explains = GoodsExplainSerializers(many=True)
-    details = GoodsDetailSerializers(many=True, )
+    details = GoodsDetailSerializers(many=True)
 
     class Meta:
         model = Goods

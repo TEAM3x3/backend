@@ -1,4 +1,6 @@
-from rest_framework import mixins
+from rest_framework.response import Response
+from rest_framework import mixins, status
+from rest_framework.decorators import action
 from rest_framework.filters import OrderingFilter
 from rest_framework.viewsets import GenericViewSet
 
@@ -30,6 +32,18 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
             type_ins = Type.objects.filter(name=type_ins).first()
             qs = self.queryset.filter(types__type=type_ins)
         return qs
+
+    @action(detail=False)
+    def main_page_md(self, request, *args, **kwargs):
+        main_md = Goods.objects.filter(id=1)
+        serializer = GoodsSerializers(main_md, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(detail=False)
+    def main_page_health(self, request, *args, **kwargs):
+        main_health = Goods.objects.filter(category__name='건강식품')
+        serializer = GoodsSerializers(main_health, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class DeliveryViewSet(mixins.ListModelMixin, GenericViewSet):
