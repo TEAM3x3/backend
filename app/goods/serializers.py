@@ -1,7 +1,14 @@
 from action_serializer import ModelActionSerializer, serializers
 from rest_framework.serializers import ModelSerializer
 from goods.models import Category, GoodsExplain, GoodsDetailTitle, GoodsDetail, Goods, DeliveryInfoImageFile, \
-      DeliveryInfoImageImageFile, Type
+    DeliveryInfoImageImageFile, Type, SaleInfo
+
+
+# 상품 세일 정보
+class SalesInfoSerializers(ModelSerializer):
+    class Meta:
+        model = SaleInfo
+        fields = ('discount_rate', 'contents')
 
 
 class CategorySerializers(ModelSerializer):
@@ -36,9 +43,25 @@ class MinimumGoodsSerializers(ModelSerializer):
         fields = ('id', 'title', 'img', 'price', 'packing_status')
 
 
+class GoodsSaleSerializers(ModelSerializer):
+    sales = SalesInfoSerializers()
+
+    class Meta:
+        model = Goods
+        fields = (
+            'id',
+            'title',
+            'short_desc',
+            'price',
+            'img',
+            'sales'
+        )
+
+
 class GoodsSerializers(ModelActionSerializer):
     explains = GoodsExplainSerializers(many=True)
     details = GoodsDetailSerializers(many=True, )
+    sales = SalesInfoSerializers()
 
     class Meta:
         model = Goods
@@ -60,7 +83,7 @@ class GoodsSerializers(ModelActionSerializer):
                   'details',
                   )
         action_fields = {
-            'list': {'fields': ('id', 'title', 'short_desc', 'price', 'img',)}
+            'list': {'fields': ('id', 'title', 'short_desc', 'price', 'img', 'sales')},
         }
 
 
