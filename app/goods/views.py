@@ -8,7 +8,7 @@ from rest_framework.viewsets import GenericViewSet
 
 from goods.filters import GoodsFilter
 from goods.models import Goods, Type, Category, DeliveryInfoImageFile
-from goods.serializers import GoodsSerializers, DeliveryInfoSerializers, CategoriesSerializers, MinimumGoodsSerializers
+from goods.serializers import GoodsSerializers, DeliveryInfoSerializers, CategoriesSerializers, GoodsSaleSerializers
 from django_filters.rest_framework import DjangoFilterBackend
 
 
@@ -20,7 +20,13 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
     filter_class = GoodsFilter
     ordering_fields = ['price', ]
 
-    def get_queryset(self):
+    def get_serializer_class(self):
+        if self.action == 'sale':
+            return GoodsSaleSerializers
+        else:
+            return super().serializer_class
+
+    def filter_queryset(self, queryset):
         # 모든 상품에 대한 정보는 보여주지 않을 것 입니다.(의도치 않은 요청)
         qs = None
         pk = self.kwargs.get('pk', None)
@@ -34,17 +40,6 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
             type_ins = Type.objects.filter(name=type_ins).first()
             qs = self.queryset.filter(types__type=type_ins)
         return qs
-
-    # @action(detail=False)
-    # def main_page_recommend(self, request, *args, **kwargs):
-    #     max_id = Goods.objects.all().count()
-    #     while True:
-    #         pk = random.randint(1, max_id)
-    #         recommend_goods = Goods.objects.filter(pk=pk).first()
-    #
-    #         if recommend_goods:
-    #             serializer = GoodsSerializers(recommend_goods)
-    #             return Response(serializer.data)
 
     @action(detail=False)
     def main_page_recommend(self, request, *args, **kwargs):
@@ -63,6 +58,11 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
 
         qs = Goods.objects.filter(pk__in=recommend_items)
         serializer = GoodsSerializers(qs, many=True)
+
+    @action(detail=False, url_path='sale', )
+    def sale(self, request):
+        qs = self.queryset.filter(sales__discount_rate__isnull=False)
+        serializer = self.get_serializer(qs, many=True)
         return Response(serializer.data)
 
 
