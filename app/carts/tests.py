@@ -40,7 +40,7 @@ class CartTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(test_user.pk, test_user.cart.pk)
 
-    def test_cart_list(self):
+    def test_cart_item_list(self):
         test_user = self.user
         self.client.force_authenticate(user=test_user)
         test_goods = Goods.objects.all()
@@ -56,42 +56,31 @@ class CartTestCase(APITestCase):
         for cart_data, response_data in zip(cartitem, response.data):
             self.assertEqual(cart_data['goods_id'], response_data['goods']['id'])
 
-    def test_cart_update(self):
+    def test_cart_item_update(self):
         test_user = self.user
         self.client.force_authenticate(user=test_user)
+        test_goods = Goods.objects.all()
+        goods1 = Goods.objects.first()
 
-        test_goods = Goods.objects.first()
-
-        data1 = {
-            'goods': test_goods.pk,
-            'quantity': 3,
-            'cart': test_user.cart.pk
+        add_cart = CartItem.objects.create(goods=goods1, cart=test_user.cart, quantity=3)
+        cart_item = CartItem.objects.filter(cart=test_user.cart)[0]
+        data = {
+            "goods": goods1.pk,
+            "quantity": 10,
+            "cart": test_user.pk
         }
-
-        response1 = self.client.post(f'/api/cart/{test_user.pk}/item', data=data1)
-        self.assertEqual(response1.status_code, status.HTTP_201_CREATED)
-
-        data2 = {
-            "goods": test_goods.pk,
-            "quantity": 6,
-            "cart": test_user.cart.pk
-        }
-
         item1 = CartItem.objects.first()
+        response = self.client.patch(f'/api/cart/{test_user.pk}/item/{item1.pk}', data=data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        response2 = self.client.patch(f'/api/cart/{test_user.pk}/item/{item1.pk}', data=data2)
-
-        self.assertEqual(response2.data['quantity'], data2['quantity'])
-
-
-    def test_cart_delete(self):
+    def test_cart_item_delete(self):
         test_user = self.user
         self.client.force_authenticate(user=test_user)
+        test_goods = Goods.objects.all()
+        goods1 = Goods.objects.first()
 
-        test_goods = Goods.objects.first()
-
-        cart = CartItem.objects.create(goods=test_goods, cart=test_user.cart, quantity=3)
-
+        add_cart = CartItem.objects.create(goods=goods1, cart=test_user.cart, quantity=3)
         item1 = CartItem.objects.first()
-
         response = self.client.delete(f'/api/cart/{test_user.pk}/item/{item1.pk}')
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
