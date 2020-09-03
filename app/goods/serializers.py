@@ -1,6 +1,7 @@
 from action_serializer import ModelActionSerializer, serializers
 from rest_framework.serializers import ModelSerializer
-from goods.models import Category, GoodsExplain, GoodsDetailTitle, GoodsDetail, Goods, DeliveryInfoImageFile, DeliveryInfoImageImageFile, Type
+from goods.models import Category, GoodsExplain, GoodsDetailTitle, GoodsDetail, Goods, DeliveryInfoImageFile, \
+    DeliveryInfoImageImageFile, Type
 
 
 class CategorySerializers(ModelSerializer):
@@ -59,7 +60,9 @@ class GoodsSerializers(ModelActionSerializer):
                   'details',
                   )
         action_fields = {
-            'list': {'fields': ('id', 'title', 'short_desc', 'price', 'img',)}
+            'list': {'fields': ('id', 'title', 'short_desc', 'price', 'img',)},
+            'main_page_recommend': {'fields': ('id', 'title',)},
+
         }
 
 

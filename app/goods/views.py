@@ -1,10 +1,14 @@
+import random
+from django.db.models import Max
 from rest_framework import mixins
+from rest_framework.decorators import action
 from rest_framework.filters import OrderingFilter
+from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
 from goods.filters import GoodsFilter
 from goods.models import Goods, Type, Category, DeliveryInfoImageFile
-from goods.serializers import GoodsSerializers, DeliveryInfoSerializers, CategoriesSerializers
+from goods.serializers import GoodsSerializers, DeliveryInfoSerializers, CategoriesSerializers, MinimumGoodsSerializers
 from django_filters.rest_framework import DjangoFilterBackend
 
 
@@ -30,6 +34,36 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
             type_ins = Type.objects.filter(name=type_ins).first()
             qs = self.queryset.filter(types__type=type_ins)
         return qs
+
+    # @action(detail=False)
+    # def main_page_recommend(self, request, *args, **kwargs):
+    #     max_id = Goods.objects.all().count()
+    #     while True:
+    #         pk = random.randint(1, max_id)
+    #         recommend_goods = Goods.objects.filter(pk=pk).first()
+    #
+    #         if recommend_goods:
+    #             serializer = GoodsSerializers(recommend_goods)
+    #             return Response(serializer.data)
+
+    @action(detail=False)
+    def main_page_recommend(self, request, *args, **kwargs):
+        max_id = Goods.objects.all().count()
+        recommend_items = []
+
+        while True:
+            # 1 , 1256
+            random_pk = random.randint(1, max_id)
+            if random_pk in recommend_items:
+                continue
+            else:
+                recommend_items.append(random_pk)
+            if len(recommend_items) == 6:
+                break
+
+        qs = Goods.objects.filter(pk__in=recommend_items)
+        serializer = GoodsSerializers(qs, many=True)
+        return Response(serializer.data)
 
 
 class DeliveryViewSet(mixins.ListModelMixin, GenericViewSet):
