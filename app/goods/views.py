@@ -1,3 +1,5 @@
+import random
+from django.db.models import Max
 from rest_framework import mixins
 from rest_framework.decorators import action
 from rest_framework.filters import OrderingFilter
@@ -38,6 +40,24 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
             type_ins = Type.objects.filter(name=type_ins).first()
             qs = self.queryset.filter(types__type=type_ins)
         return qs
+
+    @action(detail=False)
+    def main_page_recommend(self, request, *args, **kwargs):
+        max_id = Goods.objects.all().count()
+        recommend_items = []
+
+        while True:
+            # 1 , 1256
+            random_pk = random.randint(1, max_id)
+            if random_pk in recommend_items:
+                continue
+            else:
+                recommend_items.append(random_pk)
+            if len(recommend_items) == 6:
+                break
+
+        qs = Goods.objects.filter(pk__in=recommend_items)
+        serializer = GoodsSerializers(qs, many=True)
 
     @action(detail=False, url_path='sale', )
     def sale(self, request):
