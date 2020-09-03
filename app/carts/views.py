@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import mixins
 from rest_framework.viewsets import GenericViewSet
 from carts.models import CartItem, Cart
-from carts.permissions import CartIsOwnerOrReadOnly
+from carts.permissions import CartIsOwnerOrReadOnly, CartItemIsOwnerOrReadOnly
 from carts.serializers import CartItemSerializer, CartSerializer, CartItemCreateSerializer
 
 User = get_user_model()
@@ -15,6 +15,7 @@ class CartItemViewSet(mixins.CreateModelMixin,
                       GenericViewSet):
     queryset = CartItem.objects.all()
     serializer_class = CartItemSerializer
+    permission_classes = (CartItemIsOwnerOrReadOnly, )
 
     def get_serializer_class(self):
         if self.action == 'create':
