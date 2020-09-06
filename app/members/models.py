@@ -51,6 +51,10 @@ class UserAddress(models.Model):
         on_delete=models.SET_NULL,
         null=True,
     )
+    user = models.ForeignKey(
+        'members.User',
+        on_delete=models.CASCADE,
+    )
 
 # class Profile(models.Model):
 #     COUPON_CHOICES = (
