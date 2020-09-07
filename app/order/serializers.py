@@ -1,3 +1,4 @@
+from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 
 from carts.serializers import CartItemSerializer
@@ -9,6 +10,7 @@ class OrderListSerializers(ModelSerializer):
     item = CartItemSerializer(many=True)
     user = UserSerializer()
     address = UserAddressSerializers()
+    payment = serializers.SerializerMethodField()
 
     class Meta:
         model = Order
@@ -16,7 +18,11 @@ class OrderListSerializers(ModelSerializer):
                   'user',
                   'address',
                   'item',
+                  'payment'
                   )
+
+    def get_payment(self, obj):
+        return obj.total_payment()
 
 
 class OrderCreateSerializers(ModelSerializer):

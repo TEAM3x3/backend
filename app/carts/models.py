@@ -27,7 +27,7 @@ class CartItem(models.Model):
     cart = models.ForeignKey(Cart, on_delete=CASCADE, related_name='item', null=True)
     goods = models.ForeignKey(Goods, on_delete=CASCADE)
     order = models.ForeignKey('order.Order',
-                              on_delete=models.CASCADE,
+                              on_delete=models.SET_NULL,
                               null=True,
                               related_name='item',
                               )

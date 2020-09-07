@@ -46,7 +46,7 @@ class UserAddress(models.Model):
     require_message = models.CharField('요청 사항', max_length=100)
     status = models.CharField('기본 배송지', max_length=1)
 
-    recieving = models.ForeignKey(
+    recieving = models.OneToOneField(
         'members.RecievingPlace',
         on_delete=models.SET_NULL,
         null=True,
@@ -54,8 +54,8 @@ class UserAddress(models.Model):
     user = models.ForeignKey(
         'members.User',
         on_delete=models.CASCADE,
+        related_name='address',
     )
-
 # class Profile(models.Model):
 #     COUPON_CHOICES = (
 #         ('A', '[신규가입쿠폰] 10% 할인'),

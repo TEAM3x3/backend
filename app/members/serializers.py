@@ -10,15 +10,16 @@ User = get_user_model()
 class UserAddressSerializers(ModelSerializer):
     class Meta:
         model = UserAddress
-        fields = ('id', 'detail_address', 'require_message', 'status', 'recieving',)
+        fields = ('id', 'address', 'detail_address', 'require_message', 'status', 'recieving',)
 
 
 class UserSerializer(ModelActionSerializer):
+    # address = UserAddressSerializers()
+
     class Meta:
         model = User
 
-        fields = ('id', 'username', 'password', 'email', 'phone', 'nickname', 'gender',
-                  )
+        fields = ('id', 'username', 'password', 'email', 'phone', 'nickname', 'gender')
 
         action_fields = {
             'login': {'fields': ('username', 'password')},
