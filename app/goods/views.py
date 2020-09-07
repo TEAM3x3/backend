@@ -24,7 +24,7 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
         if self.action == 'sale':
             return GoodsSaleSerializers
         else:
-            return super().serializer_class
+            return self.serializer_class
 
     def filter_queryset(self, queryset):
         # 모든 상품에 대한 정보는 보여주지 않을 것 입니다.(의도치 않은 요청)
@@ -53,11 +53,12 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
                 continue
             else:
                 recommend_items.append(random_pk)
-            if len(recommend_items) == 6:
+            if len(recommend_items) == 8:
                 break
 
         qs = Goods.objects.filter(pk__in=recommend_items)
         serializer = GoodsSerializers(qs, many=True)
+        return Response(serializer.data)
 
     @action(detail=False, url_path='sale', )
     def sale(self, request):
