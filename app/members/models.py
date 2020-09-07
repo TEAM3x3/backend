@@ -12,7 +12,6 @@ class User(AbstractUser):
     nickname = models.CharField(max_length=20, blank=True)
     email = models.EmailField(unique=True)
     phone = models.CharField('핸드폰 번호', max_length=15)
-    address = models.CharField(max_length=200)
     gender = models.CharField('성별', max_length=1, choices=GENDER_CHOICES)
     birthday = models.DateField(max_length=11, null=True)
     date_joined = models.DateTimeField(auto_now_add=True, verbose_name='가입일')
@@ -26,6 +25,37 @@ class User(AbstractUser):
             super().save(*args, **kwargs)
     # REQUIRED_FIELDS = ['email']
 
+
+class RecievingPlace(models.Model):
+    LOCATION_CHOICE = (
+        ('FD', 'Front Door'),
+        ('SO', 'Security Office'),
+        ('DB', 'Delivery Box'),
+        ('etc', 'etc'),
+    )
+    recieving_place = models.CharField(max_length=3, choices=LOCATION_CHOICE)
+    entrance_password = models.CharField(max_length=10, null=True)
+    free_pass = models.BooleanField(default=False)
+    etc = models.CharField(max_length=100, null=True)
+    message = models.BooleanField(default=False)
+
+
+class UserAddress(models.Model):
+    address = models.CharField(max_length=200)
+    detail_address = models.CharField(max_length=200)
+    require_message = models.CharField('요청 사항', max_length=100)
+    status = models.CharField('기본 배송지', max_length=1)
+
+    recieving = models.OneToOneField(
+        'members.RecievingPlace',
+        on_delete=models.SET_NULL,
+        null=True,
+    )
+    user = models.ForeignKey(
+        'members.User',
+        on_delete=models.CASCADE,
+        related_name='address',
+    )
 # class Profile(models.Model):
 #     COUPON_CHOICES = (
 #         ('A', '[신규가입쿠폰] 10% 할인'),

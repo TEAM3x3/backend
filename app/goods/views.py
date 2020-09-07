@@ -24,7 +24,7 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
         if self.action == 'sale':
             return GoodsSaleSerializers
         else:
-            return super().serializer_class
+            return self.serializer_class
 
     def filter_queryset(self, queryset):
         # 모든 상품에 대한 정보는 보여주지 않을 것 입니다.(의도치 않은 요청)
