@@ -3,7 +3,7 @@ from rest_framework.serializers import ModelSerializer
 
 from carts.serializers import CartItemSerializer
 from members.serializers import UserSerializer, UserAddressSerializers
-from order.models import Order
+from order.models import Order, OrderReview
 
 
 class OrderListSerializers(ModelSerializer):
@@ -36,3 +36,9 @@ class OrderCreateSerializers(ModelSerializer):
 
     def create(self, validated_data):
         return super().create(validated_data)
+
+
+class ReviewCreateSerializers(ModelSerializer):
+    class Meta:
+        model = OrderReview
+        fields = ('id', 'title', 'content', 'goods')
