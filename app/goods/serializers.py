@@ -1,6 +1,7 @@
 from action_serializer import ModelActionSerializer, serializers
 from rest_framework.serializers import ModelSerializer
-from goods.models import Category, GoodsExplain, GoodsDetailTitle, GoodsDetail, Goods, DeliveryInfoImageFile, DeliveryInfoImageImageFile, Type, SaleInfo
+from goods.models import Category, GoodsExplain, GoodsDetailTitle, GoodsDetail, Goods, DeliveryInfoImageFile, \
+    DeliveryInfoImageImageFile, Type, SaleInfo
 
 
 # 상품 세일 정보
@@ -8,7 +9,6 @@ class SalesInfoSerializers(ModelSerializer):
     class Meta:
         model = SaleInfo
         fields = ('discount_rate', 'contents')
-
 
 
 class CategorySerializers(ModelSerializer):
@@ -61,7 +61,7 @@ class GoodsSaleSerializers(ModelSerializer):
 
 class GoodsSerializers(ModelActionSerializer):
     explains = GoodsExplainSerializers(many=True)
-    details = GoodsDetailSerializers(many=True, )
+    details = GoodsDetailSerializers(many=True)
     sales = SalesInfoSerializers()
 
     class Meta:
