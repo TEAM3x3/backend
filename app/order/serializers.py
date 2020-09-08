@@ -18,6 +18,7 @@ class OrderListSerializers(ModelSerializer):
                   'user',
                   'address',
                   'item',
+                  'status',
                   'payment'
                   )
 

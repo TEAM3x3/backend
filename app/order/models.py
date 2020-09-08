@@ -16,7 +16,8 @@ class Order(models.Model):
         'members.UserAddress',
         on_delete=models.CASCADE,
     )
-    status = models.CharField('배송 상태', max_length=1)
+    # progress,
+    status = models.CharField('배송 상태', max_length=1, default='d')
 
     def total_payment(self):
         payment = 0

@@ -10,16 +10,16 @@ User = get_user_model()
 class UserAddressSerializers(ModelSerializer):
     class Meta:
         model = UserAddress
-        fields = ('id', 'address', 'detail_address', 'require_message', 'status', 'recieving',)
+        fields = ('id', 'address', 'detail_address', 'require_message', 'status')
 
 
 class UserSerializer(ModelActionSerializer):
-    # address = UserAddressSerializers()
+    address = UserAddressSerializers(read_only=True, many=True)
 
     class Meta:
         model = User
 
-        fields = ('id', 'username', 'password', 'email', 'phone', 'nickname', 'gender')
+        fields = ('id', 'username', 'password', 'email', 'phone', 'nickname', 'gender', 'address')
 
         action_fields = {
             'login': {'fields': ('username', 'password')},
@@ -28,5 +28,7 @@ class UserSerializer(ModelActionSerializer):
         }
 
     def create(self, validated_data):
+        address = validated_data.pop('context')
         user = User.objects.create_user(**validated_data)
+        UserAddress.objects.create(user=user, address=address, status='T')
         return user
