@@ -1,9 +1,9 @@
 from rest_framework import mixins
-from rest_framework.viewsets import ModelViewSet, GenericViewSet
+from rest_framework.viewsets import GenericViewSet
 
 from carts.models import CartItem
-from order.models import Order
-from order.serializers import OrderCreateSerializers, OrderListSerializers
+from order.models import Order, OrderReview
+from order.serializers import OrderCreateSerializers, OrderListSerializers, ReviewCreateSerializers
 
 
 class OrderView(mixins.CreateModelMixin,
@@ -20,6 +20,13 @@ class OrderView(mixins.CreateModelMixin,
         else:
             return self.serializer_class
 
+    def get_queryset(self):
+        try:
+            if self.kwargs['user_pk']:
+                return self.queryset.filter(user_id=self.kwargs['user_pk'])
+        except KeyError:
+            return super().get_queryset()
+
     def perform_create(self, serializer):
         items_pk = self.request.data['item']
         items_ins = CartItem.objects.filter(pk__in=items_pk)
@@ -29,14 +36,11 @@ class OrderView(mixins.CreateModelMixin,
         serializer.save()
 
 
-class OrderAPIView(mixins.CreateModelMixin,
-                   mixins.RetrieveModelMixin,
-                   mixins.DestroyModelMixin,
-                   mixins.ListModelMixin,
-                   GenericViewSet):
-    """
-    1. order urls -> urls  /api/order
-    2. view -> list, retrieve, create, destroy
-    3. serialzier -> create // pk, list -> serializer
-
-    """
+class ReviewAPI(mixins.CreateModelMixin,
+                mixins.RetrieveModelMixin,
+                mixins.UpdateModelMixin,
+                mixins.DestroyModelMixin,
+                mixins.ListModelMixin,
+                GenericViewSet):
+    queryset = OrderReview.objects.all()
+    serializer_class = ReviewCreateSerializers

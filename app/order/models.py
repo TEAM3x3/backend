@@ -5,25 +5,46 @@ User = get_user_model()
 
 
 class Order(models.Model):
-    # 마켓컬리를 기준으로 모델을 짠다.
-    # created_at 주문 날짜를 확인하기 위해
     created_at = models.DateTimeField(
         auto_now_add=True,
     )
-    # 주문을 한 유저
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
     )
-    # 배송지 -> 받으실 장소 포함
     address = models.ForeignKey(
         'members.UserAddress',
         on_delete=models.CASCADE,
     )
+    # progress,
+    status = models.CharField('배송 상태', max_length=1, default='d')
 
-    # 결제 금액
     def total_payment(self):
         payment = 0
         for ins in self.item.all():
             payment += ins.sub_total()
         return payment
+
+
+class OrderReview(models.Model):
+    """
+    1. 주문이 완료된 상품은 리뷰를 달 수 있다.
+    2. order의 status가 "D" - Departure // "P" - Progress // "C" - Complete
+    3. order의 status가 C라면 리뷰 생성 가능.
+    4. Review 작성 완료 후에는 "R"
+    5 . cartitem과 review는 unique together?
+    """
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+    )
+    title = models.CharField(max_length=128)
+    content = models.TextField()
+    cartitem = models.ForeignKey(
+        'carts.CartItem',
+        on_delete=models.CASCADE,
+    )
+    user = models.ForeignKey(
+        'members.User',
+        on_delete=models.SET_NULL,
+        null=True,
+    )
