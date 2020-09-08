@@ -49,11 +49,6 @@ class Goods(models.Model):
     info = models.CharField('제품 정보', max_length=512, null=True, )
     expiration = models.CharField('유통기한', max_length=512, null=True, )
 
-    category = models.ForeignKey(
-        'goods.Category',
-        on_delete=models.CASCADE,
-        null=True,
-    )
     event = models.ForeignKey(
         'event.Event',
         on_delete=models.CASCADE,
@@ -77,6 +72,21 @@ class Goods(models.Model):
     def get_event():
         # 이벤트 상품 크롤링
         evenvt_crawling()
+
+    @staticmethod
+    def set_goods_packing_status():
+        # 상품 카트에 담길 시 포장 상태 표기 동작 함수
+        for i in Goods.objects.all():
+            try:
+                if '상온' in i.packing:
+                    i.packing_status = '상온'
+                elif '냉장' in i.packing:
+                    i.packing_status = '냉장'
+                elif '냉동' in i.packing:
+                    i.packing_status = '냉동'
+                i.save()
+            except TypeError:
+                continue
 
     @staticmethod
     def random_discount_rate():

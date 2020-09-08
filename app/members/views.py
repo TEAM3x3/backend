@@ -1,13 +1,9 @@
-import json
-
 from django.contrib.auth import get_user_model
-from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
-
 from members.models import UserAddress
 from members.serializers import UserSerializer, UserAddressSerializers
 
@@ -18,15 +14,6 @@ class UserViewSet(ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
-    # 1. request.data로 구현
-    # @action(detail=False, methods=['post'])
-    # def check_username(self, request):
-    #     id = User.objects.filter(username=request.data['username']).exists()
-    #     if not id:
-    #         return Response({"message": "사용 가능한 ID입니다."}, status=status.HTTP_200_OK)
-    #     return Response({"message": "이미 존재하는 ID입니다."}, status=status.HTTP_400_BAD_REQUEST)
-
-    # 2. query_params로 구현
     @action(detail=False)
     def check_username(self, request):
         username = request.query_params.get('username')
@@ -60,8 +47,6 @@ class UserViewSet(ModelViewSet):
         user.auth_token.delete()
         return Response({"clear"}, status=status.HTTP_200_OK)
 
-    # def perform_create(self, serializer):
-    #     serializer.save(context=self.request.data)
 
 class UserAddressViewSet(ModelViewSet):
     queryset = UserAddress.objects.all()

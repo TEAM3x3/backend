@@ -19,7 +19,7 @@ class CartTestCase(APITestCase):
         self.user.set_password(self.user.password)
         self.user.save()
 
-        image = settings.base.MEDIA_ROOT + '/pycharm.png'
+        image = settings.base.MEDIA_ROOT + '/mssql.jpeg'
         for i in range(5):
             test_file = SimpleUploadedFile(name='test_image.jpeg', content=open(image, 'rb', ).read(),
                                            content_type="image/jpeg"

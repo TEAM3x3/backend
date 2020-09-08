@@ -48,17 +48,10 @@ class UserAddress(models.Model):
         related_name='address',
     )
 
-    def save(self, *args, **kwargs):
-        if self.status == 'T':
-            address_data = UserAddress.objects.filter(user=self.user).exclude('F')
-            print(address_data)
-        # else:
-        #     super().save(*args, **kwargs)
-
-
 
 
 # class Profile(models.Model):
+
 #     COUPON_CHOICES = (
 #         ('A', '[신규가입쿠폰] 10% 할인'),
 #         ('B', '[농할갑시다] 햇농산물 20%'),

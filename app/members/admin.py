@@ -2,10 +2,10 @@ from django.contrib import admin
 from django.contrib.auth import get_user_model
 from members.models import UserAddress
 
+
 User = get_user_model()
 
 
-# Register your models here.
 class UserAdmin(admin.ModelAdmin):
     list_display = ['id', 'username', 'email', 'phone', 'nickname', 'address',]
 
@@ -17,5 +17,3 @@ class UserAddressAdmin(admin.ModelAdmin):
 
 admin.site.register(User, UserAdmin)
 admin.site.register(UserAddress, UserAddressAdmin)
-
-

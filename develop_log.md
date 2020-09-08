@@ -1,3 +1,13 @@
+# load data guide line
+
+```python
+# 세일품목
+Goods.random_discount_rate()
+# 카트 보관 상태 
+Goods.set_goods_packing_status()
+```
+
+
 # 마켓컬리를 구현하면서 작성하는 일지
 ## 0819
 - [변수 시작이 숫자가 되지 못하는 이유](https://epicdevsold.tistory.com/20)
@@ -114,5 +124,11 @@ uWSGI와 구니콘은 장고 개발자들이 웹 서버에서 최대한 성능�
 framework들은 스스로 수천개의 request들을 실행하고 최고의 방법으로 처리할 수 있도록 설계가 되어있지 않다. -> Django는 manage.py runserver로 배포를 하면 안된다는 소리이다. 
 
 - wsgi는 python web 개발 속도를 올려준다. 이유는 wsgi 의 기초적인 것들만 알아도, 사용하는데 아무런 문제가 없다는 뜻 이다. 너가 TurboGears, Django, cherryPy를 사용한다면, 너의 framework가 wsgi 표준을 어떻게 사용하는지 굳이 알 필요는 없다. 하지만 확실히 wsgi에 대해 안다면 도움이 된다.
+
+
+
+
+## shell에서 환경설정 쉽게 하기
+export -> shell 변수들은 export 명령어와 사용이 된다면 환경 변수를 쉽게 정의할 수 있다.
 
 
