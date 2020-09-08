@@ -1,10 +1,15 @@
 from action_serializer import ModelActionSerializer
 from django.contrib.auth import get_user_model
 from rest_framework.serializers import ModelSerializer
-
 from members.models import UserAddress
 
 User = get_user_model()
+
+
+class UserAddressCreateSerializers(ModelSerializer):
+    class Meta:
+        model = UserAddress
+        fields = ('address',)
 
 
 class UserAddressSerializers(ModelSerializer):
@@ -30,5 +35,7 @@ class UserSerializer(ModelActionSerializer):
     def create(self, validated_data):
         address = validated_data.pop('context')
         user = User.objects.create_user(**validated_data)
+        address = self.context['request'].data['address']
+        #        UserAddressCreateSerializers(address).is_valid(raise_exception=True)
         UserAddress.objects.create(user=user, address=address, status='T')
         return user

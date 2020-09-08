@@ -8,4 +8,5 @@ class CartIsOwnerOrReadOnly(permissions.BasePermission):
 
 class CartItemIsOwnerOrReadOnly(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
-        return obj.cart.user == request.user
+        return obj.cart_id == request.user.id
+
