@@ -1,10 +1,9 @@
-
 import os
 from django.contrib.auth import get_user_model
+from munch import Munch
 from rest_framework import status
 from rest_framework.test import APITestCase
 from django.core.files.uploadedfile import SimpleUploadedFile
-
 from carts.models import CartItem
 from config import settings
 from config.settings.base import ROOT_DIR
@@ -13,15 +12,14 @@ from goods.models import Goods
 User = get_user_model()
 
 
-class Cart_test(APITestCase):
+class CartTestCase(APITestCase):
 
     def setUp(self) -> None:
-        self.user = User(username='User_test', password='1111', email='cccc@c.com')
+        self.user = User(username='test_user', password='1111', email='test_user@test.com')
         self.user.set_password(self.user.password)
         self.user.save()
 
         image = settings.base.MEDIA_ROOT + '/mssql.jpeg'
-
         for i in range(5):
             test_file = SimpleUploadedFile(name='test_image.jpeg', content=open(image, 'rb', ).read(),
                                            content_type="image/jpeg"
@@ -34,31 +32,55 @@ class Cart_test(APITestCase):
                                               short_desc='간단설명', price='555')
 
     def test_cart_create(self):
-        user = self.user
-        goods = Goods.objects.first()
-        data = {
-            "goods": goods.pk,
-            "quantity": 3,
-            "user": user.pk
-        }
+        test_user = self.user
+        self.client.force_authenticate(user=test_user)
 
-        response = self.client.post(f'/api/carts', data=data)
+        response = self.client.get(f'/api/cart/{test_user.pk}')
 
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data['goods'], data['goods'])
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(test_user.pk, test_user.cart.pk)
 
-    def test_cart_list(self):
-        user = self.user
+    def test_cart_item_list(self):
+        test_user = self.user
+        self.client.force_authenticate(user=test_user)
         test_goods = Goods.objects.all()
 
         for i in test_goods:
-            self.carts = CartItem.objects.create(goods=i, user=user, quantity=4)
+            self.cart = CartItem.objects.create(goods=i, cart=test_user.cart, quantity=3)
 
-        response = self.client.get(f'/api/carts')
-        print('yyyy',response.data(len()))
+        cartitem = CartItem.objects.values()
 
+        response = self.client.get(f'/api/cart/{test_user.pk}/item')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        # self.assertEqual(response.data(len()), status.HTTP_200_OK)
 
+        for cart_data, response_data in zip(cartitem, response.data):
+            self.assertEqual(cart_data['goods_id'], response_data['goods']['id'])
 
-        self.fail()
+    def test_cart_item_update(self):
+        test_user = self.user
+        self.client.force_authenticate(user=test_user)
+        test_goods = Goods.objects.all()
+        goods1 = Goods.objects.first()
+
+        add_cart = CartItem.objects.create(goods=goods1, cart=test_user.cart, quantity=3)
+        cart_item = CartItem.objects.filter(cart=test_user.cart)[0]
+        data = {
+            "goods": goods1.pk,
+            "quantity": 10,
+            "cart": test_user.pk
+        }
+        item1 = CartItem.objects.first()
+        response = self.client.patch(f'/api/cart/{test_user.pk}/item/{item1.pk}', data=data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_cart_item_delete(self):
+        test_user = self.user
+        self.client.force_authenticate(user=test_user)
+        test_goods = Goods.objects.all()
+        goods1 = Goods.objects.first()
+
+        add_cart = CartItem.objects.create(goods=goods1, cart=test_user.cart, quantity=3)
+        item1 = CartItem.objects.first()
+        response = self.client.delete(f'/api/cart/{test_user.pk}/item/{item1.pk}')
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
