@@ -1,13 +1,12 @@
-import json
-
 from django.contrib.auth import get_user_model
-from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
-from members.serializers import UserSerializer
+
+from members.models import UserAddress
+from members.serializers import UserSerializer, UserAddressSerializers
 
 User = get_user_model()
 
@@ -58,3 +57,7 @@ class UserViewSet(ModelViewSet):
         user.auth_token.delete()
         return Response({"clear"}, status=status.HTTP_200_OK)
 
+
+class UserAddressViewSet(ModelViewSet):
+    queryset = UserAddress.objects.all()
+    serializer_class = UserAddressSerializers

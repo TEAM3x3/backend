@@ -1,33 +1,30 @@
 from action_serializer import ModelActionSerializer
 from django.contrib.auth import get_user_model
 from rest_framework.serializers import ModelSerializer
-<<<<<<< HEAD
-=======
-
 from members.models import UserAddress
->>>>>>> aac0997f205ffeac4d97c8d453b3b32fde671294
 
 User = get_user_model()
 
 
+class UserAddressCreateSerializers(ModelSerializer):
+    class Meta:
+        model = UserAddress
+        fiedls = ('address',)
+
+
 class UserAddressSerializers(ModelSerializer):
     class Meta:
-<<<<<<< HEAD
-        model = User
-=======
         model = UserAddress
->>>>>>> aac0997f205ffeac4d97c8d453b3b32fde671294
-        fields = ('id', 'address', 'detail_address', 'require_message', 'status', 'recieving',)
+        fields = ('id', 'user', 'address', 'detail_address', 'require_message', 'status',
+                  'recieving_place', 'entrance_password', 'free_pass', 'etc', 'message')
 
 
 class UserSerializer(ModelActionSerializer):
-    # address = UserAddressSerializers()
+    address = UserAddressSerializers(many=True, read_only=True)
 
     class Meta:
         model = User
-
-        fields = ('id', 'username', 'password', 'email', 'phone', 'nickname', 'gender')
-
+        fields = ('id', 'username', 'password', 'email', 'phone', 'nickname', 'gender', 'address')
         action_fields = {
             'login': {'fields': ('username', 'password')},
             'check_username': {'fields': ('username',)},
@@ -36,5 +33,7 @@ class UserSerializer(ModelActionSerializer):
 
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data)
+        address = self.context['request'].data['address']
+        #        UserAddressCreateSerializers(address).is_valid(raise_exception=True)
+        UserAddress.objects.create(user=user, address=address, status='T')
         return user
-
