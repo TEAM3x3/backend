@@ -49,11 +49,6 @@ class Goods(models.Model):
     info = models.CharField('제품 정보', max_length=512, null=True, )
     expiration = models.CharField('유통기한', max_length=512, null=True, )
 
-    category = models.ForeignKey(
-        'goods.Category',
-        on_delete=models.CASCADE,
-        null=True,
-    )
     event = models.ForeignKey(
         'event.Event',
         on_delete=models.CASCADE,

@@ -1,7 +1,5 @@
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import TestCase
-
 # Create your tests here.
 from model_bakery import baker
 from rest_framework.test import APITestCase
@@ -19,8 +17,13 @@ class GoodsTest(APITestCase):
         baker.make('goods.GoodsDetail', _quantity=1)
 
     def test_list(self):
+        g1, g2 = Goods.objects.all()
+        e1 = GoodsExplain.objects.first()
+        d1 = GoodsDetail.objects.first()
+        # 타입, 속성, pk 값이 request에 담겨 오지 않는다면 빈 리스트
         response = self.client.get('/api/goods')
         self.assertEqual(response.status_code, 200)
+        self.fail()
 
     def test_retrieve(self):
         response = self.client.get('/api/goods/1')
