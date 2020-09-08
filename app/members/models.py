@@ -47,12 +47,6 @@ class UserAddress(models.Model):
         related_name='address',
     )
 
-    def save(self, *args, **kwargs):
-        address_db = UserAddress.objects.filter(user=self.user)
-        for address in address_db:
-            address.save(status='F')
-        # if self.status == 'T':
-
     # class Profile(models.Model):
 #     COUPON_CHOICES = (
 #         ('A', '[신규가입쿠폰] 10% 할인'),

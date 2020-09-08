@@ -17,6 +17,17 @@ class UserAddressSerializers(ModelSerializer):
         model = UserAddress
         fields = ('id', 'address', 'detail_address', 'require_message', 'status')
 
+    def update(self, instance, validated_data):
+        qs = self.Meta.model.objects.all().exclude(pk=instance.pk)
+        bulk_list = []
+        for ins in self.Meta.model.objects.all().exclude(pk=instance.pk):
+            ins.status = 'F'
+            bulk_list.append(ins)
+            # bulk update
+            # ins.save()
+        self.Meta.model.objects.bulk_update(bulk_list, ['status'])
+        return super().update(instance, validated_data)
+
 
 class UserSerializer(ModelActionSerializer):
     address = UserAddressSerializers(read_only=True, many=True)
@@ -33,7 +44,6 @@ class UserSerializer(ModelActionSerializer):
         }
 
     def create(self, validated_data):
-        address = validated_data.pop('context')
         user = User.objects.create_user(**validated_data)
         address = self.context['request'].data['address']
         #        UserAddressCreateSerializers(address).is_valid(raise_exception=True)
