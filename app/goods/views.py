@@ -34,7 +34,7 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
             qs = self.queryset.filter(pk=pk)
         category = self.request.query_params.get('category', None)
         if category is not None:
-            qs = self.queryset.filter(category__name=category)
+            qs = self.queryset.filter(types__type__category__name=category)
         type_ins = self.request.query_params.get('type', None)
         if type_ins is not None:
             type_ins = Type.objects.filter(name=type_ins).first()
