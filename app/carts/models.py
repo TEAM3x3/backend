@@ -26,6 +26,7 @@ class CartItem(models.Model):
     goods = models.ForeignKey(Goods, on_delete=CASCADE)
     quantity = models.IntegerField(default=1,
                                    validators=[MinValueValidator(1), MaxValueValidator(50)])
+    # order = models.ForeignKey('order.Order', )
 
     def sub_total(self):
         return self.goods.price * self.quantity

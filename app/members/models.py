@@ -26,6 +26,35 @@ class User(AbstractUser):
             super().save(*args, **kwargs)
     # REQUIRED_FIELDS = ['email']
 
+
+class RecievingPlace(models.Model):
+    LOCATION_CHOICE = (
+        ('FD', 'Front Door'),
+        ('SO', 'Security Office'),
+        ('DB', 'Delivery Box'),
+        ('etc', 'etc'),
+    )
+    reciving_place = models.CharField(max_length=3, choices=LOCATION_CHOICE)
+    entrance_password = models.CharField(max_length=10, null=True)
+    free_pass = models.BooleanField(default=False)
+    etc = models.CharField(max_length=100, null=True)
+    message = models.BooleanField(default=False)
+
+
+class UserAddress(models.Model):
+    address = models.CharField(max_length=200)
+    detail_address = models.CharField(max_length=200)
+    require_massage = models.CharField('요청 사항', max_length=100)
+    status = models.CharField('기본 배송지', max_length=1)
+
+    recieving = models.ForeignKey('members.RecievingPlace',
+                                  on_delete=models.SET_NULL,
+                                  null=True)
+
+    user = models.ForeignKey('members.User',
+                             on_delete=models.CASCADE,)
+
+
 # class Profile(models.Model):
 #     COUPON_CHOICES = (
 #         ('A', '[신규가입쿠폰] 10% 할인'),
