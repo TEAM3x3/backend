@@ -9,7 +9,7 @@ User = get_user_model()
 class UserAddressCreateSerializers(ModelSerializer):
     class Meta:
         model = UserAddress
-        fiedls = ('address',)
+        fields = ('address',)
 
 
 class UserAddressSerializers(ModelSerializer):
@@ -32,6 +32,7 @@ class UserSerializer(ModelActionSerializer):
         }
 
     def create(self, validated_data):
+        address = validated_data.pop('context')
         user = User.objects.create_user(**validated_data)
         address = self.context['request'].data['address']
         #        UserAddressCreateSerializers(address).is_valid(raise_exception=True)

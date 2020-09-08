@@ -52,6 +52,7 @@ class GoodsSaleSerializers(ModelSerializer):
             'id',
             'title',
             'short_desc',
+            'packing_status',
             'price',
             'img',
             'sales'

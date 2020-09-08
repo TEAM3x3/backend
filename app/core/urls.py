@@ -19,6 +19,7 @@ router.register('order', OrderView)
 # /users
 users_router = routers.NestedSimpleRouter(router, 'users', lookup='user')
 users_router.register('address', UserAddressViewSet)
+users_router.register('orders', OrderView)
 # /goods
 goods_router = routers.NestedSimpleRouter(router, 'goods', lookup='goods')
 # /cart
@@ -28,4 +29,5 @@ cart_router.register('item', CartItemViewSet)
 urlpatterns = (
     url('', include(router.urls)),
     url('', include(cart_router.urls)),
+    url('', include(users_router.urls)),
 )

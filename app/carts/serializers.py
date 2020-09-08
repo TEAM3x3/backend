@@ -2,16 +2,17 @@ from action_serializer import ModelActionSerializer
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 from carts.models import CartItem, Cart
-from goods.serializers import MinimumGoodsSerializers
+from goods.serializers import MinimumGoodsSerializers, GoodsSaleSerializers
 
 
 class CartItemSerializer(ModelActionSerializer):
     sub_total = serializers.SerializerMethodField()
-    goods = MinimumGoodsSerializers(read_only=True)
+    discount_payment = serializers.SerializerMethodField()
+    goods = GoodsSaleSerializers(read_only=True)
 
     class Meta:
         model = CartItem
-        fields = ('id', 'cart', 'goods', 'quantity', 'sub_total')
+        fields = ('id', 'cart', 'goods', 'quantity', 'sub_total', 'discount_payment')
         action_fields = {
             'list': {
                 'fields': ('id', 'goods', 'quantity', 'sub_total')
@@ -23,6 +24,9 @@ class CartItemSerializer(ModelActionSerializer):
 
     def get_sub_total(self, obj):
         return obj.sub_total()
+
+    def get_discount_payment(self, obj):
+        return obj.discount_payment()
 
 
 class CartItemCreateSerializer(serializers.ModelSerializer):
