@@ -14,7 +14,16 @@ class OrderListSerializers(ModelSerializer):
 
     class Meta:
         model = Order
+<<<<<<< HEAD
         fields = ('id', 'user', 'address', 'item', 'payment')
+=======
+        fields = ('id',
+                  'user',
+                  'address',
+                  'item',
+                  'payment'
+                  )
+>>>>>>> aac0997f205ffeac4d97c8d453b3b32fde671294
 
     def get_payment(self, obj):
         return obj.total_payment()
@@ -23,7 +32,15 @@ class OrderListSerializers(ModelSerializer):
 class OrderCreateSerializers(ModelSerializer):
     class Meta:
         model = Order
+<<<<<<< HEAD
         fields = ('id', 'user', 'address', 'item')
+=======
+        fields = ('id',
+                  'user',
+                  'address',
+                  'item',
+                  )
+>>>>>>> aac0997f205ffeac4d97c8d453b3b32fde671294
 
     def create(self, validated_data):
         return super().create(validated_data)
