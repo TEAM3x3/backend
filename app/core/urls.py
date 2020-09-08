@@ -4,8 +4,7 @@ from rest_framework_nested import routers
 from carts.views import CartViewSet, CartItemViewSet
 from event.views import EventAPIView
 from goods.views import GoodsViewSet, DeliveryViewSet, CategoryViewSet
-
-from members.views import UserViewSet
+from members.views import UserViewSet, UserAddressViewSet
 from order.views import OrderView
 
 router = routers.SimpleRouter(trailing_slash=False)
@@ -16,6 +15,7 @@ router.register('delivery', DeliveryViewSet)
 router.register('category', CategoryViewSet)
 router.register('event', EventAPIView)
 router.register('order', OrderView)
+router.register('address', UserAddressViewSet)
 
 # /users
 users_router = routers.NestedSimpleRouter(router, 'users', lookup='user')
@@ -24,6 +24,8 @@ goods_router = routers.NestedSimpleRouter(router, 'goods', lookup='goods')
 # /cart
 cart_router = routers.NestedSimpleRouter(router, 'cart', lookup='cart')
 cart_router.register('item', CartItemViewSet)
+# /address
+address_router = routers.NestedSimpleRouter(router, 'address', lookup='address')
 
 urlpatterns = (
     url('', include(router.urls)),
