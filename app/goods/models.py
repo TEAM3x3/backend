@@ -62,7 +62,6 @@ class Goods(models.Model):
         null=True,
         related_name='goods',
     )
-
     @staticmethod
     def get_crawling():
         # 상품 크롤링

@@ -41,7 +41,7 @@ class CartItem(models.Model):
     def discount_payment(self):
         try:
             if type(self.goods.sales.discount_rate) is int:
-                return ((100-self.goods.sales.discount_rate) * 0.01) * (self.goods.price * self.quantity)
-            return None
+                return ((100 - self.goods.sales.discount_rate) * 0.01) * (self.goods.price * self.quantity)
+            return self.sub_total()
         except AttributeError:
-            return None
+            return self.sub_total()
