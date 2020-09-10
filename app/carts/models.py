@@ -28,7 +28,7 @@ class CartItem(models.Model):
     quantity = models.IntegerField(default=1,
                                    validators=[MinValueValidator(1), MaxValueValidator(50)])
     cart = models.ForeignKey(Cart, on_delete=CASCADE, related_name='item', null=True)
-    goods = models.ForeignKey(Goods, on_delete=CASCADE)
+    goods = models.ForeignKey(Goods, on_delete=CASCADE, related_name='item',)
     order = models.ForeignKey('order.Order',
                               on_delete=models.SET_NULL,
                               null=True,
@@ -41,7 +41,7 @@ class CartItem(models.Model):
     def discount_payment(self):
         try:
             if type(self.goods.sales.discount_rate) is int:
-                return ((100-self.goods.sales.discount_rate) * 0.01) * (self.goods.price * self.quantity)
-            return None
+                return ((100 - self.goods.sales.discount_rate) * 0.01) * (self.goods.price * self.quantity)
+            return self.sub_total()
         except AttributeError:
-            return None
+            return self.sub_total()

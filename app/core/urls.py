@@ -15,7 +15,7 @@ router.register('delivery', DeliveryViewSet)
 router.register('category', CategoryViewSet)
 router.register('event', EventAPIView)
 router.register('order', OrderView)
-
+router.register('address', UserAddressViewSet)
 # /users
 users_router = routers.NestedSimpleRouter(router, 'users', lookup='user')
 users_router.register('address', UserAddressViewSet)

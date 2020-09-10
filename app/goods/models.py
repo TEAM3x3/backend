@@ -38,7 +38,7 @@ class Goods(models.Model):
     info_img = models.ImageField('상품 이미지', upload_to=goods_info_img_path, null=True)
     title = models.CharField('상품 명', max_length=60)
     short_desc = models.CharField('간단 설명', max_length=100)
-    price = models.IntegerField('가격')
+    price = models.PositiveIntegerField('가격')
     each = models.CharField('판매 단위', max_length=64, null=True, )
     weight = models.CharField('중량/용량', max_length=64, null=True, )
     transfer = models.CharField('배송 구분', max_length=64, null=True, )
@@ -62,7 +62,6 @@ class Goods(models.Model):
         null=True,
         related_name='goods',
     )
-
     @staticmethod
     def get_crawling():
         # 상품 크롤링
