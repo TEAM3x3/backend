@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from model_bakery import baker
 from rest_framework.test import APITestCase
 
-from goods.models import Goods, GoodsExplain, GoodsDetail, Category, Type, GoodsType
+from goods.models import Goods, GoodsExplain, GoodsDetail, Category, Type, GoodsType, SaleInfo
 
 User = get_user_model()
 
@@ -11,8 +11,9 @@ User = get_user_model()
 class GoodsTest(APITestCase):
     def setUp(self) -> None:
         user = User.objects.create_user(username='test', password='1111')
-        baker.make('goods.GoodsExplain', _quantity=1)
-        baker.make('goods.GoodsDetail', _quantity=1)
+        self.ex1 = baker.make('goods.GoodsExplain', _quantity=1)
+        test = []
+        test += baker.make('goods.GoodsDetail', _quantity=1, goods=self.ex1[0].goods)
 
         category = Category.objects.create(name='채소')
         type = Type.objects.create(name='기본채소', category=category)
@@ -24,6 +25,10 @@ class GoodsTest(APITestCase):
         explain.save()
         detail.goods = self.g1
         detail.save()
+
+        self.g2 = baker.make('goods.Goods', price=1000)
+        baker.make('goods.GoodsExplain', _quantity=1, goods=self.g2)
+        baker.make('goods.GoodsDetail', _quantity=1, goods=self.g2)
 
         GoodsType.objects.create(type=type, goods=self.g1)
 
@@ -56,5 +61,29 @@ class GoodsTest(APITestCase):
         qs = Goods.objects.first()
         self.assertEqual(response.data['id'], qs.id)
 
-    # def test_sale(self):
-    #     response =
+    def test_sale(self):
+        sale_ins = SaleInfo.objects.create(discount_rate=5)
+        self.g1.sales = sale_ins
+        self.g1.save()
+
+        response = self.client.get('/api/goods/sale')
+        qs = Goods.objects.filter(sales__discount_rate__isnull=False)
+        for res_data in response.data:
+            self.assertEqual(res_data['id'], qs[0].id)
+        self.assertEqual(response.status_code, 200)
+
+    def test_sales_price_ordering(self):
+        sale_ins5 = SaleInfo.objects.create(discount_rate=5)
+        sale_ins10 = SaleInfo.objects.create(discount_rate=10)
+        self.g2.sales = sale_ins10
+        self.g2.save()
+        self.g1.sales = sale_ins5
+        self.g1.save()
+
+        qs = Goods.objects.filter(sales__discount_rate__isnull=False).order_by('price')
+
+        response = self.client.get('/api/goods/sale?ordering=price')
+
+        for index, res_data in enumerate(response.data):
+            self.assertEqual(qs[index].id, res_data['id'])
+            self.assertEqual(qs[index].price, res_data['price'])

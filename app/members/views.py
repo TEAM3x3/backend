@@ -15,6 +15,9 @@ class UserViewSet(ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
+    def get_queryset(self):
+        return super().get_queryset()
+
     @action(detail=False)
     def check_username(self, request):
         username = request.query_params.get('username')

@@ -28,7 +28,7 @@ class CartItem(models.Model):
     quantity = models.IntegerField(default=1,
                                    validators=[MinValueValidator(1), MaxValueValidator(50)])
     cart = models.ForeignKey(Cart, on_delete=CASCADE, related_name='item', null=True)
-    goods = models.ForeignKey(Goods, on_delete=CASCADE)
+    goods = models.ForeignKey(Goods, on_delete=CASCADE, related_name='item',)
     order = models.ForeignKey('order.Order',
                               on_delete=models.SET_NULL,
                               null=True,
