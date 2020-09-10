@@ -15,6 +15,7 @@ router.register('delivery', DeliveryViewSet)
 router.register('category', CategoryViewSet)
 router.register('event', EventAPIView)
 router.register('order', OrderView)
+router.register('address', UserAddressViewSet)
 
 # /users
 users_router = routers.NestedSimpleRouter(router, 'users', lookup='user')
@@ -25,6 +26,7 @@ goods_router = routers.NestedSimpleRouter(router, 'goods', lookup='goods')
 # /cart
 cart_router = routers.NestedSimpleRouter(router, 'cart', lookup='cart')
 cart_router.register('item', CartItemViewSet)
+
 
 urlpatterns = (
     url('', include(router.urls)),
