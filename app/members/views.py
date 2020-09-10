@@ -51,3 +51,10 @@ class UserViewSet(ModelViewSet):
 class UserAddressViewSet(ModelViewSet):
     queryset = UserAddress.objects.all()
     serializer_class = UserAddressSerializers
+
+    def get_queryset(self):
+        try:
+            if self.kwargs['user_pk']:
+                return self.queryset.filter(user_id=self.kwargs['user_pk'])
+        except KeyError:
+            return super().get_queryset()
