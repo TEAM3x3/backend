@@ -1,8 +1,8 @@
 from django.conf.urls import url
-from django.urls import include
+from django.urls import include, path
 from rest_framework_nested import routers
 from carts.views import CartViewSet, CartItemViewSet
-from event.views import EventAPIView
+from event.views import EventAPIView, MainEventAPIView
 from goods.views import GoodsViewSet, DeliveryViewSet, CategoryViewSet
 from members.views import UserViewSet, UserAddressViewSet
 from order.views import OrderView
@@ -16,6 +16,7 @@ router.register('category', CategoryViewSet)
 router.register('event', EventAPIView)
 router.register('order', OrderView)
 router.register('address', UserAddressViewSet)
+router.register('mainEvent', MainEventAPIView)
 # /users
 users_router = routers.NestedSimpleRouter(router, 'users', lookup='user')
 users_router.register('address', UserAddressViewSet)
@@ -26,8 +27,4 @@ goods_router = routers.NestedSimpleRouter(router, 'goods', lookup='goods')
 cart_router = routers.NestedSimpleRouter(router, 'cart', lookup='cart')
 cart_router.register('item', CartItemViewSet)
 
-urlpatterns = (
-    url('', include(router.urls)),
-    url('', include(cart_router.urls)),
-    url('', include(users_router.urls)),
-)
+urlpatterns = router.urls + users_router.urls + goods_router.urls + cart_router.urls
