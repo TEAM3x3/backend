@@ -62,6 +62,7 @@ class Goods(models.Model):
         null=True,
         related_name='goods',
     )
+
     @staticmethod
     def get_crawling():
         # 상품 크롤링
@@ -234,3 +235,20 @@ class DeliveryInfoImageImageFile(models.Model):
 class SaleInfo(models.Model):
     discount_rate = models.IntegerField(null=True, )
     contents = models.CharField(max_length=30, null=True, )
+
+
+class Tag(models.Model):
+    name = models.CharField(max_length=36)
+
+
+class Tagging(models.Model):
+    tag = models.ForeignKey(
+        'goods.Tag',
+        on_delete=models.CASCADE,
+        related_name='tagging'
+    )
+    goods = models.ForeignKey(
+        'goods.Goods',
+        on_delete=models.CASCADE,
+        related_name='tagging'
+    )
