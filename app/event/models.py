@@ -15,7 +15,8 @@ class Event(models.Model):
 
 class MainEvent(models.Model):
     title = models.CharField(max_length=48)
-    image = models.ImageField(upload_to='mainEvent', null=True, blank=True)
+    image = models.CharField(max_length=500, null=True)
+    detail_image = models.ImageField(upload_to='mainEvent/detail', null=True, blank=True)
     start_date = models.DateTimeField(null=True, blank=True)
     end_date = models.DateTimeField(null=True, blank=True)
 

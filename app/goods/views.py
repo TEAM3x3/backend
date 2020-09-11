@@ -11,14 +11,14 @@ from rest_framework.filters import OrderingFilter
 
 class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericViewSet):
     queryset = Goods.objects.all()
-    serializer_class = GoodsSerializers
+    serializer_class = GoodsSaleSerializers
     # filter는 각 viewset별 다를 수 있어서
     filter_backends = (OrderingFilter,)
     ordering_fields = ['price', ]
 
     def get_serializer_class(self):
-        if self.action == 'sale':
-            return GoodsSaleSerializers
+        if self.action in ['retrieve']:
+            return GoodsSerializers
         else:
             return self.serializer_class
 
@@ -42,13 +42,13 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
     @action(detail=False)
     def main_page_md(self, request, *args, **kwargs):
         main_md = Goods.objects.filter(id=1)
-        serializer = GoodsSerializers(main_md, many=True)
+        serializer = GoodsSaleSerializers(main_md, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     @action(detail=False)
     def main_page_health(self, request, *args, **kwargs):
         main_health = Goods.objects.filter(category__name='건강식품')
-        serializer = GoodsSerializers(main_health, many=True)
+        serializer = GoodsSaleSerializers(main_health, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def main_page_recommend(self, request, *args, **kwargs):
