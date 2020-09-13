@@ -60,6 +60,7 @@ class TaggingSerializers(ModelSerializer):
 class GoodsSaleSerializers(ModelSerializer):
     sales = SalesInfoSerializers()
     tagging = TaggingSerializers(many=True)
+    discount_price = serializers.SerializerMethodField()
 
     class Meta:
         model = Goods
@@ -71,8 +72,18 @@ class GoodsSaleSerializers(ModelSerializer):
             'price',
             'img',
             'sales',
-            'tagging'
+            'tagging',
+            'discount_price',
         )
+
+    def get_discount_price(self, obj):
+        try:
+            if type(obj.sales.discount_rate) is int:
+                value = ((100 - obj.sales.discount_rate) * 0.01)*obj.price
+                return value
+            return None
+        except AttributeError:
+            return None
 
 
 class GoodsSerializers(ModelActionSerializer):
