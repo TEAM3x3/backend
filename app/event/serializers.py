@@ -2,7 +2,7 @@ from action_serializer import ModelActionSerializer
 from rest_framework.serializers import ModelSerializer
 
 from .models import Event, MainEvent, MainEventType, GoodsEventType
-from goods.serializers import GoodsSerializers, GoodsSaleSerializers
+from goods.serializers import GoodsSaleSerializers
 
 
 class EventSerializers(ModelActionSerializer):
