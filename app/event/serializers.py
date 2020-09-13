@@ -5,12 +5,16 @@ from .models import Event, MainEvent, MainEventType, GoodsEventType
 from goods.serializers import GoodsSerializers, GoodsSaleSerializers
 
 
-class EventSerializers(ModelSerializer):
-    goods = GoodsSerializers(many=True)
+class EventSerializers(ModelActionSerializer):
+    goods = GoodsSaleSerializers(many=True)
 
     class Meta:
         model = Event
         fields = ('id', 'title', 'image', 'goods')
+        action_fields = {
+            'list': {'fields': ('id', 'title', 'image')},
+            'retrieve': {'fields': ('id', 'title', 'goods')},
+        }
 
 
 class GoodsEventTypeSerializers(ModelSerializer):
