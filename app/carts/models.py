@@ -52,3 +52,8 @@ class CartItem(models.Model):
         super().save(*args, **kwargs)
         self.cart.quantity_of_goods = F('quantity_of_goods') + 1
         self.cart.save()
+
+    def delete(self, using=None, keep_parents=False):
+        super().save()
+        self.cart.quantity_of_goods = F('quantity_of_goods') - 1
+        self.cart.save()
