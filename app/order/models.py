@@ -1,6 +1,5 @@
 from django.contrib.auth import get_user_model
 from django.db import models
-from django.db.models import CASCADE
 
 User = get_user_model()
 
@@ -58,4 +57,8 @@ class OrderReview(models.Model):
     goods = models.ForeignKey(
         'goods.Goods',
         on_delete=models.CASCADE,
+    )
+    order = models.ForeignKey(
+        'order.Order',
+        on_delete=models.CASCADE
     )
