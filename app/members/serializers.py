@@ -17,6 +17,14 @@ class UserAddressSerializers(ModelSerializer):
         model = UserAddress
         fields = ('id', 'address', 'detail_address', 'require_message', 'status', 'user')
 
+    def create(self, validated_data):
+        if validated_data['status'] == 'T':
+            for ins in self.Meta.model.objects.filter(user__pk=self.data.get('user')):
+                ins.status = 'F'
+                ins.save()
+        return super().create(validated_data)
+
+
     def update(self, instance, validated_data):
         qs = self.Meta.model.objects.all().exclude(pk=instance.pk)
         bulk_list = []

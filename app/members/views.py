@@ -21,6 +21,9 @@ class UserViewSet(ModelViewSet):
             return [UserInfoOwnerOrReadOnly()]
         return super().get_permissions()
 
+    def get_queryset(self):
+        return super().get_queryset()
+
     @action(detail=False)
     def check_username(self, request):
         username = request.query_params.get('username')

@@ -1,7 +1,7 @@
 from action_serializer import ModelActionSerializer, serializers
 from rest_framework.serializers import ModelSerializer
 from goods.models import Category, GoodsExplain, GoodsDetailTitle, GoodsDetail, Goods, DeliveryInfoImageFile, \
-    DeliveryInfoImageImageFile, Type, SaleInfo
+    DeliveryInfoImageImageFile, Type, SaleInfo, Tag, Tagging
 
 
 # 상품 세일 정보
@@ -43,8 +43,24 @@ class MinimumGoodsSerializers(ModelSerializer):
         fields = ('id', 'title', 'img', 'price', 'packing_status')
 
 
+class TagSerializers(ModelSerializer):
+    class Meta:
+        model = Tag
+        fields = ('name',)
+
+
+class TaggingSerializers(ModelSerializer):
+    tag = TagSerializers()
+
+    class Meta:
+        model = Tagging
+        fields = ('tag',)
+
+
 class GoodsSaleSerializers(ModelSerializer):
     sales = SalesInfoSerializers()
+    tagging = TaggingSerializers(many=True)
+    discount_price = serializers.SerializerMethodField()
 
     class Meta:
         model = Goods
@@ -55,8 +71,19 @@ class GoodsSaleSerializers(ModelSerializer):
             'packing_status',
             'price',
             'img',
-            'sales'
+            'sales',
+            'tagging',
+            'discount_price',
         )
+
+    def get_discount_price(self, obj):
+        try:
+            if type(obj.sales.discount_rate) is int:
+                value = ((100 - obj.sales.discount_rate) * 0.01)*obj.price
+                return value
+            return None
+        except AttributeError:
+            return None
 
 
 class GoodsSerializers(ModelActionSerializer):
