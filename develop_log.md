@@ -132,3 +132,29 @@ framework들은 스스로 수천개의 request들을 실행하고 최고의 방�
 export -> shell 변수들은 export 명령어와 사용이 된다면 환경 변수를 쉽게 정의할 수 있다.
 
 
+
+
+## Order 뒤로 가기 시 카트가 None이 되는 상황은?
+주문서 생성 시 cart 는 None이 된다. 이후에 뒤로가기가 요청이 될 경우 cart에 담긴 item들은 None이 되어 데이터가 소실된다. 
+
+이에 대한 방법은 order에 status field - 결제 완료, 진행 중 등 값을 넣고 완료 시 cart 의 값을 None으로 변경한다.
+
+-> signal로 결제 완료 후 status value >>> update 호출.  업데이트 
+
+## django admin page custom
+[링크](https://docs.djangoproject.com/en/3.1/ref/contrib/admin/#overriding-admin-templates)
+
+## django transaction
+#### django에서 트랜잭션을 구현하는 3가지 방법
+1. 데코레이터를 이용한 Transaction : 하나의 함수에 적용
+2. with 명령어를 이용한 트랜잭션 : 중간 부분에 적용 
+3. savepoint를 직접 지정 
+
+
+기본적으로 django는 transaction을 지원하지만, ATOMIC_REQUESTS가 False 이므로, ORM 쿼리 단위로 transaction이 관리된다. (create, delete, update, get_or_create …)
+
+그래서 어떤 특정 코드 뭉치에 DB transaction을 지원하려면, transaction.atomic과 같은 구문이 필요하다.
+
+이 때 주의할 점은 with transaction.atomic 블록 안에서 try-except를 하지말라는 것이다. (django 문서에도 언급되어 있다.)
+
+transaction.atomic() 내부에서는 try-except 를 사용하지말자. 써야만 한다면 try 블록이 transaction.atomic() 블록을 감싸도록 사용하자.

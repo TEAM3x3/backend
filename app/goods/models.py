@@ -38,7 +38,7 @@ class Goods(models.Model):
     info_img = models.ImageField('상품 이미지', upload_to=goods_info_img_path, null=True)
     title = models.CharField('상품 명', max_length=60)
     short_desc = models.CharField('간단 설명', max_length=100)
-    price = models.IntegerField('가격')
+    price = models.PositiveIntegerField('가격')
     each = models.CharField('판매 단위', max_length=64, null=True, )
     weight = models.CharField('중량/용량', max_length=64, null=True, )
     transfer = models.CharField('배송 구분', max_length=64, null=True, )
@@ -235,3 +235,20 @@ class DeliveryInfoImageImageFile(models.Model):
 class SaleInfo(models.Model):
     discount_rate = models.IntegerField(null=True, )
     contents = models.CharField(max_length=30, null=True, )
+
+
+class Tag(models.Model):
+    name = models.CharField(max_length=36)
+
+
+class Tagging(models.Model):
+    tag = models.ForeignKey(
+        'goods.Tag',
+        on_delete=models.CASCADE,
+        related_name='tagging'
+    )
+    goods = models.ForeignKey(
+        'goods.Goods',
+        on_delete=models.CASCADE,
+        related_name='tagging'
+    )

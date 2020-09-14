@@ -27,6 +27,12 @@ class Order(models.Model):
             payment += ins.sub_total()
         return payment
 
+    def discount_payment(self):
+        payment = 0
+        for ins in self.item.all():
+            payment += ins.discount_payment()
+        return payment
+
 
 class OrderReview(models.Model):
     """

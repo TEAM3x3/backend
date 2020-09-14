@@ -16,10 +16,15 @@ class UserViewSet(ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
+
     # def get_permissions(self):
     #     if self.action in ['create', 'login']:
     #         return [AllowAny()]
     #     return super().get_permissions()
+
+    def get_queryset(self):
+        return super().get_queryset()
+
 
     @action(detail=False)
     def check_username(self, request):
