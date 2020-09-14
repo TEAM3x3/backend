@@ -53,6 +53,7 @@ class CartItem(models.Model):
         self.cart.quantity_of_goods = F('quantity_of_goods') + 1
         self.cart.save()
 
+    @transaction.atomic
     def delete(self, using=None, keep_parents=False):
         super().save()
         self.cart.quantity_of_goods = F('quantity_of_goods') - 1
