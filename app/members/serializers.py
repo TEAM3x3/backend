@@ -56,6 +56,8 @@ class UserSerializer(ModelActionSerializer):
             'login': {'fields': ('username', 'password')},
             'check_username': {'fields': ('username',)},
             'check_email': {'fields': ('email',)},
+            'userinfo_check': {'fields': ('password',)},
+            'userinfo_edit': {'fields': ('id')},
         }
 
     def create(self, validated_data):

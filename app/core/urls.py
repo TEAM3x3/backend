@@ -27,5 +27,7 @@ goods_router = routers.NestedSimpleRouter(router, 'goods', lookup='goods')
 # /cart
 cart_router = routers.NestedSimpleRouter(router, 'cart', lookup='cart')
 cart_router.register('item', CartItemViewSet)
+# /address
+address_router = routers.NestedSimpleRouter(router, 'address', lookup='address')
 
 urlpatterns = router.urls + users_router.urls + goods_router.urls + cart_router.urls
