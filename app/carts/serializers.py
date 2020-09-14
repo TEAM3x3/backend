@@ -50,7 +50,8 @@ class CartSerializer(ModelSerializer):
 
     class Meta:
         model = Cart
-        fields = ('id', 'quantity_of_goods', 'item', 'total_pay', 'discount_total_pay', 'discount_payment')
+        fields = (
+            'id', 'quantity_of_goods', 'item', 'total_pay', 'discount_total_pay', 'discount_price')
 
     def get_total_pay(self, obj):
         return obj.total_pay
