@@ -1,11 +1,11 @@
 from django.contrib.auth import get_user_model
 from rest_framework import status
 from rest_framework.authtoken.models import Token
-from rest_framework.decorators import action
+from rest_framework.decorators import action, permission_classes
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
-
 from members.models import UserAddress
+from members.permissions import UserInfoOwnerOrReadOnly
 from members.serializers import UserSerializer, UserAddressSerializers
 
 User = get_user_model()
@@ -14,6 +14,12 @@ User = get_user_model()
 class UserViewSet(ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    permission_classes = (UserInfoOwnerOrReadOnly,)
+
+    def get_permissions(self):
+        if self.action in ['user_info', ]:
+            return [UserInfoOwnerOrReadOnly()]
+        return super().get_permissions()
 
     @action(detail=False)
     def check_username(self, request):
@@ -47,6 +53,22 @@ class UserViewSet(ModelViewSet):
         user = request.user
         user.auth_token.delete()
         return Response({"clear"}, status=status.HTTP_200_OK)
+
+    @action(detail=False)
+    def user_info(self, request, *args, **kwargs):
+        user = User.objects.get(username=request.user.username)
+        if user.check_password(request.data.get('password')):
+            profile = User.objects.filter(username=user.username)
+            serializer = UserSerializer(profile, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=False, methods=['patch'])
+    def password_change(self, request):
+        user = User.objects.get(username=request.user.username)
+        user.set_password(request.data['password'])
+        user.save()
+        return Response(status=status.HTTP_200_OK)
 
 
 class UserAddressViewSet(ModelViewSet):

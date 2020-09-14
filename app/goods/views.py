@@ -1,6 +1,5 @@
 import random
-from django.db.models import Max
-from rest_framework import mixins
+from rest_framework import mixins, status
 from rest_framework.decorators import action
 from rest_framework.filters import OrderingFilter
 from rest_framework.response import Response
@@ -19,6 +18,7 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
     filter_backends = (DjangoFilterBackend, OrderingFilter)
     filter_class = GoodsFilter
     ordering_fields = ['price', ]
+    filterset_fields = ['goods',]
 
     def get_serializer_class(self):
         if self.action == 'sale':
@@ -40,6 +40,15 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
             type_ins = Type.objects.filter(name=type_ins).first()
             qs = self.queryset.filter(types__type=type_ins)
         return qs
+
+    @action(detail=False)
+    def goods_search(self, request, *args, **kwargs):
+        word = self.request.GET.get('goods_word', None)
+        if word:
+            qs = Goods.objects.filter(title__icontains=word)
+            serializer = self.get_serializer(qs, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=False)
     def main_page_md(self, request, *args, **kwargs):
