@@ -1,5 +1,4 @@
 import django_filters
-
 from goods.models import Goods
 
 
