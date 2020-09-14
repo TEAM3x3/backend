@@ -24,6 +24,7 @@ class UserAddressSerializers(ModelSerializer):
                 ins.save()
         return super().create(validated_data)
 
+
     def update(self, instance, validated_data):
         qs = self.Meta.model.objects.all().exclude(pk=instance.pk)
         bulk_list = []
@@ -34,6 +35,13 @@ class UserAddressSerializers(ModelSerializer):
             # ins.save()
         self.Meta.model.objects.bulk_update(bulk_list, ['status'])
         return super().update(instance, validated_data)
+
+    def create(self, validated_data):
+        if validated_data['status'] == 'T':
+            for ins in UserAddress.objects.filter(user=self.data.get('user')):
+                ins.status = 'F'
+                ins.save()
+        return super().create(validated_data)
 
 
 class UserSerializer(ModelActionSerializer):

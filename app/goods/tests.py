@@ -57,6 +57,33 @@ class GoodsTest(APITestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_retrieve(self):
+
+        response = self.client.get('/api/goods/1')
+
+    def test_create(self):
+        image = settings.dev.MEDIA_ROOT + '/tree.jpeg'
+        test_image = SimpleUploadedFile(
+            name='tree.jpeg',
+            content=open(image, "rb").read(),
+            content_type="image/jpeg"
+        )
+        test_image2 = SimpleUploadedFile(
+            name='tree.jpeg',
+            content=open(image, "rb").read(),
+            content_type="image/jpeg"
+        )
+
+        goods_ins = Goods.objects.create(
+            img=test_image,
+            info_img=test_image2,
+            title='testTitle',
+            short_desc='short_desc',
+            price=1,
+        )
+
+    # def test_retrieve_category(self):
+    #     response = self.client.get('/api/goods/?category=채소')
+    #     goods = Goods.objects.filter(category__name='채소')
         response = self.client.get('/api/goods/8')
         qs = Goods.objects.first()
         self.assertEqual(response.data['id'], qs.id)
