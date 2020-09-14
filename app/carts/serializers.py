@@ -46,7 +46,7 @@ class CartSerializer(ModelSerializer):
     item = CartItemSerializer(many=True)
     total_pay = serializers.SerializerMethodField()
     discount_total_pay = serializers.SerializerMethodField()
-    discount_payment = serializers.SerializerMethodField()
+    discount_price = serializers.SerializerMethodField()
 
     class Meta:
         model = Cart
@@ -58,5 +58,5 @@ class CartSerializer(ModelSerializer):
     def get_discount_total_pay(self, obj):
         return obj.discount_total_pay
 
-    def get_discount_payment(self, obj):
+    def get_discount_price(self, obj):
         return int(obj.total_pay - obj.discount_total_pay)

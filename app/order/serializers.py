@@ -12,6 +12,7 @@ class OrderListSerializers(ModelSerializer):
     address = UserAddressSerializers()
     payment = serializers.SerializerMethodField()
     discount_payment = serializers.SerializerMethodField()
+    discount_price = serializers.SerializerMethodField()
 
     class Meta:
         model = Order
@@ -21,7 +22,8 @@ class OrderListSerializers(ModelSerializer):
                   'item',
                   'status',
                   'payment',
-                  'discount_payment'
+                  'discount_payment',
+                  'discount_price',
                   )
 
     def get_payment(self, obj):
@@ -29,6 +31,9 @@ class OrderListSerializers(ModelSerializer):
 
     def get_discount_payment(self, obj):
         return obj.discount_payment()
+
+    def get_discount_price(self, obj):
+        return int(obj.total_payment() - obj.discount_payment())
 
 
 class OrderCreateSerializers(ModelSerializer):
