@@ -80,7 +80,7 @@ class GoodsSaleSerializers(ModelSerializer):
         try:
             if type(obj.sales.discount_rate) is int:
                 value = ((100 - obj.sales.discount_rate) * 0.01)*obj.price
-                return value
+                return int(value)
             return None
         except AttributeError:
             return None
