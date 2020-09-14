@@ -24,7 +24,6 @@ class UserAddressSerializers(ModelSerializer):
                 ins.save()
         return super().create(validated_data)
 
-
     def update(self, instance, validated_data):
         qs = self.Meta.model.objects.all().exclude(pk=instance.pk)
         bulk_list = []

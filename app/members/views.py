@@ -6,7 +6,7 @@ from rest_framework.decorators import action, permission_classes
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from members.models import UserAddress
-from members.permissions import UserInfoOwnerOrReadOnly, AllowAny
+from members.permissions import UserInfoOwnerOrReadOnly
 from members.serializers import UserSerializer, UserAddressSerializers
 
 User = get_user_model()
@@ -22,15 +22,8 @@ class UserViewSet(ModelViewSet):
             return [UserInfoOwnerOrReadOnly()]
         return super().get_permissions()
 
-
-    # def get_permissions(self):
-    #     if self.action in ['create', 'login']:
-    #         return [AllowAny()]
-    #     return super().get_permissions()
-
     def get_queryset(self):
         return super().get_queryset()
-
 
     @action(detail=False)
     def check_username(self, request):

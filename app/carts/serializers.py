@@ -45,10 +45,18 @@ class CartItemCreateSerializer(serializers.ModelSerializer):
 class CartSerializer(ModelSerializer):
     item = CartItemSerializer(many=True)
     total_pay = serializers.SerializerMethodField()
+    discount_total_pay = serializers.SerializerMethodField()
+    discount_payment = serializers.SerializerMethodField()
 
     class Meta:
         model = Cart
-        fields = ('id', 'quantity_of_goods', 'item', 'total_pay')
+        fields = ('id', 'quantity_of_goods', 'item', 'total_pay', 'discount_total_pay', 'discount_payment')
 
     def get_total_pay(self, obj):
         return obj.total_pay
+
+    def get_discount_total_pay(self, obj):
+        return obj.discount_total_pay
+
+    def get_discount_payment(self, obj):
+        return int(obj.total_pay - obj.discount_total_pay)
