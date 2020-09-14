@@ -77,6 +77,14 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
         serializer = self.get_serializer(qs, many=True)
         return Response(serializer.data)
 
+    @action(detail=False)
+    def goods_search(self, request, *args, **kwargs):
+        word = self.request.GET.get('word', '')
+        if word:
+            qs = self.queryset.filter(title__icontains=word)
+            serializer = self.serializer_class(qs, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
 class DeliveryViewSet(mixins.ListModelMixin, GenericViewSet):
     queryset = DeliveryInfoImageFile.objects.all()
