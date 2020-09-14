@@ -1,10 +1,11 @@
 from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import login_required
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.decorators import action
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
-
 from members.models import UserAddress
 from members.serializers import UserSerializer, UserAddressSerializers
 
@@ -15,8 +16,15 @@ class UserViewSet(ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
+
+    # def get_permissions(self):
+    #     if self.action in ['create', 'login']:
+    #         return [AllowAny()]
+    #     return super().get_permissions()
+
     def get_queryset(self):
         return super().get_queryset()
+
 
     @action(detail=False)
     def check_username(self, request):
@@ -45,13 +53,29 @@ class UserViewSet(ModelViewSet):
             return Response(data, status=status.HTTP_201_CREATED)
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
-    @action(detail=False, methods=['delete'])
+    @action(detail=False, methods=['post'])
     def logout(self, request):
         user = request.user
         user.auth_token.delete()
         return Response({"clear"}, status=status.HTTP_200_OK)
 
+    @action(detail=False)
+    def userinfo_check(self, request):
+        user = User.objects.get(username=request.user.username)
+        if user.check_password(request.data['password']):
+            qs = User.objects.filter(username=user)
+            serializer = UserSerializer(qs, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
 
 class UserAddressViewSet(ModelViewSet):
     queryset = UserAddress.objects.all()
     serializer_class = UserAddressSerializers
+
+    def get_queryset(self):
+        try:
+            if self.kwargs['user_pk']:
+                return self.queryset.filter(user_id=self.kwargs['user_pk'])
+        except KeyError:
+            return super().get_queryset()
