@@ -27,13 +27,13 @@ class OrderView(mixins.CreateModelMixin,
         except KeyError:
             return super().get_queryset()
 
-    def perform_create(self, serializer):
-        items_pk = self.request.data['item']
-        items_ins = CartItem.objects.filter(pk__in=items_pk)
-        for item in items_ins:
-            item.cart = None
-            item.save()
-        serializer.save()
+    # def perform_create(self, serializer):
+    #     items_pk = self.request.data['item']
+    #     items_ins = CartItem.objects.filter(pk__in=items_pk)
+    #     for item in items_ins:
+    #         item.cart = None
+    #         item.save()
+    #     serializer.save()
 
 
 class ReviewAPI(mixins.CreateModelMixin,

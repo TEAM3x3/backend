@@ -40,9 +40,6 @@ class OrderCreateSerializers(ModelSerializer):
                   'item',
                   )
 
-    def create(self, validated_data):
-        return super().create(validated_data)
-
 
 class ReviewCreateSerializers(ModelSerializer):
     class Meta:
