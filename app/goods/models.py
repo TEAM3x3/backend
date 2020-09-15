@@ -63,6 +63,17 @@ class Goods(models.Model):
         related_name='goods',
     )
 
+    @property
+    def discount_price(self):
+        try:
+            if type(self.sales.discount_rate) is int:
+                price = (100 - self.sales.discount_rate) * 0.01 * self.price
+                return int(price)
+            return None
+
+        except AttributeError:
+            return None
+
     @staticmethod
     def get_crawling():
         # 상품 크롤링
