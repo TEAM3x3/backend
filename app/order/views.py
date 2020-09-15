@@ -6,6 +6,7 @@ from rest_framework.viewsets import GenericViewSet
 from carts.models import CartItem
 from carts.serializers import CartItemSerializer
 from order.models import Order, OrderReview
+from order.permissions import OrderReviewPermission
 from order.serializers import OrderCreateSerializers, OrderListSerializers, ReviewCreateSerializers, \
     ReviewUpdateSerializers
 
@@ -59,8 +60,14 @@ class ReviewAPI(mixins.CreateModelMixin,
             return ReviewUpdateSerializers
         return self.serializer_class
 
+    def get_permissions(self):
+        if self.action in ['partial_update', 'destroy']:
+            return [OrderReviewPermission(), ]
+        # 참고 링크 :https://stackoverflow.com/questions/35970970/django-rest-framework-permission-classes-of-viewset-method
+        return [permissions() for permissions in self.permission_classes]
+
     @action(detail=False)
     def writable(self, request):
-        qs = CartItem.objects.filter(order__user=request.user).filter(order__status='c')
+        qs = CartItem.objects.filter(order__user=request.user).filter(status='c')
         serializers = CartItemSerializer(qs, many=True)
         return Response(serializers.data, status=status.HTTP_200_OK)

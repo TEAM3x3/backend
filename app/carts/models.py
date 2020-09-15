@@ -34,6 +34,12 @@ class Cart(models.Model):
 
 
 class CartItem(models.Model):
+    ORDER_STATUS = (
+        ("d", "departure"),
+        ("p", "progress"),
+        ("c", "complete"),
+        ("r", "review")
+    )
     quantity = models.IntegerField(default=1,
                                    validators=[MinValueValidator(1), MaxValueValidator(50)])
     cart = models.ForeignKey(Cart, on_delete=CASCADE, related_name='item', null=True)
@@ -43,6 +49,7 @@ class CartItem(models.Model):
                               null=True,
                               related_name='item',
                               )
+    status = models.CharField('배송 상태', max_length=1, default='d', choices=ORDER_STATUS)
 
     def sub_total(self):
         return int(self.goods.price * self.quantity)
@@ -62,6 +69,7 @@ class CartItem(models.Model):
         if self.pk is None:
             self.cart.quantity_of_goods = F('quantity_of_goods') + 1
             self.cart.save()
+        # 결제 완료로 업데이트가 될 경우 self.cart.quantity_of_goods = F('quantity_of_goods') - 1
         super().save(*args, **kwargs)
 
     @transaction.atomic
