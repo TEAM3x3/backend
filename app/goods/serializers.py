@@ -79,7 +79,7 @@ class GoodsSaleSerializers(ModelSerializer):
     def get_discount_price(self, obj):
         try:
             if type(obj.sales.discount_rate) is int:
-                value = ((100 - obj.sales.discount_rate) * 0.01)*obj.price
+                value = ((100 - obj.sales.discount_rate) * 0.01) * obj.price
                 return int(value)
             return None
         except AttributeError:
@@ -89,6 +89,7 @@ class GoodsSaleSerializers(ModelSerializer):
 class GoodsSerializers(ModelActionSerializer):
     explains = GoodsExplainSerializers(many=True)
     details = GoodsDetailSerializers(many=True)
+    discount_price = serializers.SerializerMethodField()
     sales = SalesInfoSerializers()
 
     class Meta:
@@ -99,6 +100,8 @@ class GoodsSerializers(ModelActionSerializer):
                   'title',
                   'short_desc',
                   'price',
+                  'sales',
+                  'discount_price',
                   'each',
                   'weight',
                   'transfer',
@@ -114,6 +117,9 @@ class GoodsSerializers(ModelActionSerializer):
             'list': {'fields': ('id', 'title', 'short_desc', 'price', 'img',)},
             'main_page_recommend': {'fields': ('id', 'title',)},
         }
+
+    def get_discount_price(self, obj):
+        return obj.discount_price
 
 
 class DeliveryInfoImageSerializers(ModelSerializer):
@@ -144,3 +150,4 @@ class CategoriesSerializers(ModelSerializer):
     class Meta:
         model = Category
         fields = ('name', 'types')
+
