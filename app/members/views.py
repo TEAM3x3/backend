@@ -5,10 +5,11 @@ from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
+
 from members.models import UserAddress, UserSearch
 from members.permissions import UserInfoOwnerOrReadOnly
 from members.serializers import UserSerializer, UserAddressSerializers, UserSearchSerializer
-from rest_framework_tricks.filters import OrderingFilter
+
 
 User = get_user_model()
 
@@ -22,11 +23,6 @@ class UserViewSet(ModelViewSet):
         if self.action in ['user_info', ]:
             return [UserInfoOwnerOrReadOnly()]
         return super().get_permissions()
-
-    # def get_permissions(self):
-    #     if self.action in ['create', 'login']:
-    #         return [AllowAny()]
-    #     return super().get_permissions()
 
     def get_queryset(self):
         return super().get_queryset()

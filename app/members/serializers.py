@@ -68,6 +68,7 @@ class UserSerializer(ModelActionSerializer):
         return user
 
 
+
 class UserSearchSerializer(ModelActionSerializer):
     class Meta:
         model = UserSearch
