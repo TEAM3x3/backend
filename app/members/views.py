@@ -1,13 +1,14 @@
 from django.contrib.auth import get_user_model
-from django.contrib.auth.decorators import login_required
 from rest_framework import status
 from rest_framework.authtoken.models import Token
-from rest_framework.decorators import action, permission_classes
+from rest_framework.decorators import action
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
-from members.models import UserAddress
-from members.permissions import UserInfoOwnerOrReadOnly, AllowAny
-from members.serializers import UserSerializer, UserAddressSerializers
+from members.models import UserAddress, UserSearch
+from members.permissions import UserInfoOwnerOrReadOnly
+from members.serializers import UserSerializer, UserAddressSerializers, UserSearchSerializer
+from rest_framework_tricks.filters import OrderingFilter
 
 User = get_user_model()
 
@@ -22,7 +23,6 @@ class UserViewSet(ModelViewSet):
             return [UserInfoOwnerOrReadOnly()]
         return super().get_permissions()
 
-
     # def get_permissions(self):
     #     if self.action in ['create', 'login']:
     #         return [AllowAny()]
@@ -30,7 +30,6 @@ class UserViewSet(ModelViewSet):
 
     def get_queryset(self):
         return super().get_queryset()
-
 
     @action(detail=False)
     def check_username(self, request):
@@ -59,7 +58,7 @@ class UserViewSet(ModelViewSet):
             return Response(data, status=status.HTTP_201_CREATED)
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
-    @action(detail=False, methods=['post'])
+    @action(detail=False, methods=['delete'])
     def logout(self, request):
         user = request.user
         user.auth_token.delete()
@@ -81,14 +80,6 @@ class UserViewSet(ModelViewSet):
         user.save()
         return Response(status=status.HTTP_200_OK)
 
-    def userinfo_check(self, request):
-        user = User.objects.get(username=request.user.username)
-        if user.check_password(request.data['password']):
-            qs = User.objects.filter(username=user)
-            serializer = UserSerializer(qs, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(status=status.HTTP_400_BAD_REQUEST)
-
 
 class UserAddressViewSet(ModelViewSet):
     queryset = UserAddress.objects.all()
@@ -100,3 +91,32 @@ class UserAddressViewSet(ModelViewSet):
                 return self.queryset.filter(user_id=self.kwargs['user_pk'])
         except KeyError:
             return super().get_queryset()
+
+
+class UserSearchViewSet(ModelViewSet):
+    queryset = UserSearch.objects.all()
+    serializer_class = UserSearchSerializer
+
+    def get_queryset(self):
+        try:
+            if self.kwargs['user_pk']:
+                return self.queryset.filter(user_id=self.kwargs['user_pk']).order_by('-id')
+        except KeyError:
+            return super().get_queryset()
+
+    @action(detail=False, )
+    def recent_word(self, request, *args, **kwargs):
+        search_word = self.request.GET.get('keyword', '')
+        if search_word:
+            word_create = UserSearch.objects.create(user=request.user, keyword=search_word)
+            serializer = UserSearchSerializer(word_create)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response("검색어를 입력해주세요.", status=status.HTTP_400_BAD_REQUEST)
+
+    # @action(detail=False, )
+    # def popular_word(self, request, *args, **kwargs):
+        allword = UserSearch.objects.all()
+        # for i in allword:
+
+        # serializer = UserSearchSerializer(count)
+        # return Response(serializer.data, status=status.HTTP_200_OK)

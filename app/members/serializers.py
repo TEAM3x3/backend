@@ -1,7 +1,8 @@
 from action_serializer import ModelActionSerializer
 from django.contrib.auth import get_user_model
+from rest_framework.fields import SerializerMethodField
 from rest_framework.serializers import ModelSerializer
-from members.models import UserAddress
+from members.models import UserAddress, UserSearch
 
 User = get_user_model()
 
@@ -23,7 +24,6 @@ class UserAddressSerializers(ModelSerializer):
                 ins.status = 'F'
                 ins.save()
         return super().create(validated_data)
-
 
     def update(self, instance, validated_data):
         qs = self.Meta.model.objects.all().exclude(pk=instance.pk)
@@ -66,3 +66,9 @@ class UserSerializer(ModelActionSerializer):
         #        UserAddressCreateSerializers(address).is_valid(raise_exception=True)
         UserAddress.objects.create(user=user, address=address, status='T')
         return user
+
+
+class UserSearchSerializer(ModelActionSerializer):
+    class Meta:
+        model = UserSearch
+        fields = ('id', 'user', 'keyword')
