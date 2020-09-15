@@ -1,7 +1,4 @@
 from django.test import TestCase
-
-# Create your tests here.
-
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from model_bakery import baker
@@ -96,6 +93,7 @@ class UserTestCase(APITestCase):
                                       HTTP_AUTHORIZATION='Token ' + token.key)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertFalse(Token.objects.filter(user=self.user).exists())
+
 
 class UserAddressTestAPI(APITestCase):
     def setUp(self) -> None:
@@ -219,7 +217,8 @@ class UserAddressTestAPI(APITestCase):
         delete_response = self.client.delete(f'/api/users/{user.id}/address/{address_pk}')
         self.assertEqual(delete_response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertIsNone(delete_response.data)
-=======
+
+
 class UserAddressTestCase(APITestCase):
     def setUp(self) -> None:
         self.user = User(username='test_user', password='1111')
@@ -305,4 +304,3 @@ class UserAddressTestCase(APITestCase):
         address_pk = response2.data[0]['id']
         delete_response = self.client.delete(f'/api/users/{test_user.pk}/address/{address_pk}')
         self.assertEqual(delete_response.status_code, status.HTTP_204_NO_CONTENT)
-
