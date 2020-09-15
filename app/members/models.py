@@ -49,6 +49,14 @@ class UserAddress(models.Model):
     )
 
 
+class UserSearch(models.Model):
+    user = models.ForeignKey('members.User', on_delete=models.CASCADE, related_name='search')
+    keyword = models.ForeignKey('members.Keyword', on_delete=models.CASCADE, related_name='search')
+    create_at = models.DateTimeField(auto_now_add=True)
+
+
+class Keyword(models.Model):
+    name = models.CharField(max_length=100)
 
 # class Profile(models.Model):
 

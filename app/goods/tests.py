@@ -1,8 +1,10 @@
 from django.contrib.auth import get_user_model
 # Create your tests here.
+from django.core.files.uploadedfile import SimpleUploadedFile
 from model_bakery import baker
 from rest_framework.test import APITestCase
 
+from config.settings import dev
 from goods.models import Goods, GoodsExplain, GoodsDetail, Category, Type, GoodsType, SaleInfo
 
 User = get_user_model()
@@ -61,7 +63,7 @@ class GoodsTest(APITestCase):
         response = self.client.get('/api/goods/1')
 
     def test_create(self):
-        image = settings.dev.MEDIA_ROOT + '/tree.jpeg'
+        image = dev.MEDIA_ROOT + '/tree.jpeg'
         test_image = SimpleUploadedFile(
             name='tree.jpeg',
             content=open(image, "rb").read(),
@@ -84,9 +86,8 @@ class GoodsTest(APITestCase):
     # def test_retrieve_category(self):
     #     response = self.client.get('/api/goods/?category=채소')
     #     goods = Goods.objects.filter(category__name='채소')
-        response = self.client.get('/api/goods/8')
-        qs = Goods.objects.first()
-        self.assertEqual(response.data['id'], qs.id)
+        response = self.client.get(f'/api/goods/{goods_ins.pk}')
+        self.assertEqual(response.data['id'], goods_ins.id)
 
     def test_sale(self):
         sale_ins = SaleInfo.objects.create(discount_rate=5)

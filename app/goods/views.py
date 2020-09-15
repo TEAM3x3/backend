@@ -16,7 +16,7 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
     # filter는 각 viewset별 다를 수 있어서
     filter_backends = (OrderingFilter,)
     ordering_fields = ['price', ]
-    filterset_fields = ['goods',]
+    filterset_fields = ['goods', ]
 
     def get_serializer_class(self):
         if self.action in ['retrieve']:
@@ -40,15 +40,6 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
         if sale is not None:
             qs = self.queryset.filter(sales__discount_rate__isnull=False)
         return qs
-
-    @action(detail=False)
-    def goods_search(self, request, *args, **kwargs):
-        word = self.request.GET.get('goods_word', None)
-        if word:
-            qs = Goods.objects.filter(title__icontains=word)
-            serializer = self.get_serializer(qs, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=False)
     def main_page_md(self, request, *args, **kwargs):
@@ -101,6 +92,7 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
             serializer = self.serializer_class(qs, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_400_BAD_REQUEST)
+
 
 class DeliveryViewSet(mixins.ListModelMixin, GenericViewSet):
     queryset = DeliveryInfoImageFile.objects.all()
