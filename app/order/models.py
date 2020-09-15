@@ -5,12 +5,6 @@ User = get_user_model()
 
 
 class Order(models.Model):
-    ORDER_STATUS = (
-        ("d", "departure"),
-        ("p", "progress"),
-        ("c", "complete"),
-        ("r", "review")
-    )
     created_at = models.DateTimeField(
         auto_now_add=True,
     )
@@ -22,7 +16,6 @@ class Order(models.Model):
         'members.UserAddress',
         on_delete=models.CASCADE,
     )
-    status = models.CharField('배송 상태', max_length=1, default='d', choices=ORDER_STATUS)
 
     def total_payment(self):
         payment = 0
@@ -58,7 +51,7 @@ class OrderReview(models.Model):
         'goods.Goods',
         on_delete=models.CASCADE,
     )
-    order = models.ForeignKey(
-        'order.Order',
-        on_delete=models.CASCADE
+    cartItem = models.ForeignKey(
+        'carts.CartItem',
+        on_delete=models.CASCADE,
     )
