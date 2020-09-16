@@ -1,8 +1,10 @@
 from django.contrib.auth import get_user_model
 # Create your tests here.
+from django.core.files.uploadedfile import SimpleUploadedFile
 from model_bakery import baker
 from rest_framework.test import APITestCase
 
+from config import settings
 from goods.models import Goods, GoodsExplain, GoodsDetail, Category, Type, GoodsType, SaleInfo
 
 User = get_user_model()
@@ -84,7 +86,7 @@ class GoodsTest(APITestCase):
     # def test_retrieve_category(self):
     #     response = self.client.get('/api/goods/?category=채소')
     #     goods = Goods.objects.filter(category__name='채소')
-        response = self.client.get('/api/goods/8')
+        response = self.client.get(f'/api/goods/8')
         qs = Goods.objects.first()
         self.assertEqual(response.data['id'], qs.id)
 

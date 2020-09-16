@@ -42,15 +42,6 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
         return qs
 
     @action(detail=False)
-    def goods_search(self, request, *args, **kwargs):
-        word = self.request.GET.get('goods_word', None)
-        if word:
-            qs = Goods.objects.filter(title__icontains=word)
-            serializer = self.get_serializer(qs, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(status=status.HTTP_400_BAD_REQUEST)
-
-    @action(detail=False)
     def main_page_md(self, request, *args, **kwargs):
         main_md = Goods.objects.filter(id=1)
         serializer = GoodsSaleSerializers(main_md, many=True)
@@ -62,6 +53,7 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
         serializer = GoodsSaleSerializers(main_health, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    @action(detail=False)
     def main_page_recommend(self, request, *args, **kwargs):
         max_id = Goods.objects.all().count()
         recommend_items = []
