@@ -53,6 +53,12 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
         serializer = GoodsSaleSerializers(main_health, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    @action(detail=False)
+    def save_info(self, request, *args, **kwargs):
+        save_info = Goods.objects.filter(id=1)
+        serializer = GoodsSaleSerializers(save_info, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
     def main_page_recommend(self, request, *args, **kwargs):
         max_id = Goods.objects.all().count()
         recommend_items = []
