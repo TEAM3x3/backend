@@ -25,16 +25,20 @@ cd app
 ```python
 # root/.env
 DB_HOST=localhost
-DB_NAME=<db_name>
+DB_NAME=fc-13final
 DB_USER=postgres
 DB_PASSWORD=
 DB_PORT=5432
-S3_ACCESS_KEY_ID=<S3_ACCESS_KEY_ID>
-S3_SECRET_ACCESS_KEY=<S3_SECRET_ACCESS_KEY>
-
+DB_DEPLOY_HOST=<RDS EndPoint>
+DB_DEPLOY_NAME=postgres
+DB_DEPLOY_USER=postgres
+DB_DEPLOY_PASSWORD=postgres
+DB_DEPLOY_PORT=5432
+S3_ACCESS_KEY_ID=<s3 key>
+S3_SECRET_ACCESS_KEY=<s3 secret key>
 ```
 
 ## ERD
 
 ## API docs
-[linkg](https://cloudy-comet-1571.postman.co/collections/5847490-3c3e8773-4e53-4ae8-a7f7-8ef4573e218d?version=latest&workspace=3b9e6b96-acb3-4058-a8b6-4d974402650f#introduction)
+[link](https://cloudy-comet-1571.postman.co/collections/5847490-3c3e8773-4e53-4ae8-a7f7-8ef4573e218d?version=latest&workspace=3b9e6b96-acb3-4058-a8b6-4d974402650f#introduction)

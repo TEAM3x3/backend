@@ -1,11 +1,12 @@
+import os
 from django.contrib.auth import get_user_model
-from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import TestCase
-from model_bakery import baker
+from munch import Munch
 from rest_framework import status
 from rest_framework.test import APITestCase
-
+from django.core.files.uploadedfile import SimpleUploadedFile
+from carts.models import CartItem
 from config import settings
+from config.settings.base import ROOT_DIR
 from goods.models import Goods
 
 User = get_user_model()
@@ -70,14 +71,3 @@ class CartTestCase(APITestCase):
     #         'user': test_user.pk
     #     }
     #     response2 = self.client.post(f'/api/carts', data=data2)
-
-
-
-
-
-
-
-
-
-
-

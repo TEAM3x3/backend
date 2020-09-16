@@ -1,13 +1,15 @@
-import json
-
 from django.contrib.auth import get_user_model
-from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.decorators import action
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
-from members.serializers import UserSerializer
+
+from members.models import UserAddress, UserSearch
+from members.permissions import UserInfoOwnerOrReadOnly
+from members.serializers import UserSerializer, UserAddressSerializers, UserSearchSerializer
+
 
 User = get_user_model()
 
@@ -15,16 +17,16 @@ User = get_user_model()
 class UserViewSet(ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    permission_classes = (UserInfoOwnerOrReadOnly,)
 
-    # 1. request.data로 구현
-    # @action(detail=False, methods=['post'])
-    # def check_username(self, request):
-    #     id = User.objects.filter(username=request.data['username']).exists()
-    #     if not id:
-    #         return Response({"message": "사용 가능한 ID입니다."}, status=status.HTTP_200_OK)
-    #     return Response({"message": "이미 존재하는 ID입니다."}, status=status.HTTP_400_BAD_REQUEST)
+    def get_permissions(self):
+        if self.action in ['user_info', ]:
+            return [UserInfoOwnerOrReadOnly()]
+        return super().get_permissions()
 
-    # 2. query_params로 구현
+    def get_queryset(self):
+        return super().get_queryset()
+
     @action(detail=False)
     def check_username(self, request):
         username = request.query_params.get('username')
@@ -58,6 +60,59 @@ class UserViewSet(ModelViewSet):
         user.auth_token.delete()
         return Response({"clear"}, status=status.HTTP_200_OK)
 
+    @action(detail=False)
+    def user_info(self, request, *args, **kwargs):
+        user = User.objects.get(username=request.user.username)
+        if user.check_password(request.data.get('password')):
+            profile = User.objects.filter(username=user.username)
+            serializer = UserSerializer(profile, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=False, methods=['patch'])
+    def password_change(self, request):
+        user = User.objects.get(username=request.user.username)
+        user.set_password(request.data['password'])
+        user.save()
+        return Response(status=status.HTTP_200_OK)
 
 
+class UserAddressViewSet(ModelViewSet):
+    queryset = UserAddress.objects.all()
+    serializer_class = UserAddressSerializers
 
+    def get_queryset(self):
+        try:
+            if self.kwargs['user_pk']:
+                return self.queryset.filter(user_id=self.kwargs['user_pk'])
+        except KeyError:
+            return super().get_queryset()
+
+
+class UserSearchViewSet(ModelViewSet):
+    queryset = UserSearch.objects.all()
+    serializer_class = UserSearchSerializer
+
+    def get_queryset(self):
+        try:
+            if self.kwargs['user_pk']:
+                return self.queryset.filter(user_id=self.kwargs['user_pk']).order_by('-id')
+        except KeyError:
+            return super().get_queryset()
+
+    @action(detail=False, )
+    def recent_word(self, request, *args, **kwargs):
+        search_word = self.request.GET.get('keyword', '')
+        if search_word:
+            word_create = UserSearch.objects.create(user=request.user, keyword=search_word)
+            serializer = UserSearchSerializer(word_create)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response("검색어를 입력해주세요.", status=status.HTTP_400_BAD_REQUEST)
+
+    # @action(detail=False, )
+    # def popular_word(self, request, *args, **kwargs):
+        allword = UserSearch.objects.all()
+        # for i in allword:
+
+        # serializer = UserSearchSerializer(count)
+        # return Response(serializer.data, status=status.HTTP_200_OK)
