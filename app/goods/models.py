@@ -4,7 +4,6 @@ from goods.crawling.event import evenvt_crawling
 from goods.crawling.goods import crawling
 import random
 
-
 def goods_img_path(instance, filename):
     if 'media/' in filename:
         filename = filename.split('media/')

@@ -3,9 +3,9 @@ from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from model_bakery import baker
 from rest_framework.test import APITestCase
-
 from config.settings import dev
 from goods.models import Goods, GoodsExplain, GoodsDetail, Category, Type, GoodsType, SaleInfo
+
 
 User = get_user_model()
 
@@ -115,3 +115,4 @@ class GoodsTest(APITestCase):
         for index, res_data in enumerate(response.data):
             self.assertEqual(qs[index].id, res_data['id'])
             self.assertEqual(qs[index].price, res_data['price'])
+
