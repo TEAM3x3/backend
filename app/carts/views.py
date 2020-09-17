@@ -32,7 +32,7 @@ class CartItemViewSet(mixins.CreateModelMixin,
     def goods_delete(self, request, *args, **kwargs):
         delete_items = request.data['goods']
         # user_all_items = CartItem.objects.all(user=request.user)
-        items = CartItem.objects.filter(pk__in=delete_items)
+        items = CartItem.objects.filter(id__in=delete_items)
 
         for i in items:
             items.delete()

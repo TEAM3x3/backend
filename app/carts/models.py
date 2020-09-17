@@ -66,7 +66,7 @@ class CartItem(models.Model):
 
     @transaction.atomic
     def save(self, *args, **kwargs):
-        if self.pk is None:
+        if self.id is None:
             self.cart.quantity_of_goods = F('quantity_of_goods') + 1
             self.cart.save()
         # 결제 완료로 업데이트가 될 경우 self.cart.quantity_of_goods = F('quantity_of_goods') - 1

@@ -25,9 +25,9 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
 
     def get_queryset(self):
         qs = None
-        pk = self.kwargs.get('pk', None)
-        if pk is not None:
-            qs = self.queryset.filter(pk=pk)
+        id = self.kwargs.get('pk', None)
+        if id is not None:
+            qs = self.queryset.filter(id=id)
         category = self.request.query_params.get('category', None)
         if category is not None:
             qs = self.queryset.filter(types__type__category__name=category)
@@ -69,7 +69,7 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
             if len(recommend_items) == 8:
                 break
 
-        qs = Goods.objects.filter(pk__in=recommend_items)
+        qs = Goods.objects.filter(id__in=recommend_items)
         serializer = GoodsSerializers(qs, many=True)
         return Response(serializer.data)
 

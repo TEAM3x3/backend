@@ -28,6 +28,7 @@ class CartItemSerializer(ModelActionSerializer):
     def get_discount_payment(self, obj):
         return obj.discount_payment()
 
+
 class CartItemCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = CartItem
@@ -60,4 +61,3 @@ class CartSerializer(ModelSerializer):
 
     def get_discount_price(self, obj):
         return int(obj.total_pay - obj.discount_total_pay)
-

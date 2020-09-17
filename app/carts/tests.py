@@ -45,9 +45,9 @@ class CartTestCase(APITestCase):
         goods = Goods.objects.first()
 
         data = {
-            'goods': goods.pk,
+            'goods': goods.id,
             'quantity': 2,
-            'user': test_user.pk
+            'user': test_user.id
         }
         self.client.force_authenticate(user=test_user)
         response = self.client.post(f'/api/carts', data=data)

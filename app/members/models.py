@@ -17,7 +17,7 @@ class User(AbstractUser):
 
     def save(self, *args, **kwargs):
         from carts.models import Cart
-        if self.pk is None:
+        if self.id is None:
             super().save(*args, **kwargs)
             Cart.objects.create(user=self)
         else:

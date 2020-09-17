@@ -8,7 +8,6 @@ from goods.views import GoodsViewSet, DeliveryViewSet, CategoryViewSet
 from members.views import UserViewSet, UserAddressViewSet, UserSearchViewSet
 from order.views import OrderView, ReviewAPI
 
-
 router = routers.SimpleRouter(trailing_slash=False)
 router.register('users', UserViewSet)
 router.register('goods', GoodsViewSet)
