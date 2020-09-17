@@ -18,6 +18,10 @@ class OrderView(mixins.CreateModelMixin,
                 GenericViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderCreateSerializers
+    """
+    결제가 완료 되면 order.status = 'd' 로 update
+    결제 완료가 되고 하루 뒤 아침 7시에는 order.status='c' 로 update
+    """
 
     def get_serializer_class(self):
         if self.action in ['list', 'retrieve']:
@@ -49,6 +53,11 @@ class ReviewAPI(mixins.CreateModelMixin,
                 GenericViewSet):
     queryset = OrderReview.objects.all()
     serializer_class = ReviewCreateSerializers
+    """
+    배송이 완료 되기 전 'r' ready
+    배송 완료- 후기 작성 가능 상태 'p' possible
+    후기 작성 완료 'd' done 
+    """
 
     def get_queryset(self):
         if self.action in ['list', 'retrieve']:
@@ -68,6 +77,6 @@ class ReviewAPI(mixins.CreateModelMixin,
 
     @action(detail=False)
     def writable(self, request):
-        qs = CartItem.objects.filter(order__user=request.user).filter(status='c')
+        qs = CartItem.objects.filter(order__user=request.user).filter(status='p')
         serializers = CartItemSerializer(qs, many=True)
         return Response(serializers.data, status=status.HTTP_200_OK)
