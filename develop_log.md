@@ -158,3 +158,8 @@ export -> shell 변수들은 export 명령어와 사용이 된다면 환경 변�
 이 때 주의할 점은 with transaction.atomic 블록 안에서 try-except를 하지말라는 것이다. (django 문서에도 언급되어 있다.)
 
 transaction.atomic() 내부에서는 try-except 를 사용하지말자. 써야만 한다면 try 블록이 transaction.atomic() 블록을 감싸도록 사용하자.
+
+# [django sercrets](https://docs.python.org/3/library/secrets.html) - 비밀관리를 위한 난수 생성 
+- 암호, 계정 인증, 보안 토큰, 관련 비밀 등 데이터 관리에 적합한 암호화된 강력한 무작위 번호를 생성하는 데 사용된다.
+- 보안이나 암호화가 아닌 모델링과 시뮬레이션을 위해 설계된 무작위 모듈의 기본 의사 난수 생성기에 우선하여 사용해야 한다.
+- 

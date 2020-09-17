@@ -1,4 +1,4 @@
-import random
+import secrets
 from rest_framework import mixins, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -59,8 +59,10 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
 
         while True:
             # 1 , 1256
-            random_pk = random.randint(1, max_id)
+            random_pk = secrets.randbelow(max_id)
             if random_pk in recommend_items:
+                continue
+            elif max_id == 0:
                 continue
             else:
                 recommend_items.append(random_pk)

@@ -2,7 +2,8 @@ from django.db import models
 
 from goods.crawling.event import evenvt_crawling
 from goods.crawling.goods import crawling
-import random
+import secrets
+
 
 def goods_img_path(instance, filename):
     if 'media/' in filename:
@@ -103,8 +104,10 @@ class Goods(models.Model):
         pk_lst = []
         range_limit = Goods.objects.all().count()
         while True:
-            val = random.randint(1, range_limit)
+            val = secrets.randbelow(range_limit)
             if val in pk_lst:
+                continue
+            elif val == 0:
                 continue
             else:
                 pk_lst.append(val)
