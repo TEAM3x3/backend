@@ -77,7 +77,7 @@ class ReviewCreateSerializers(ModelActionSerializer):
     def validate(self, attrs):
         goods = self.initial_data['goods']
         user = self.initial_data['user']
-        qs = CartItem.objects.filter(status='c').filter(order__user__id=user).filter(goods_id=goods)
+        qs = CartItem.objects.filter(status='p').filter(order__user__id=user).filter(goods_id=goods)
         if qs.count() == 0:
             raise serializers.ValidationError('리뷰 작성이 가능한 데이터가 존재하지 않습니다.')
         return super().validate(attrs)
