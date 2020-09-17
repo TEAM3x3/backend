@@ -34,12 +34,12 @@ class Cart(models.Model):
 
 
 class CartItem(models.Model):
-    ORDER_STATUS = (
-        ("d", "departure"),
-        ("p", "progress"),
-        ("c", "complete"),
-        ("r", "review")
-    )
+    class Order_Status(models.TextChoices):
+        DEPARTURE = 'd', ('출발')
+        PROGRESS = 'p', ('배송 중')
+        COMPLETE = 'c', ('완료')
+        REVIEW = 'r', ('후기작성완료')
+
     quantity = models.IntegerField(default=1,
                                    validators=[MinValueValidator(1), MaxValueValidator(50)])
     cart = models.ForeignKey(Cart, on_delete=CASCADE, related_name='items', null=True)
@@ -49,7 +49,7 @@ class CartItem(models.Model):
                               null=True,
                               related_name='items',
                               )
-    status = models.CharField('배송 상태', max_length=1, default='d', choices=ORDER_STATUS)
+    status = models.CharField('배송 상태', max_length=1, default=Order_Status.DEPARTURE, choices=Order_Status.choices)
 
     def sub_total(self):
         return int(self.goods.price * self.quantity)
