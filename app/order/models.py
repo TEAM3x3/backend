@@ -20,13 +20,13 @@ class Order(models.Model):
 
     def total_payment(self):
         payment = 0
-        for ins in self.item.all():
+        for ins in self.items.all():
             payment += ins.sub_total()
         return payment
 
     def discount_payment(self):
         payment = 0
-        for ins in self.item.all():
+        for ins in self.items.all():
             payment += ins.discount_payment()
         return payment
 

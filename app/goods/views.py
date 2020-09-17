@@ -26,17 +26,17 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
     def get_queryset(self):
         qs = None
         id = self.kwargs.get('pk', None)
-        if id is not None:
+        if id:
             qs = self.queryset.filter(id=id)
         category = self.request.query_params.get('category', None)
-        if category is not None:
+        if category:
             qs = self.queryset.filter(types__type__category__name=category)
         type_ins = self.request.query_params.get('type', None)
-        if type_ins is not None:
+        if type_ins:
             type_ins = Type.objects.filter(name=type_ins).first()
             qs = self.queryset.filter(types__type=type_ins)
         sale = self.request.query_params.get('sale', None)
-        if sale is not None:
+        if sale:
             qs = self.queryset.filter(sales__discount_rate__isnull=False)
         return qs
 
@@ -81,7 +81,7 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
         # get_queryset에서 params에 sale을 받는 형식으로 하면 동작 가능하지만 올바르지 않은 접근 같다고 판단 하였습니다.
         qs = self.queryset.filter(sales__discount_rate__isnull=False)
         params = self.request.query_params.get('ordering', None)
-        if params is not None:
+        if params:
             qs = qs.order_by(params)
         serializer = self.get_serializer(qs, many=True)
         return Response(serializer.data)

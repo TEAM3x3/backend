@@ -12,9 +12,8 @@ User = get_user_model()
 class GoodsTest(APITestCase):
     def setUp(self) -> None:
         user = User.objects.create_user(username='test', password='1111')
-        self.ex1 = baker.make('goods.GoodsExplain', _quantity=1)
-        test = []
-        test += baker.make('goods.GoodsDetail', _quantity=1, goods=self.ex1[0].goods)
+        self.ex1 = baker.make('goods.GoodsExplain', )
+        baker.make('goods.GoodsDetail', _quantity=1, goods=self.ex1.goods)
 
         category = Category.objects.create(name='채소')
         type = Type.objects.create(name='기본채소', category=category)
@@ -58,7 +57,8 @@ class GoodsTest(APITestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_retrieve(self):
-        response = self.client.get('/api/goods/1')
+        goods = Goods.objects.first()
+        response = self.client.get(f'/api/goods/{goods.id}')
         self.assertEqual(200, response.status_code)
 
     def test_sale(self):

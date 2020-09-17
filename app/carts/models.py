@@ -17,14 +17,14 @@ class Cart(models.Model):
     @property
     def total_pay(self):
         payment = 0
-        for ins in self.item.all():
+        for ins in self.items.all():
             payment += ins.sub_total()
         return payment
 
     @property
     def discount_total_pay(self):
         payment = 0
-        for ins in self.item.all():
+        for ins in self.items.all():
             if ins.discount_payment() is not None:
                 payment += ins.discount_payment()
             else:
@@ -42,12 +42,12 @@ class CartItem(models.Model):
     )
     quantity = models.IntegerField(default=1,
                                    validators=[MinValueValidator(1), MaxValueValidator(50)])
-    cart = models.ForeignKey(Cart, on_delete=CASCADE, related_name='item', null=True)
-    goods = models.ForeignKey(Goods, on_delete=CASCADE, related_name='item', )
+    cart = models.ForeignKey(Cart, on_delete=CASCADE, related_name='items', null=True)
+    goods = models.ForeignKey(Goods, on_delete=CASCADE, related_name='items', )
     order = models.ForeignKey('order.Order',
                               on_delete=models.SET_NULL,
                               null=True,
-                              related_name='item',
+                              related_name='items',
                               )
     status = models.CharField('배송 상태', max_length=1, default='d', choices=ORDER_STATUS)
 
