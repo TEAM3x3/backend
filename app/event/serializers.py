@@ -38,8 +38,8 @@ class MainEventSerializers(ModelActionSerializer):
 
     class Meta:
         model = MainEvent
-        fields = ('id', 'image', 'event')
+        fields = ('id', 'title', 'image', 'event')
         action_fields = {
-            'list': {'fields': ('id', 'image',)},
-            'retrieve': {'fields': ('id', 'event',)}
+            'list': {'fields': ('id', 'title', 'image',)},
+            'retrieve': {'fields': ('id', 'title', 'event',)}
         }

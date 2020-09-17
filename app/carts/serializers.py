@@ -2,7 +2,7 @@ from action_serializer import ModelActionSerializer
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 from carts.models import CartItem, Cart
-from goods.serializers import MinimumGoodsSerializers, GoodsSaleSerializers
+from goods.serializers import GoodsSaleSerializers
 
 
 class CartItemSerializer(ModelActionSerializer):
