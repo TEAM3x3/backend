@@ -111,7 +111,7 @@ class UserSearchViewSet(ModelViewSet):
 
     # @action(detail=False, )
     # def popular_word(self, request, *args, **kwargs):
-        allword = UserSearch.objects.all()
+    #     allword = UserSearch.objects.all()
         # for i in allword:
 
         # serializer = UserSearchSerializer(count)
