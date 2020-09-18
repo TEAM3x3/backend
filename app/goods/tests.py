@@ -83,9 +83,9 @@ class GoodsTest(APITestCase):
             price=1,
         )
 
-    # def test_retrieve_category(self):
-    #     response = self.client.get('/api/goods/?category=채소')
-    #     goods = Goods.objects.filter(category__name='채소')
+        # def test_retrieve_category(self):
+        #     response = self.client.get('/api/goods/?category=채소')
+        #     goods = Goods.objects.filter(category__name='채소')
         response = self.client.get(f'/api/goods/{goods_ins.pk}')
         self.assertEqual(response.data['id'], goods_ins.id)
 
