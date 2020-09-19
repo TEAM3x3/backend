@@ -1,5 +1,3 @@
-from django.conf.urls import url
-from django.urls import include, path
 from rest_framework_nested import routers
 from carts.views import CartViewSet, CartItemViewSet
 from event.views import EventAPIView, MainEventAPIView
@@ -18,9 +16,9 @@ router.register('event', EventAPIView)
 router.register('order', OrderView)
 router.register('address', UserAddressViewSet)
 router.register('mainEvent', MainEventAPIView)
-router.register('review', ReviewAPI)
+# router.register('review', ReviewAPI)
 
-# /users
+# / users
 users_router = routers.NestedSimpleRouter(router, 'users', lookup='user')
 users_router.register('address', UserAddressViewSet)
 users_router.register('orders', OrderView)
@@ -28,6 +26,7 @@ users_router.register('searchword', UserSearchViewSet)
 
 # /goods
 goods_router = routers.NestedSimpleRouter(router, 'goods', lookup='goods')
+goods_router.register('reviews', ReviewAPI)
 
 # goods_router.register('review', ReviewAPI)
 
