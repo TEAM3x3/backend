@@ -6,10 +6,13 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
+from carts.models import CartItem
+from carts.serializers import CartItemSerializer
 from members.models import UserAddress, UserSearch
 from members.permissions import UserInfoOwnerOrReadOnly
 from members.serializers import UserSerializer, UserAddressSerializers, UserSearchSerializer
-
+from order.models import OrderReview
+from order.serializers import ReviewSerializers
 
 User = get_user_model()
 
@@ -75,6 +78,18 @@ class UserViewSet(ModelViewSet):
         user.set_password(request.data['password'])
         user.save()
         return Response(status=status.HTTP_200_OK)
+
+    @action(detail=False)
+    def writable(self, request):
+        qs = CartItem.objects.filter(order__user=request.user).filter(status='p')
+        serializers = CartItemSerializer(qs, many=True)
+        return Response(serializers.data, status=status.HTTP_200_OK)
+
+    @action(detail=False)
+    def reviews(self, request):
+        qs = OrderReview.objects.filter(user=request.user)
+        serializers = ReviewSerializers(qs, many=True)
+        return Response(serializers.data, status=status.HTTP_200_OK)
 
 
 class UserAddressViewSet(ModelViewSet):
