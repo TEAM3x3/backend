@@ -20,15 +20,15 @@ class UserAddressSerializers(ModelSerializer):
 
     def create(self, validated_data):
         if validated_data['status'] == 'T':
-            for ins in self.Meta.model.objects.filter(user__pk=self.data.get('user')):
+            for ins in self.Meta.model.objects.filter(user__id=self.data.get('user')):
                 ins.status = 'F'
                 ins.save()
         return super().create(validated_data)
 
     def update(self, instance, validated_data):
-        qs = self.Meta.model.objects.all().exclude(pk=instance.pk)
+        qs = self.Meta.model.objects.all().exclude(id=instance.id)
         bulk_list = []
-        for ins in self.Meta.model.objects.all().exclude(pk=instance.pk):
+        for ins in self.Meta.model.objects.all().exclude(id=instance.id):
             ins.status = 'F'
             bulk_list.append(ins)
             # bulk update
@@ -66,7 +66,6 @@ class UserSerializer(ModelActionSerializer):
         #        UserAddressCreateSerializers(address).is_valid(raise_exception=True)
         UserAddress.objects.create(user=user, address=address, status='T')
         return user
-
 
 
 class UserSearchSerializer(ModelActionSerializer):
