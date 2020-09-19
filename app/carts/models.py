@@ -51,6 +51,7 @@ class CartItem(models.Model):
                               )
     status = models.CharField('배송 상태', max_length=1, default=Order_Status.DEPARTURE, choices=Order_Status.choices)
 
+    @property
     def sub_total(self):
         return int(self.goods.price * self.quantity)
 
