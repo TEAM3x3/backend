@@ -164,3 +164,5 @@ transaction.atomic() 내부에서는 try-except 를 사용하지말자. 써야�
 - 보안이나 암호화가 아닌 모델링과 시뮬레이션을 위해 설계된 무작위 모듈의 기본 의사 난수 생성기에 우선하여 사용해야 한다.
 
 # [Django ORM](https://medium.com/@chrisjune_13837/django-%EB%8B%B9%EC%8B%A0%EC%9D%B4-%EB%AA%B0%EB%9E%90%EB%8D%98-orm-%EA%B8%B0%EC%B4%88%EC%99%80-%EC%8B%AC%ED%99%94-592a6017b5f5)
+
+# [KAKAO PAY](https://in0-pro.tistory.com/16)
