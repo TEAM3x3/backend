@@ -50,7 +50,7 @@ class UserTestCase(APITestCase):
     def test_retrieve(self):
         test_user = self.users[0]
         self.client.force_authenticate(user=self.users[0])
-        response = self.client.get(f'/api/users/{self.users[0].pk}')
+        response = self.client.get(f'/api/users/{self.users[0].id}')
         self.assertEqual(response.data['username'], test_user.username)
 
     def test_partial_update(self):
@@ -87,136 +87,11 @@ class UserTestCase(APITestCase):
         self.assertTrue(response.data.get('token'))
 
     def test_logout(self):
-        test_user = self.users[0]
-        token = Token.objects.create(user=test_user)
+        token = Token.objects.create(user=self.user)
         response = self.client.delete(f'/api/users/logout',
                                       HTTP_AUTHORIZATION='Token ' + token.key)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertFalse(Token.objects.filter(user=self.user).exists())
-
-
-class UserAddressTestAPI(APITestCase):
-    def setUp(self) -> None:
-        self.user = User(username='test_Address', password='1111')
-        self.user.set_password(self.user.password)
-        self.user.save()
-
-    def test_address_create(self):
-        user = self.user
-        self.client.force_authenticate(user=user)
-
-        data = {
-            "address": "서울 중구",
-            "detail_address": "신당동",
-            "require_message": "0000",
-            "status": "T",
-            "user": user.id
-        }
-
-        response = self.client.post(f'/api/users/{user.id}/address', data=data)
-        response2 = self.client.get(f'/api/users/{user.id}')
-
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response2.status_code, status.HTTP_200_OK)
-
-        self.assertEqual(response2.data['address'][0]['require_message'], data['require_message'])
-        self.assertEqual(response2.data['address'][0]['address'], data['address'])
-
-    def test_address_list(self):
-        user = self.user
-        self.client.force_authenticate(user=user)
-
-        data = {
-            "address": "서울 중구",
-            "detail_address": "신당동",
-            "require_message": "0000",
-            "status": "T",
-            "user": user.id
-        }
-
-        data2 = {
-            "address": "강원도 강릉",
-            "detail_address": "강릉동",
-            "require_message": "0000",
-            "status": "F",
-            "user": user.id
-        }
-
-        response = self.client.post(f'/api/users/{user.id}/address', data=data)
-        response2 = self.client.post(f'/api/users/{user.id}/address', data=data2)
-        response3 = self.client.get(f'/api/users/{user.id}')
-
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response2.status_code, status.HTTP_201_CREATED)
-
-        self.assertEqual(response3.data['address'][0]['address'], data['address'])
-        self.assertEqual(response3.data['address'][1]['address'], data2['address'])
-        self.assertEqual(len(response3.data['address']), 2)
-
-    def test_address_update(self):
-        user = self.user
-        self.client.force_authenticate(user=user)
-
-        data = {
-            "address": "서울 중구",
-            "detail_address": "신당동",
-            "require_message": "0000",
-            "status": "T",
-            "user": user.id
-        }
-
-        data2 = {
-            "address": "강원도 강릉",
-            "detail_address": "강릉동",
-            "require_message": "0000",
-            "status": "F",
-            "user": user.id
-        }
-
-        response = self.client.post(f'/api/users/{user.id}/address', data=data)
-        response2 = self.client.post(f'/api/users/{user.id}/address', data=data2)
-        address_list = self.client.get(f'/api/users/{user.id}')
-
-        self.assertEqual(address_list.data['address'][0]['status'], data['status'])
-        self.assertEqual(address_list.data['address'][0]['status'], "T")
-        self.assertEqual(address_list.data['address'][1]['status'], data2['status'])
-        self.assertEqual(address_list.data['address'][1]['status'], "F")
-
-        status_patch = {
-            "status": "T"
-        }
-        address_pk = address_list.data['address'][1]['id']
-
-        self.client.patch(f'/api/users/{user.id}/address/{address_pk}', data=status_patch)
-
-        patch_list = self.client.get(f'/api/users/{user.id}')
-
-        self.assertEqual(patch_list.data['address'][0]['address'], data['address'])
-        self.assertEqual(patch_list.data['address'][0]['status'], "F")
-        self.assertEqual(patch_list.data['address'][1]['address'], data2['address'])
-        self.assertEqual(patch_list.data['address'][1]['status'], "T")
-
-    def test_address_delete(self):
-        user = self.user
-        self.client.force_authenticate(user=user)
-
-        data = {
-            "address": "서울 중구",
-            "detail_address": "신당동",
-            "require_message": "0000",
-            "status": "T",
-            "user": user.id
-        }
-
-        response = self.client.post(f'/api/users/{user.id}/address', data=data)
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-        address_list = self.client.get(f'/api/users/{user.id}')
-        address_pk = address_list.data['address'][0]['id']
-
-        delete_response = self.client.delete(f'/api/users/{user.id}/address/{address_pk}')
-        self.assertEqual(delete_response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertIsNone(delete_response.data)
 
 
 class UserAddressTestCase(APITestCase):
@@ -228,7 +103,7 @@ class UserAddressTestCase(APITestCase):
     def test_address_list(self):
         test_user = self.user
         self.client.force_authenticate(user=test_user)
-        response = self.client.get(f'/api/users/{test_user.pk}/address')
+        response = self.client.get(f'/api/users/{test_user.id}/address')
 
     def test_address_create1(self):
         # 배송지 주소 생성 test
@@ -239,9 +114,9 @@ class UserAddressTestCase(APITestCase):
             "detail_address": "드림타워",
             "require_message": "문 앞에 놔주세요",
             "status": "T",
-            "user": test_user.pk
+            "user": test_user.id
         }
-        response = self.client.post(f'/api/users/{test_user.pk}/address', data=data)
+        response = self.client.post(f'/api/users/{test_user.id}/address', data=data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         user_response = Munch(response.data)
         self.assertTrue(user_response.address)
@@ -253,12 +128,12 @@ class UserAddressTestCase(APITestCase):
             "detail_address": "드림타워",
             "require_message": "문 앞에 놔주세요",
             "status": "T",
-            "user": test_user.pk
+            "user": test_user.id
         }
-        response2 = self.client.post(f'/api/users/{test_user.pk}/address', data=data2)
+        response2 = self.client.post(f'/api/users/{test_user.id}/address', data=data2)
         self.assertEqual(response2.status_code, status.HTTP_201_CREATED)
 
-        get_response = self.client.get(f'/api/users/{test_user.pk}/address')
+        get_response = self.client.get(f'/api/users/{test_user.id}/address')
         self.assertNotEquals(get_response.data[0]['status'], get_response.data[1]['status'])
         self.assertEqual(get_response.data[0]['status'], 'F')
         self.assertEqual(get_response.data[1]['status'], 'T')
@@ -272,21 +147,21 @@ class UserAddressTestCase(APITestCase):
             "detail_address": "드림타워",
             "require_message": "문 앞에 놔주세요",
             "status": "F",
-            "user": test_user.pk
+            "user": test_user.id
         }
-        response = self.client.post(f'/api/users/{test_user.pk}/address', data=data1)
-        response2 = self.client.get(f'/api/users/{test_user.pk}/address')
-        address_pk = response2.data[0]['id']
+        response = self.client.post(f'/api/users/{test_user.id}/address', data=data1)
+        response2 = self.client.get(f'/api/users/{test_user.id}/address')
+        address_id = response2.data[0]['id']
 
         data2 = {
             "address": "서울시 성동구22",
             "detail_address": "드림타워22",
             "require_message": "문 앞에 놔주세요22",
             "status": "T",
-            "user": test_user.pk
+            "user": test_user.id
         }
 
-        response3 = self.client.patch(f'/api/users/{test_user.pk}/address/{address_pk}', data=data2)
+        response3 = self.client.patch(f'/api/users/{test_user.id}/address/{address_id}', data=data2)
         self.assertEqual(response3.status_code, status.HTTP_200_OK)
 
     def test_address_delete(self):

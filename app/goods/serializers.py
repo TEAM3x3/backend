@@ -150,4 +150,3 @@ class CategoriesSerializers(ModelSerializer):
     class Meta:
         model = Category
         fields = ('name', 'types')
-

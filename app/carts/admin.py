@@ -7,7 +7,7 @@ class CartItemAdmin(admin.ModelAdmin):
 
 
 class CartAdmin(admin.ModelAdmin):
-    list_display = ['pk', 'user', ]
+    list_display = ['id', 'user', ]
 
 
 admin.site.register(CartItem, CartItemAdmin)
