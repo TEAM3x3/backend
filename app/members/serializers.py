@@ -1,8 +1,9 @@
 from action_serializer import ModelActionSerializer
 from django.contrib.auth import get_user_model
+from rest_framework import serializers
 from rest_framework.fields import SerializerMethodField
 from rest_framework.serializers import ModelSerializer
-from members.models import UserAddress, UserSearch
+from members.models import UserAddress, UserSearch, KeyWord
 
 User = get_user_model()
 
@@ -68,8 +69,18 @@ class UserSerializer(ModelActionSerializer):
         return user
 
 
-
 class UserSearchSerializer(ModelActionSerializer):
+    keyword = serializers.StringRelatedField()
+
     class Meta:
         model = UserSearch
         fields = ('id', 'user', 'keyword')
+
+    def __str__(self):
+        return self.keyword
+
+
+class PopularSerializer(ModelActionSerializer):
+    class Meta:
+        model = KeyWord
+        fields = ('id', 'name', 'count')
