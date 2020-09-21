@@ -3,10 +3,10 @@ from rest_framework import mixins, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
-
 from goods.models import Goods, Type, Category, DeliveryInfoImageFile
 from goods.serializers import GoodsSerializers, DeliveryInfoSerializers, CategoriesSerializers, GoodsSaleSerializers
 from rest_framework.filters import OrderingFilter
+from members.models import UserSearch, KeyWord
 
 
 class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericViewSet):
@@ -88,19 +88,45 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
 
     @action(detail=False)
     def goods_search(self, request, *args, **kwargs):
-        word = self.request.GET.get('word', '')
-        if word:
-            qs = self.queryset.filter(title__icontains=word)
+        search_word = self.request.GET.get('word', '')
+        if search_word:
+            # 유저는 '가지'라는 키워드를 검색
+            # 유저는 최근 검색어 '가지'
+            # '가지'라는 키워드는 1번 검색이 됨
+            # word_ins, __Keyword.objects.get_or_create(
+            # UserSearch.objects.create(user=requset.user, keyword=word_ins)
+            key_word, __ = KeyWord.objects.get_or_create(name=search_word)
+            word = UserSearch.objects.create(user=request.user, keyword=key_word)
+            qs = self.queryset.filter(title__icontains=key_word)
             serializer = self.serializer_class(qs, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
+    @action(detail=False)
+    def sales_goods(self, request, *args, **kwargs):
+        count_all = self.queryset.filter(sales__discount_rate__isnull=False).count()
+        sales_items = []
 
-class DeliveryViewSet(mixins.ListModelMixin, GenericViewSet):
-    queryset = DeliveryInfoImageFile.objects.all()
-    serializer_class = DeliveryInfoSerializers
+        while True:
+            # 1 , 716
+            random_save = random.randint(1, count_all)
+            if random_save in sales_items:
+                continue
+            else:
+                sales_items.append(random_save)
+            if len(sales_items) == 8:
+                break
+
+        save_ins = self.queryset.filter(pk__in=sales_items)
+        serializer = GoodsSaleSerializers(save_ins, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class CategoryViewSet(mixins.ListModelMixin, GenericViewSet):
     queryset = Category.objects.all()
     serializer_class = CategoriesSerializers
+
+
+class DeliveryViewSet(mixins.ListModelMixin, GenericViewSet):
+    queryset = DeliveryInfoImageFile.objects.all()
+    serializer_class = DeliveryInfoSerializers
