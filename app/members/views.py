@@ -2,13 +2,15 @@ from django.contrib.auth import get_user_model
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.decorators import action
-from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from members.models import UserAddress, UserSearch, KeyWord
-from members.permissions import UserInfoOwnerOrReadOnly
 from members.serializers import UserSerializer, UserAddressSerializers, UserSearchSerializer, PopularSerializer
-from rest_framework_tricks.filters import OrderingFilter
+
+
+from members.models import UserAddress, UserSearch
+from members.permissions import UserInfoOwnerOrReadOnly
+from members.serializers import UserSerializer, UserAddressSerializers, UserSearchSerializer
 
 User = get_user_model()
 
@@ -22,11 +24,6 @@ class UserViewSet(ModelViewSet):
         if self.action in ['user_info', ]:
             return [UserInfoOwnerOrReadOnly()]
         return super().get_permissions()
-
-    # def get_permissions(self):
-    #     if self.action in ['create', 'login']:
-    #         return [AllowAny()]
-    #     return super().get_permissions()
 
     def get_queryset(self):
         return super().get_queryset()
@@ -103,7 +100,6 @@ class UserSearchViewSet(ModelViewSet):
                 return self.queryset.filter(user_id=self.kwargs['user_pk']).order_by('-id')
         except KeyError:
             return super().get_queryset()
-
 
     @action(detail=False, )
     def popular_word(self, request, *args, **kwargs):
