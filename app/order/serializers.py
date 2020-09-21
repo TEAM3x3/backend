@@ -55,15 +55,18 @@ class ReviewUpdateSerializers(ModelSerializer):
         fields = ('title', 'content')
 
 
-class ReviewCreateSerializers(ModelActionSerializer):
+class ReviewSerializers(ModelActionSerializer):
     goods_ins = GoodsSaleSerializers(source='goods')
+    user = serializers.HiddenField(
+        default=serializers.CurrentUserDefault()
+    )
 
     class Meta:
         model = OrderReview
         fields = ('id', 'title', 'content', 'goods', 'user')
         action_fields = {
             'list': {'fields': ('id', 'goods', 'title', 'content', 'goods_ins')},
-            'create': {'fields': ('title', 'content', 'goods', 'user', 'cartItem')},
+            'create': {'fields': ('title', 'content', 'user', 'goods', 'cartItem')},
         }
         validators = [
             serializers.UniqueTogetherValidator(
@@ -75,22 +78,10 @@ class ReviewCreateSerializers(ModelActionSerializer):
         ]
 
     def validate(self, attrs):
-        goods = self.initial_data['goods']
-        user = self.initial_data['user']
-        qs = CartItem.objects.filter(status='c').filter(order__user__id=user).filter(goods_id=goods)
-        if qs.count() == 0:
+        goods_id = attrs['goods'].id
+        user_id = attrs['user'].id
+        qs = CartItem.objects.filter(status='p').filter(order__user_id=user_id).filter(
+            goods_id=goods_id)
+        if not qs.exists():
             raise serializers.ValidationError('리뷰 작성이 가능한 데이터가 존재하지 않습니다.')
         return super().validate(attrs)
-
-    def validate_user(self, value):
-        # 퍼미션으로 사용을 하는게 나은지 validation 에 두는게 나을지
-        # 퍼미션은 수정의 경우에만 가능하지 않나요? obj가 있어야 하니까
-        if self.context['request'].user != value:
-            raise serializers.ValidationError('요청한 유저와 값을 받은 유저가 일치하지 않습니다.')
-        return value
-
-    def create(self, validated_data):
-        """
-        user, goods, cartitem or order
-        """
-        return super().create(validated_data)
