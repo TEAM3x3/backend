@@ -57,9 +57,20 @@ class UserSearch(models.Model):
     keyword = models.ForeignKey('members.Keyword', on_delete=models.CASCADE, related_name='search')
     create_at = models.DateTimeField(auto_now_add=True)
 
+    def save(self, *args, **kwargs):
+        count_word = self.keyword
+        if count_word:
+            self.keyword.count += 1
+            self.keyword.save()
+            super().save(*args, **kwargs)
 
-class Keyword(models.Model):
-    name = models.CharField(max_length=100)
+
+class KeyWord(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    count = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.name
 
 # class Profile(models.Model):
 

@@ -4,14 +4,15 @@ from rest_framework.authtoken.models import Token
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
-
+from members.models import UserAddress, UserSearch, KeyWord
+from members.permissions import UserInfoOwnerOrReadOnly
+from members.serializers import UserSerializer, UserAddressSerializers, UserSearchSerializer, PopularSerializer
+from rest_framework_tricks.filters import OrderingFilter
 from carts.models import CartItem
 from carts.serializers import CartItemSerializer
-from members.models import UserAddress, UserSearch
-from members.permissions import UserInfoOwnerOrReadOnly
-from members.serializers import UserSerializer, UserAddressSerializers, UserSearchSerializer
 from order.models import OrderReview
 from order.serializers import ReviewSerializers
+
 
 User = get_user_model()
 
@@ -25,6 +26,14 @@ class UserViewSet(ModelViewSet):
         if self.action in ['user_info', ]:
             return [UserInfoOwnerOrReadOnly()]
         return super().get_permissions()
+
+    # def get_permissions(self):
+    #     if self.action in ['create', 'login']:
+    #         return [AllowAny()]
+    #     return super().get_permissions()
+
+    def get_queryset(self):
+        return super().get_queryset()
 
     @action(detail=False)
     def check_username(self, request):
@@ -110,21 +119,9 @@ class UserSearchViewSet(ModelViewSet):
                 return self.queryset.filter(user_id=self.kwargs['user_pk']).order_by('-id')
         except KeyError:
             return super().get_queryset()
-
+          
     @action(detail=False, )
-    def recent_word(self, request, *args, **kwargs):
-        search_word = self.request.GET.get('keyword', '')
-        if search_word:
-            word_create = UserSearch.objects.create(user=request.user, keyword=search_word)
-            serializer = UserSearchSerializer(word_create)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response("검색어를 입력해주세요.", status=status.HTTP_400_BAD_REQUEST)
-
-    # @action(detail=False, )
-    # def popular_word(self, request, *args, **kwargs):
-    #     allword = UserSearch.objects.all()
-        # for i in allword:
-
-        # serializer = UserSearchSerializer(count)
-        # return Response(serializer.data, status=status.HTTP_200_OK)
-
+    def popular_word(self, request, *args, **kwargs):
+        orderby_word = KeyWord.objects.all().order_by('-count')[:5]
+        serializer = PopularSerializer(orderby_word, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
