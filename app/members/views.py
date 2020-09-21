@@ -104,6 +104,7 @@ class UserSearchViewSet(ModelViewSet):
         except KeyError:
             return super().get_queryset()
 
+
     @action(detail=False, )
     def popular_word(self, request, *args, **kwargs):
         orderby_word = KeyWord.objects.all().order_by('-count')[:5]

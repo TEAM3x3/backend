@@ -74,10 +74,10 @@ class UserSearchSerializer(ModelActionSerializer):
 
     class Meta:
         model = UserSearch
-        fields = ('id', 'user', 'keyword')
+        fields = ('id', 'user', 'keyword',)
 
 
 class PopularSerializer(ModelActionSerializer):
     class Meta:
         model = KeyWord
-        fields = ('id', 'name', 'count')
+        fields = ('id', 'name', 'count',)
