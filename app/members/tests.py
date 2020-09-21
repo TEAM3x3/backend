@@ -179,3 +179,25 @@ class UserAddressTestCase(APITestCase):
         address_pk = response2.data[0]['id']
         delete_response = self.client.delete(f'/api/users/{test_user.pk}/address/{address_pk}')
         self.assertEqual(delete_response.status_code, status.HTTP_204_NO_CONTENT)
+
+
+class UserSearchTestCase(APITestCase):
+    def setUp(self) -> None:
+        self.user = User(username='test_user', password='1111')
+        self.user.set_password(self.user.password)
+        self.user.save()
+
+    def test_search_word(self):
+        test_user = self.user
+        self.client.force_authenticate(user=test_user)
+        response = self.client.get(f'/api/users/{test_user.id}/searchword/recent_word', {'keyword': '하리보'})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertTrue(response.data['keyword'], '하리보')
+
+    def test_recent_word(self):
+        test_user = self.user
+        self.client.force_authenticate(user=test_user)
+        response = self.client.get(f'/api/users/{test_user.id}/searchword/recent_word', {'keyword': '하리보'})
+
+        response2 = self.client.get(f'/api/users/{test_user.id}/searchword')
