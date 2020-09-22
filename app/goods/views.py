@@ -1,3 +1,4 @@
+import random
 import secrets
 from rest_framework import mixins, status
 from rest_framework.decorators import action
@@ -7,6 +8,8 @@ from goods.models import Goods, Type, Category, DeliveryInfoImageFile
 from goods.serializers import GoodsSerializers, DeliveryInfoSerializers, CategoriesSerializers, GoodsSaleSerializers
 from rest_framework.filters import OrderingFilter
 from members.models import UserSearch, KeyWord
+from order.models import OrderReview
+from order.serializers import ReviewSerializers
 
 
 class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericViewSet):
@@ -62,7 +65,7 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
             random_pk = secrets.randbelow(max_id)
             if random_pk in recommend_items:
                 continue
-            elif max_id == 0:
+            elif random_pk == 0:
                 continue
             else:
                 recommend_items.append(random_pk)
@@ -109,17 +112,25 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
 
         while True:
             # 1 , 716
-            random_save = random.randint(1, count_all)
+            random_save = random.randint(count_all)
             if random_save in sales_items:
+                continue
+            elif random_save == 0:
                 continue
             else:
                 sales_items.append(random_save)
             if len(sales_items) == 8:
                 break
-
         save_ins = self.queryset.filter(pk__in=sales_items)
         serializer = GoodsSaleSerializers(save_ins, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(detail=True)
+    def reviews(self, request, *args, **kwargs):
+        goods_pk = kwargs['pk']
+        qs = OrderReview.objects.filter(goods__pk=goods_pk)
+        serializers = ReviewSerializers(qs, many=True)
+        return Response(serializers.data, status=status.HTTP_200_OK)
 
 
 class CategoryViewSet(mixins.ListModelMixin, GenericViewSet):
