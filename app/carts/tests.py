@@ -45,6 +45,7 @@ class CartTestCase(APITestCase):
             'cart': test_user.id
         }
         self.client.force_authenticate(user=test_user)
+<<<<<<< HEAD
         response = self.client.post(f'/api/cart/{test_user.id}/item', data=data)
 
         self.assertEqual(data['goods'], response.data['goods'])
@@ -66,3 +67,13 @@ class CartTestCase(APITestCase):
     #     patch_update = self.client.patch(f'/api/cart/{test_user.id}/item/{first_item}', data={'quantity': 11})
     #
     #     self.fail()
+=======
+        test_goods = Goods.objects.all()
+        goods1 = Goods.objects.first()
+
+        add_cart = CartItem.objects.create(goods=goods1, cart=test_user.cart, quantity=3)
+        item1 = CartItem.objects.first()
+        response = self.client.delete(f'/api/cart/{test_user.pk}/item/{item1.pk}')
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+>>>>>>> 272e3a316f6759ecabf6f934e63a9cd933208282
