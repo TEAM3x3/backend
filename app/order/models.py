@@ -1,7 +1,5 @@
 from django.contrib.auth import get_user_model
 from django.db import models
-from django.db.models import CASCADE
-
 
 User = get_user_model()
 
@@ -18,18 +16,17 @@ class Order(models.Model):
         'members.UserAddress',
         on_delete=models.CASCADE,
     )
-    # progress,
-    status = models.CharField('배송 상태', max_length=1, default='d')
+    status = models.CharField(max_length=1, help_text='주문 상태')
 
     def total_payment(self):
         payment = 0
-        for ins in self.item.all():
+        for ins in self.items.all():
             payment += ins.sub_total()
         return payment
 
     def discount_payment(self):
         payment = 0
-        for ins in self.item.all():
+        for ins in self.items.all():
             payment += ins.discount_payment()
         return payment
 
@@ -42,17 +39,20 @@ class OrderReview(models.Model):
     4. Review 작성 완료 후에는 "R"
     5 . cartitem과 review는 unique together?
     """
-    created_at = models.DateTimeField(
-        auto_now_add=True,
-    )
+    created_at = models.DateTimeField(auto_now_add=True, )
     title = models.CharField(max_length=128)
     content = models.TextField()
-    cartitem = models.ForeignKey(
-        'carts.CartItem',
-        on_delete=models.CASCADE,
-    )
+    # 회원 탈퇴한 유저라면 null 허용 , default로 해서 탈퇴한 유저 전용 instance 를 만드는게 나은지
     user = models.ForeignKey(
         'members.User',
         on_delete=models.SET_NULL,
-        null=True,
+        null=True
+    )
+    goods = models.ForeignKey(
+        'goods.Goods',
+        on_delete=models.CASCADE,
+    )
+    cartItem = models.ForeignKey(
+        'carts.CartItem',
+        on_delete=models.CASCADE,
     )

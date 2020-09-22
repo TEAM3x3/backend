@@ -1,7 +1,4 @@
 from django.test import TestCase
-
-# Create your tests here.
-
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from model_bakery import baker
@@ -53,7 +50,7 @@ class UserTestCase(APITestCase):
     def test_retrieve(self):
         test_user = self.users[0]
         self.client.force_authenticate(user=self.users[0])
-        response = self.client.get(f'/api/users/{self.users[0].pk}')
+        response = self.client.get(f'/api/users/{self.users[0].id}')
         self.assertEqual(response.data['username'], test_user.username)
 
     def test_partial_update(self):
@@ -90,8 +87,7 @@ class UserTestCase(APITestCase):
         self.assertTrue(response.data.get('token'))
 
     def test_logout(self):
-        test_user = self.users[0]
-        token = Token.objects.create(user=test_user)
+        token = Token.objects.create(user=self.user)
         response = self.client.delete(f'/api/users/logout',
                                       HTTP_AUTHORIZATION='Token ' + token.key)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -107,7 +103,7 @@ class UserAddressTestCase(APITestCase):
     def test_address_list(self):
         test_user = self.user
         self.client.force_authenticate(user=test_user)
-        response = self.client.get(f'/api/users/{test_user.pk}/address')
+        response = self.client.get(f'/api/users/{test_user.id}/address')
 
     def test_address_create1(self):
         # 배송지 주소 생성 test
@@ -118,9 +114,9 @@ class UserAddressTestCase(APITestCase):
             "detail_address": "드림타워",
             "require_message": "문 앞에 놔주세요",
             "status": "T",
-            "user": test_user.pk
+            "user": test_user.id
         }
-        response = self.client.post(f'/api/users/{test_user.pk}/address', data=data)
+        response = self.client.post(f'/api/users/{test_user.id}/address', data=data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         user_response = Munch(response.data)
         self.assertTrue(user_response.address)
@@ -132,12 +128,12 @@ class UserAddressTestCase(APITestCase):
             "detail_address": "드림타워",
             "require_message": "문 앞에 놔주세요",
             "status": "T",
-            "user": test_user.pk
+            "user": test_user.id
         }
-        response2 = self.client.post(f'/api/users/{test_user.pk}/address', data=data2)
+        response2 = self.client.post(f'/api/users/{test_user.id}/address', data=data2)
         self.assertEqual(response2.status_code, status.HTTP_201_CREATED)
 
-        get_response = self.client.get(f'/api/users/{test_user.pk}/address')
+        get_response = self.client.get(f'/api/users/{test_user.id}/address')
         self.assertNotEquals(get_response.data[0]['status'], get_response.data[1]['status'])
         self.assertEqual(get_response.data[0]['status'], 'F')
         self.assertEqual(get_response.data[1]['status'], 'T')
@@ -151,21 +147,21 @@ class UserAddressTestCase(APITestCase):
             "detail_address": "드림타워",
             "require_message": "문 앞에 놔주세요",
             "status": "F",
-            "user": test_user.pk
+            "user": test_user.id
         }
-        response = self.client.post(f'/api/users/{test_user.pk}/address', data=data1)
-        response2 = self.client.get(f'/api/users/{test_user.pk}/address')
-        address_pk = response2.data[0]['id']
+        response = self.client.post(f'/api/users/{test_user.id}/address', data=data1)
+        response2 = self.client.get(f'/api/users/{test_user.id}/address')
+        address_id = response2.data[0]['id']
 
         data2 = {
             "address": "서울시 성동구22",
             "detail_address": "드림타워22",
             "require_message": "문 앞에 놔주세요22",
             "status": "T",
-            "user": test_user.pk
+            "user": test_user.id
         }
 
-        response3 = self.client.patch(f'/api/users/{test_user.pk}/address/{address_pk}', data=data2)
+        response3 = self.client.patch(f'/api/users/{test_user.id}/address/{address_id}', data=data2)
         self.assertEqual(response3.status_code, status.HTTP_200_OK)
 
     def test_address_delete(self):
@@ -184,3 +180,24 @@ class UserAddressTestCase(APITestCase):
         delete_response = self.client.delete(f'/api/users/{test_user.pk}/address/{address_pk}')
         self.assertEqual(delete_response.status_code, status.HTTP_204_NO_CONTENT)
 
+
+class UserSearchTestCase(APITestCase):
+    def setUp(self) -> None:
+        self.user = User(username='test_user', password='1111')
+        self.user.set_password(self.user.password)
+        self.user.save()
+
+    def test_search_word(self):
+        test_user = self.user
+        self.client.force_authenticate(user=test_user)
+        response = self.client.get(f'/api/users/{test_user.id}/searchword/recent_word', {'keyword': '하리보'})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertTrue(response.data['keyword'], '하리보')
+
+    def test_recent_word(self):
+        test_user = self.user
+        self.client.force_authenticate(user=test_user)
+        response = self.client.get(f'/api/users/{test_user.id}/searchword/recent_word', {'keyword': '하리보'})
+
+        response2 = self.client.get(f'/api/users/{test_user.id}/searchword')

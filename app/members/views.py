@@ -1,13 +1,16 @@
 from django.contrib.auth import get_user_model
-from django.contrib.auth.decorators import login_required
 from rest_framework import status
 from rest_framework.authtoken.models import Token
-from rest_framework.decorators import action, permission_classes
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
-from members.models import UserAddress
+from members.models import UserAddress, UserSearch, KeyWord
+from members.serializers import UserSerializer, UserAddressSerializers, UserSearchSerializer, PopularSerializer
 from members.permissions import UserInfoOwnerOrReadOnly
-from members.serializers import UserSerializer, UserAddressSerializers
+from carts.models import CartItem
+from carts.serializers import CartItemSerializer
+from order.models import OrderReview
+from order.serializers import ReviewSerializers
 
 User = get_user_model()
 
@@ -74,6 +77,18 @@ class UserViewSet(ModelViewSet):
         user.save()
         return Response(status=status.HTTP_200_OK)
 
+    @action(detail=False)
+    def writable(self, request):
+        qs = CartItem.objects.filter(order__user=request.user).filter(status='p')
+        serializers = CartItemSerializer(qs, many=True)
+        return Response(serializers.data, status=status.HTTP_200_OK)
+
+    @action(detail=False)
+    def reviews(self, request):
+        qs = OrderReview.objects.filter(user=request.user)
+        serializers = ReviewSerializers(qs, many=True)
+        return Response(serializers.data, status=status.HTTP_200_OK)
+
 
 class UserAddressViewSet(ModelViewSet):
     queryset = UserAddress.objects.all()
@@ -85,3 +100,21 @@ class UserAddressViewSet(ModelViewSet):
                 return self.queryset.filter(user_id=self.kwargs['user_pk'])
         except KeyError:
             return super().get_queryset()
+
+
+class UserSearchViewSet(ModelViewSet):
+    queryset = UserSearch.objects.all()
+    serializer_class = UserSearchSerializer
+
+    def get_queryset(self):
+        try:
+            if self.kwargs['user_pk']:
+                return self.queryset.filter(user_id=self.kwargs['user_pk']).order_by('-id')
+        except KeyError:
+            return super().get_queryset()
+
+    @action(detail=False, )
+    def popular_word(self, request, *args, **kwargs):
+        orderby_word = KeyWord.objects.all().order_by('-count')[:5]
+        serializer = PopularSerializer(orderby_word, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

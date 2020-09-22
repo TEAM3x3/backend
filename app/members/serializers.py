@@ -1,7 +1,9 @@
 from action_serializer import ModelActionSerializer
 from django.contrib.auth import get_user_model
+from rest_framework import serializers
+from rest_framework.fields import SerializerMethodField
 from rest_framework.serializers import ModelSerializer
-from members.models import UserAddress
+from members.models import UserAddress, UserSearch, KeyWord
 
 User = get_user_model()
 
@@ -19,16 +21,15 @@ class UserAddressSerializers(ModelSerializer):
 
     def create(self, validated_data):
         if validated_data['status'] == 'T':
-            for ins in self.Meta.model.objects.filter(user__pk=self.data.get('user')):
+            for ins in self.Meta.model.objects.filter(user__id=self.data.get('user')):
                 ins.status = 'F'
                 ins.save()
         return super().create(validated_data)
 
-
     def update(self, instance, validated_data):
-        qs = self.Meta.model.objects.all().exclude(pk=instance.pk)
+        qs = self.Meta.model.objects.all().exclude(id=instance.id)
         bulk_list = []
-        for ins in self.Meta.model.objects.all().exclude(pk=instance.pk):
+        for ins in self.Meta.model.objects.all().exclude(id=instance.id):
             ins.status = 'F'
             bulk_list.append(ins)
             # bulk update
@@ -66,3 +67,21 @@ class UserSerializer(ModelActionSerializer):
         #        UserAddressCreateSerializers(address).is_valid(raise_exception=True)
         UserAddress.objects.create(user=user, address=address, status='T')
         return user
+
+
+class UserSearchSerializer(ModelActionSerializer):
+    keyword = serializers.StringRelatedField()
+
+    class Meta:
+        model = UserSearch
+        fields = ('id', 'user', 'keyword',)
+
+    def __str__(self):
+        return self.keyword
+
+
+class PopularSerializer(ModelActionSerializer):
+    class Meta:
+        model = KeyWord
+        fields = ('id', 'name', 'count')
+
