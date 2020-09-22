@@ -25,11 +25,6 @@ class UserViewSet(ModelViewSet):
             return [UserInfoOwnerOrReadOnly()]
         return super().get_permissions()
 
-    # def get_permissions(self):
-    #     if self.action in ['create', 'login']:
-    #         return [AllowAny()]
-    #     return super().get_permissions()
-
     def get_queryset(self):
         return super().get_queryset()
 

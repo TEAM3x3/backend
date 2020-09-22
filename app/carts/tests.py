@@ -45,24 +45,11 @@ class CartTestCase(APITestCase):
             'user': test_user.id
         }
         self.client.force_authenticate(user=test_user)
-        response = self.client.post(f'/api/carts', data=data)
-        self.assertEqual(response.data['quantity'], data['quantity'])
+        test_goods = Goods.objects.all()
+        goods1 = Goods.objects.first()
 
-    # def test_partial_update(self):
-    #     test_user = self.user
-    #     goods = Goods.objects.first()
-    #     goods2 = Goods.objects.last()
-    #
-    #     data = {
-    #         'goods': goods.pk,
-    #         'quantity': 2,
-    #         'user': test_user.pk
-    #     }
-    #     response = self.client.post(f'/api/carts', data=data)
-    #
-    #     data2 = {
-    #         'goods': goods2.pk,
-    #         'quantity': 2,
-    #         'user': test_user.pk
-    #     }
-    #     response2 = self.client.post(f'/api/carts', data=data2)
+        add_cart = CartItem.objects.create(goods=goods1, cart=test_user.cart, quantity=3)
+        item1 = CartItem.objects.first()
+        response = self.client.delete(f'/api/cart/{test_user.pk}/item/{item1.pk}')
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
