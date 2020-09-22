@@ -7,7 +7,7 @@ from rest_framework.viewsets import ModelViewSet
 from members.models import UserAddress, UserSearch, KeyWord
 from members.serializers import UserSerializer, UserAddressSerializers, UserSearchSerializer, PopularSerializer
 from members.permissions import UserInfoOwnerOrReadOnly
-from rest_framework_tricks.filters import OrderingFilter
+
 from carts.models import CartItem
 from carts.serializers import CartItemSerializer
 from order.models import OrderReview

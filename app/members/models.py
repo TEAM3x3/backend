@@ -57,6 +57,9 @@ class UserSearch(models.Model):
     keyword = models.ForeignKey('members.Keyword', on_delete=models.CASCADE, related_name='search')
     create_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        unique_together = ('user', 'keyword')
+
     def save(self, *args, **kwargs):
         count_word = self.keyword
         if count_word:
