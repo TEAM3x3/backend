@@ -5,7 +5,7 @@ from event.models import Event, MainEvent, MainEventType
 
 @admin.register(Event)
 class EventAdmin(admin.ModelAdmin):
-    list_display = ['id', 'title']
+    list_display = ['id', 'title', 'image']
 
 
 @admin.register(MainEvent)

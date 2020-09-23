@@ -1,35 +1,59 @@
 from action_serializer import ModelActionSerializer
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
-
 from carts.models import CartItem
 from carts.serializers import CartItemSerializer
 from goods.serializers import GoodsSaleSerializers
-from members.serializers import UserSerializer, UserAddressSerializers
-from order.models import Order, OrderReview
+from members.serializers import UserOrderSerializers
+from order.models import Order, OrderReview, OrderDetail
 
 
-class OrderListSerializers(ModelSerializer):
-    item = CartItemSerializer(many=True)
-    user = UserSerializer()
-    address = UserAddressSerializers()
-    payment = serializers.SerializerMethodField()
+class OrderDetailSerializers(ModelSerializer):
+    class Meta:
+        model = OrderDetail
+        fields = (
+            'delivery_cost',
+            'point',
+
+            'consumer',
+            'created_at',
+            'receiver',
+            'receiver_phone',
+            'delivery_type',
+            'zip_code',
+            'address',
+            'receiving_place',
+            'entrance_password',
+            'free_pass',
+            'etc',
+
+            'extra_message',
+            'message',
+            'order'
+        )
+
+
+class OrderSerializers(ModelSerializer):
+    total_payment = serializers.SerializerMethodField()
     discount_payment = serializers.SerializerMethodField()
     discount_price = serializers.SerializerMethodField()
+    items = CartItemSerializer(many=True)
+    orderdetail = OrderDetailSerializers()
+    user = UserOrderSerializers()
 
     class Meta:
         model = Order
-        fields = ('id',
-                  'user',
-                  'address',
-                  'item',
-                  'status',
-                  'payment',
-                  'discount_payment',
-                  'discount_price',
-                  )
+        fields = (
+            'id',
+            'items',
+            'total_payment',
+            'discount_price',
+            'discount_payment',
+            'orderdetail',
+            'user'
+        )
 
-    def get_payment(self, obj):
+    def get_total_payment(self, obj):
         return obj.total_payment()
 
     def get_discount_payment(self, obj):
@@ -40,13 +64,16 @@ class OrderListSerializers(ModelSerializer):
 
 
 class OrderCreateSerializers(ModelSerializer):
+    user = serializers.HiddenField(
+        default=serializers.CurrentUserDefault()
+    )
+
     class Meta:
         model = Order
-        fields = ('id',
-                  'user',
-                  'address',
-                  'item',
-                  )
+        fields = (
+            'user',
+            'items',
+        )
 
 
 class ReviewUpdateSerializers(ModelSerializer):

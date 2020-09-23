@@ -79,7 +79,7 @@ class UserViewSet(ModelViewSet):
 
     @action(detail=False)
     def writable(self, request):
-        qs = CartItem.objects.filter(order__user=request.user).filter(status='p')
+        qs = CartItem.objects.filter(order__user=request.user).filter(status='c')
         serializers = CartItemSerializer(qs, many=True)
         return Response(serializers.data, status=status.HTTP_200_OK)
 

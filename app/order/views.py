@@ -1,14 +1,9 @@
-from rest_framework import mixins, status
-from rest_framework.decorators import action
-from rest_framework.response import Response
+from rest_framework import mixins
 from rest_framework.viewsets import GenericViewSet
-
-from carts.models import CartItem
-from carts.serializers import CartItemSerializer
-from order.models import Order, OrderReview
-from order.permissions import OrderReviewPermission
-from order.serializers import OrderCreateSerializers, OrderListSerializers, ReviewSerializers, \
-    ReviewUpdateSerializers
+from order.models import Order, OrderReview, OrderDetail
+from order.permissions import OrderReviewPermission, OrderPermission
+from order.serializers import OrderCreateSerializers, ReviewSerializers, \
+    ReviewUpdateSerializers, OrderSerializers, OrderDetailSerializers
 
 
 class OrderView(mixins.CreateModelMixin,
@@ -18,31 +13,26 @@ class OrderView(mixins.CreateModelMixin,
                 GenericViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderCreateSerializers
-    """
-    결제가 완료 되면 order.status = 'd' 로 update
-    결제 완료가 되고 하루 뒤 아침 7시에는 order.status='c' 로 update
-    """
+    permission_classes = (OrderPermission,)
 
     def get_serializer_class(self):
         if self.action in ['list', 'retrieve']:
-            return OrderListSerializers
+            return OrderSerializers
         else:
             return self.serializer_class
 
     def get_queryset(self):
         try:
-            if self.kwargs['user_pk']:
+            user_pk = self.kwargs['user_pk']
+            if user_pk:
                 return self.queryset.filter(user_id=self.kwargs['user_pk'])
         except KeyError:
             return super().get_queryset()
 
-    # def perform_create(self, serializer):
-    #     items_pk = self.request.data['item']
-    #     items_ins = CartItem.objects.filter(pk__in=items_pk)
-    #     for item in items_ins:
-    #         item.cart = None
-    #         item.save()
-    #     serializer.save()
+
+class OrderDetailView(mixins.CreateModelMixin, mixins.RetrieveModelMixin, GenericViewSet):
+    queryset = OrderDetail.objects.all()
+    serializer_class = OrderDetailSerializers
 
 
 class ReviewAPI(mixins.CreateModelMixin,
