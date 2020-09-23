@@ -97,7 +97,7 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
             # 유저는 최근 검색어 '가지'
             # '가지'라는 키워드는 1번 검색이 됨
             # word_ins, __Keyword.objects.get_or_create(
-            # UserSearch.objects.create(user=requset.user, keyword=word_ins)
+            # UserSearch.objects.create(user=request.user, keyword=word_ins)
             key_word, __ = KeyWord.objects.get_or_create(name=search_word)
             word = UserSearch.objects.create(user=request.user, keyword=key_word)
             qs = self.queryset.filter(title__icontains=key_word)

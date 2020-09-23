@@ -39,6 +39,7 @@ def category_img(instance, filename):
         return filename[1]
     return filename
 
+
 class Goods(models.Model):
     img = models.ImageField('메인이미지', upload_to=goods_img_path)
     info_img = models.ImageField('상품 이미지', upload_to=goods_info_img_path, null=True)
