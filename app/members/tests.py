@@ -190,14 +190,19 @@ class UserSearchTestCase(APITestCase):
     def test_search_word(self):
         test_user = self.user
         self.client.force_authenticate(user=test_user)
-        response = self.client.get(f'/api/users/{test_user.id}/searchword/recent_word', {'keyword': '하리보'})
+        response = self.client.get(f'/api/goods/goods_search', {'word': '칼칼'})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertTrue(response.data['keyword'], '하리보')
 
     def test_recent_word(self):
         test_user = self.user
         self.client.force_authenticate(user=test_user)
-        response = self.client.get(f'/api/users/{test_user.id}/searchword/recent_word', {'keyword': '하리보'})
+        response = self.client.get(f'/api/goods/goods_search', {'word': '칼칼'})
 
         response2 = self.client.get(f'/api/users/{test_user.id}/searchword')
+        self.assertEqual(response2.status_code, status.HTTP_200_OK)
+        self.assertEqual(response2.data[0]['user'], test_user.id)
+        self.assertEqual(response2.data[0]['keyword'], response.wsgi_request.GET['word'])
+
+
+    # def test_popular_word(self):
