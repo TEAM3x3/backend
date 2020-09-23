@@ -59,7 +59,7 @@ class Order(models.Model):
     extra_message = models.TextField(help_text='특이사항, 택배함 정보', null=True)
 
     # 배송 완료 메세지 전송
-    message = models.CharField(choices=Message_Choice.choices, max_length=2, help_text='배송 완료 메세지 전송')
+    message = models.CharField(choices=Message_Choice.choices, max_length=3, help_text='배송 완료 메세지 전송')
 
     def total_payment(self):
         payment = 0

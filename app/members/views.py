@@ -7,10 +7,6 @@ from rest_framework.viewsets import ModelViewSet
 from members.models import UserAddress, UserSearch, KeyWord
 from members.serializers import UserSerializer, UserAddressSerializers, UserSearchSerializer, PopularSerializer
 from members.permissions import UserInfoOwnerOrReadOnly
-<<<<<<< HEAD
-
-=======
->>>>>>> 272e3a316f6759ecabf6f934e63a9cd933208282
 from carts.models import CartItem
 from carts.serializers import CartItemSerializer
 from order.models import OrderReview
