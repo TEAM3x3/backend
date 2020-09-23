@@ -16,7 +16,7 @@ router.register('event', EventAPIView)
 router.register('order', OrderView)
 router.register('address', UserAddressViewSet)
 router.register('mainEvent', MainEventAPIView)
-# router.register('review', ReviewAPI)
+router.register('review', ReviewAPI)
 
 # / users
 users_router = routers.NestedSimpleRouter(router, 'users', lookup='user')

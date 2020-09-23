@@ -11,7 +11,7 @@ class OrderAdmin(admin.ModelAdmin):
 
 @admin.register(OrderDetail)
 class OrderDetailAdmin(admin.ModelAdmin):
-    list_display = ['id', 'order', ]
+    list_display = ['id', 'order', 'status']
 
 
 @admin.register(OrderReview)

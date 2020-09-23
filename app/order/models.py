@@ -10,12 +10,14 @@ class Order(models.Model):
         on_delete=models.CASCADE,
     )
 
+    @property
     def total_payment(self):
         payment = 0
         for ins in self.items.all():
             payment += ins.sub_total
         return payment
 
+    @property
     def discount_payment(self):
         payment = 0
         for ins in self.items.all():

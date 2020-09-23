@@ -25,7 +25,7 @@ class OrderView(mixins.CreateModelMixin,
         try:
             user_pk = self.kwargs['user_pk']
             if user_pk:
-                return self.queryset.filter(user_id=self.kwargs['user_pk'])
+                return self.queryset.filter(user_id=self.kwargs['user_pk']).filter(orderdetail__status='배송완료')
         except KeyError:
             return super().get_queryset()
 
