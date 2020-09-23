@@ -218,7 +218,7 @@ class Type(models.Model):
 
 class Category(models.Model):
     name = models.CharField(max_length=30)
-    category_img = models.ImageField(upload_to='delivery_img', null=True)
+    category_img = models.ImageField(upload_to='category_img', null=True)
 
 
 class GoodsType(models.Model):
