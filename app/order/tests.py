@@ -25,7 +25,6 @@ class OrderTest(APITestCase):
 
         for qs_data, res_data in zip(qs, response.data):
             self.assertEqual(qs_data.id, res_data['id'])
-            self.assertEqual(qs_data.user.id, res_data['user']['id'])
 
     def test_create(self):
         self.client.force_authenticate(user=self.user)
@@ -57,6 +56,10 @@ class OrderTest(APITestCase):
         self.assertEqual(201, response.status_code)
         qs = OrderDetail.objects.last()
         self.assertEqual(response.data['order'], qs.order.id)
-        self.fail()
 
-
+    def test_order_destroy(self):
+        response = self.client.delete(f'/api/order/{self.order.id}')
+        self.assertEqual(401, response.status_code)
+        self.client.force_authenticate(user=self.user)
+        response = self.client.delete(f'/api/order/{self.order.id}')
+        self.assertEqual(204, response.status_code)
