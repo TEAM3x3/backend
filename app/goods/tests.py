@@ -11,7 +11,7 @@ User = get_user_model()
 
 class GoodsTest(APITestCase):
     def setUp(self) -> None:
-        user = User.objects.create_user(username='test', password='1111')
+        self.user = User.objects.create_user(username='test', password='1111')
         self.ex1 = baker.make('goods.GoodsExplain', )
         baker.make('goods.GoodsDetail', _quantity=1, goods=self.ex1.goods)
 
@@ -117,3 +117,20 @@ class GoodsTest(APITestCase):
         for index, res_data in enumerate(response.data):
             self.assertEqual(qs[index].id, res_data['id'])
             self.assertEqual(qs[index].price, res_data['price'])
+
+    def test_main_page_recommend(self):
+        self.goods = baker.make('goods.Goods', _quantity=1000)
+        response = self.client.get(f'/api/goods/main_page_recommend')
+        self.assertEqual(8, len(response.data))
+
+    def test_goods_search(self):
+        test_user = self.user
+        self.client.force_authenticate(user=self.user)
+        goods_name = self.g1.title
+        response = self.client.get(f'/api/goods/goods_search', {'word': goods_name})
+
+        self.assertEqual(goods_name, response.data[0]['title'])
+        self.assertTrue(goods_name in response.data[0]['title'])
+        self.fail()
+
+
