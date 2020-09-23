@@ -20,7 +20,7 @@ class TypeAdmin(admin.ModelAdmin):
 
 
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ['id', 'name']
+    list_display = ['id', 'name', 'category_img']
 
 
 class GoodsTypeAdmin(admin.ModelAdmin):

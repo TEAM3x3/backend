@@ -31,7 +31,7 @@ class CartTestCase(APITestCase):
     def test_CartList(self):
         test_user = self.user
         self.client.force_authenticate(user=test_user)
-        response = self.client.get(f'/api/carts')
+        response = self.client.get(f'/api/cart/{test_user.id}')
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -42,27 +42,38 @@ class CartTestCase(APITestCase):
         data = {
             'goods': goods.id,
             'quantity': 2,
-            'user': test_user.id
+            'cart': test_user.id
         }
         self.client.force_authenticate(user=test_user)
-        response = self.client.post(f'/api/carts', data=data)
-        self.assertEqual(response.data['quantity'], data['quantity'])
+<<<<<<< HEAD
+        response = self.client.post(f'/api/cart/{test_user.id}/item', data=data)
+
+        self.assertEqual(data['goods'], response.data['goods'])
+        self.assertEqual(data['quantity'], response.data['quantity'])
 
     # def test_partial_update(self):
     #     test_user = self.user
     #     goods = Goods.objects.first()
-    #     goods2 = Goods.objects.last()
+    #     self.client.force_authenticate(user=test_user)
     #
     #     data = {
-    #         'goods': goods.pk,
+    #         'goods': goods.id,
     #         'quantity': 2,
-    #         'user': test_user.pk
+    #         'cart': test_user.id
     #     }
-    #     response = self.client.post(f'/api/carts', data=data)
+    #     response = self.client.post(f'/api/cart/{test_user.id}/item', data=data)
     #
-    #     data2 = {
-    #         'goods': goods2.pk,
-    #         'quantity': 2,
-    #         'user': test_user.pk
-    #     }
-    #     response2 = self.client.post(f'/api/carts', data=data2)
+    #     first_item = test_user.cart.items[0]
+    #     patch_update = self.client.patch(f'/api/cart/{test_user.id}/item/{first_item}', data={'quantity': 11})
+    #
+    #     self.fail()
+=======
+        test_goods = Goods.objects.all()
+        goods1 = Goods.objects.first()
+
+        add_cart = CartItem.objects.create(goods=goods1, cart=test_user.cart, quantity=3)
+        item1 = CartItem.objects.first()
+        response = self.client.delete(f'/api/cart/{test_user.pk}/item/{item1.pk}')
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+>>>>>>> 272e3a316f6759ecabf6f934e63a9cd933208282

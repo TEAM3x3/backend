@@ -179,3 +179,30 @@ class UserAddressTestCase(APITestCase):
         address_pk = response2.data[0]['id']
         delete_response = self.client.delete(f'/api/users/{test_user.pk}/address/{address_pk}')
         self.assertEqual(delete_response.status_code, status.HTTP_204_NO_CONTENT)
+
+
+class UserSearchTestCase(APITestCase):
+    def setUp(self) -> None:
+        self.user = User(username='test_user', password='1111')
+        self.user.set_password(self.user.password)
+        self.user.save()
+
+    def test_search_word(self):
+        test_user = self.user
+        self.client.force_authenticate(user=test_user)
+        response = self.client.get(f'/api/goods/goods_search', {'word': '칼칼'})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_recent_word(self):
+        test_user = self.user
+        self.client.force_authenticate(user=test_user)
+        response = self.client.get(f'/api/goods/goods_search', {'word': '칼칼'})
+
+        response2 = self.client.get(f'/api/users/{test_user.id}/searchword')
+        self.assertEqual(response2.status_code, status.HTTP_200_OK)
+        self.assertEqual(response2.data[0]['user'], test_user.id)
+        self.assertEqual(response2.data[0]['keyword'], response.wsgi_request.GET['word'])
+
+
+    # def test_popular_word(self):

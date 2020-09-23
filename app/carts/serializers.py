@@ -23,10 +23,10 @@ class CartItemSerializer(ModelActionSerializer):
         }
 
     def get_sub_total(self, obj):
-        return obj.sub_total()
+        return obj.sub_total
 
     def get_discount_payment(self, obj):
-        return obj.discount_payment()
+        return obj.discount_payment
 
 
 class CartItemCreateSerializer(serializers.ModelSerializer):

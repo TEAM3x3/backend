@@ -35,8 +35,7 @@ class UserAddress(models.Model):
     address = models.CharField(max_length=200)
     detail_address = models.CharField(max_length=200)
     require_message = models.CharField('요청 사항', max_length=100)
-    status = models.CharField('기본 배송지', max_length=1, default=False)
-    recieving_place = models.CharField('받으실 장소', max_length=3,
+    receiving_place = models.CharField('받으실 장소', max_length=3,
                                        choices=Location_Choice.choices,
                                        default=Location_Choice.ETC,
                                        null=True)
@@ -58,8 +57,22 @@ class UserSearch(models.Model):
     create_at = models.DateTimeField(auto_now_add=True)
 
 
-class Keyword(models.Model):
-    name = models.CharField(max_length=100)
+
+    def save(self, *args, **kwargs):
+        count_word = self.keyword
+        if count_word:
+            self.keyword.count += 1
+            self.keyword.save()
+            super().save(*args, **kwargs)
+
+
+
+class KeyWord(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    count = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.name
 
 # class Profile(models.Model):
 

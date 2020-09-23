@@ -17,7 +17,7 @@ class CartItemViewSet(mixins.CreateModelMixin,
                       GenericViewSet):
     queryset = CartItem.objects.all()
     serializer_class = CartItemSerializer
-    permission_classes = (CartItemIsOwnerOrReadOnly, )
+    permission_classes = (CartItemIsOwnerOrReadOnly,)
 
     def get_serializer_class(self):
         if self.action == 'create':
@@ -31,17 +31,14 @@ class CartItemViewSet(mixins.CreateModelMixin,
     @action(detail=False, methods=['delete'])
     def goods_delete(self, request, *args, **kwargs):
         delete_items = request.data['goods']
-        # user_all_items = CartItem.objects.all(user=request.user)
         items = CartItem.objects.filter(id__in=delete_items)
 
         for i in items:
             items.delete()
-
         return Response("clear", status=status.HTTP_200_OK)
 
 
 class CartViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, GenericViewSet):
     queryset = Cart.objects.all()
     serializer_class = CartSerializer
-    permission_classes = (CartIsOwnerOrReadOnly, )
-
+    permission_classes = (CartIsOwnerOrReadOnly,)
