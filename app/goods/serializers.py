@@ -14,7 +14,7 @@ class SalesInfoSerializers(ModelSerializer):
 class CategorySerializers(ModelSerializer):
     class Meta:
         model = Category
-        fields = ('name',)
+        fields = ('name', 'category_img')
 
 
 class GoodsExplainSerializers(ModelSerializer):
