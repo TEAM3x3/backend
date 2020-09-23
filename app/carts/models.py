@@ -15,24 +15,23 @@ class Cart(models.Model):
     def total_pay(self):
         payment = 0
         for ins in self.items.all():
-            payment += ins.sub_total()
+            payment += ins.sub_total
         return payment
 
     @property
     def discount_total_pay(self):
         payment = 0
         for ins in self.items.all():
-            if ins.discount_payment() is not None:
-                payment += ins.discount_payment()
+            if ins.discount_payment is not None:
+                payment += ins.discount_payment
             else:
-                payment += ins.sub_total()
+                payment += ins.sub_total
         return payment
 
 
 class CartItem(models.Model):
     class Order_Status(models.TextChoices):
-        DEPARTURE = 'd', ('출발')
-        PROGRESS = 'p', ('배송 중')
+        DEPARTURE = 'w', ('대기')
         COMPLETE = 'c', ('완료')
         REVIEW = 'r', ('후기작성완료')
 
@@ -46,6 +45,7 @@ class CartItem(models.Model):
                               )
     status = models.CharField('배송 상태', max_length=1, default=Order_Status.DEPARTURE, choices=Order_Status.choices)
 
+    @property
     def sub_total(self):
         return int(self.goods.price * self.quantity)
 

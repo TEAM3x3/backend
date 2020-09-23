@@ -54,13 +54,13 @@ class OrderSerializers(ModelSerializer):
         )
 
     def get_total_payment(self, obj):
-        return obj.total_payment()
+        return obj.total_payment
 
     def get_discount_payment(self, obj):
-        return obj.discount_payment()
+        return obj.discount_payment
 
     def get_discount_price(self, obj):
-        return int(obj.total_payment() - obj.discount_payment())
+        return int(obj.total_payment - obj.discount_payment)
 
 
 class OrderCreateSerializers(ModelSerializer):
@@ -107,8 +107,9 @@ class ReviewSerializers(ModelActionSerializer):
     def validate(self, attrs):
         goods_id = attrs['goods'].id
         user_id = attrs['user'].id
-        qs = CartItem.objects.filter(status='p').filter(order__user_id=user_id).filter(
-            goods_id=goods_id)
+        cartItem_id = attrs['cartItem'].id
+        qs = CartItem.objects.filter(status='c').filter(goods__id=goods_id).filter(order__user__id=user_id).filter(
+            id=cartItem_id)
         if not qs.exists():
             raise serializers.ValidationError('리뷰 작성이 가능한 데이터가 존재하지 않습니다.')
         return super().validate(attrs)
