@@ -28,9 +28,9 @@ def index(request):
         }
         res = requests.post(URL, headers=headers, params=params)
         request.session['tid'] = res.json()['tid']  # 결제 고유 번호, 20자 결제 승인시 사용할 tid를 세션에 저장
+
         next_url = res.json()['next_redirect_pc_url']  # 카카오톡 결제 페이지 Redirect URL
         return redirect(next_url)
-
     return render(request, 'base.html')
 
 
