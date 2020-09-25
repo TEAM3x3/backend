@@ -84,8 +84,13 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
         # get_queryset에서 params에 sale을 받는 형식으로 하면 동작 가능하지만 올바르지 않은 접근 같다고 판단 하였습니다.
         qs = self.queryset.filter(sales__discount_rate__isnull=False)
         params = self.request.query_params.get('ordering', None)
-        if params:
-            qs = qs.order_by(params)
+        transfer = self.request.query_params.get('transfer')
+        if not (params or transfer):
+            return Response({"message": "params and transfer is requirement"}, status=status.HTTP_400_BAD_REQUEST)
+        elif not transfer in ['샛별배송 ONLY', '샛별배송/택배배송']:
+            return Response({"message": "transfer is invalid"}, status=status.HTTP_400_BAD_REQUEST)
+        qs = qs.filter(transfer=transfer)
+        qs = qs.order_by(params)
         serializer = self.get_serializer(qs, many=True)
         return Response(serializer.data)
 
