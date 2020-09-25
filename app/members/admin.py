@@ -6,7 +6,7 @@ User = get_user_model()
 
 
 class UserAdmin(admin.ModelAdmin):
-    list_display = ['id', 'username', 'email', 'phone', 'nickname', 'address', ]
+    list_display = ['id', 'username', 'email', 'phone', 'nickname', ]
 
 
 class UserAddressAdmin(admin.ModelAdmin):
