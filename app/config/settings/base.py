@@ -23,6 +23,8 @@ INSTALLED_APPS = [
     'goods',
     'members',
     'carts',
+    'event',
+    'order',
 
     'rest_framework',
     'rest_framework.authtoken',
@@ -126,5 +128,6 @@ AWS_S3_REGION_NAME = 'ap-northeast-2'
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
-    ]
+    ],
+    # 'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',)
 }

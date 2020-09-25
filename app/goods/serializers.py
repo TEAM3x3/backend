@@ -1,8 +1,14 @@
-from action_serializer import ModelActionSerializer
+from action_serializer import ModelActionSerializer, serializers
 from rest_framework.serializers import ModelSerializer
-
 from goods.models import Category, GoodsExplain, GoodsDetailTitle, GoodsDetail, Goods, DeliveryInfoImageFile, \
-    DeliveryInfoImageImageFile, Type
+    DeliveryInfoImageImageFile, Type, SaleInfo, Tag, Tagging
+
+
+# 상품 세일 정보
+class SalesInfoSerializers(ModelSerializer):
+    class Meta:
+        model = SaleInfo
+        fields = ('discount_rate', 'contents')
 
 
 class CategorySerializers(ModelSerializer):
@@ -37,9 +43,54 @@ class MinimumGoodsSerializers(ModelSerializer):
         fields = ('id', 'title', 'img', 'price', 'packing_status')
 
 
+class TagSerializers(ModelSerializer):
+    class Meta:
+        model = Tag
+        fields = ('name',)
+
+
+class TaggingSerializers(ModelSerializer):
+    tag = TagSerializers()
+
+    class Meta:
+        model = Tagging
+        fields = ('tag',)
+
+
+class GoodsSaleSerializers(ModelSerializer):
+    sales = SalesInfoSerializers()
+    tagging = TaggingSerializers(many=True)
+    discount_price = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Goods
+        fields = (
+            'id',
+            'title',
+            'short_desc',
+            'packing_status',
+            'price',
+            'img',
+            'sales',
+            'tagging',
+            'discount_price',
+        )
+
+    def get_discount_price(self, obj):
+        try:
+            if type(obj.sales.discount_rate) is int:
+                value = ((100 - obj.sales.discount_rate) * 0.01) * obj.price
+                return int(value)
+            return None
+        except AttributeError:
+            return None
+
+
 class GoodsSerializers(ModelActionSerializer):
     explains = GoodsExplainSerializers(many=True)
-    details = GoodsDetailSerializers(many=True, )
+    details = GoodsDetailSerializers(many=True)
+    discount_price = serializers.SerializerMethodField()
+    sales = SalesInfoSerializers()
 
     class Meta:
         model = Goods
@@ -49,6 +100,8 @@ class GoodsSerializers(ModelActionSerializer):
                   'title',
                   'short_desc',
                   'price',
+                  'sales',
+                  'discount_price',
                   'each',
                   'weight',
                   'transfer',
@@ -61,8 +114,12 @@ class GoodsSerializers(ModelActionSerializer):
                   'details',
                   )
         action_fields = {
-            'list': {'fields': ('id', 'title', 'short_desc', 'price', 'img',)}
+            'list': {'fields': ('id', 'title', 'short_desc', 'price', 'img',)},
+            'main_page_recommend': {'fields': ('id', 'title',)},
         }
+
+    def get_discount_price(self, obj):
+        return obj.discount_price
 
 
 class DeliveryInfoImageSerializers(ModelSerializer):

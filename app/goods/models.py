@@ -1,6 +1,8 @@
 from django.db import models
-import goods
-from goods.crawling import crawling, get_delivery
+
+from goods.crawling.event import evenvt_crawling
+from goods.crawling.goods import crawling
+import secrets
 
 
 def goods_img_path(instance, filename):
@@ -31,12 +33,19 @@ def delivery_img(instance, filename):
     return filename
 
 
+def category_img(instance, filename):
+    if 'media/' in filename:
+        filename = filename.split('media/')
+        return filename[1]
+    return filename
+
+
 class Goods(models.Model):
     img = models.ImageField('메인이미지', upload_to=goods_img_path)
     info_img = models.ImageField('상품 이미지', upload_to=goods_info_img_path, null=True)
     title = models.CharField('상품 명', max_length=60)
     short_desc = models.CharField('간단 설명', max_length=100)
-    price = models.IntegerField('가격')
+    price = models.PositiveIntegerField('가격')
     each = models.CharField('판매 단위', max_length=64, null=True, )
     weight = models.CharField('중량/용량', max_length=64, null=True, )
     transfer = models.CharField('배송 구분', max_length=64, null=True, )
@@ -47,26 +56,131 @@ class Goods(models.Model):
     info = models.CharField('제품 정보', max_length=512, null=True, )
     expiration = models.CharField('유통기한', max_length=512, null=True, )
 
-    category = models.ForeignKey(
-        'goods.Category',
+    event = models.ForeignKey(
+        'event.Event',
         on_delete=models.CASCADE,
         null=True,
+        related_name='goods',
     )
+
+    sales = models.ForeignKey(
+        'goods.SaleInfo',
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='goods',
+    )
+
+    @property
+    def discount_price(self):
+        try:
+            if type(self.sales.discount_rate) is int:
+                price = (100 - self.sales.discount_rate) * 0.01 * self.price
+                return int(price)
+            return None
+
+        except AttributeError:
+            return None
 
     @staticmethod
     def get_crawling():
+        # 상품 크롤링
         crawling()
 
     @staticmethod
-    def get_delivery():
-        get_delivery()
+    def get_event():
+        # 이벤트 상품 크롤링
+        evenvt_crawling()
+
+    @staticmethod
+    def set_goods_packing_status():
+        # 상품 카트에 담길 시 포장 상태 표기 동작 함수
+        for i in Goods.objects.all():
+            try:
+                if '상온' in i.packing:
+                    i.packing_status = '상온'
+                elif '냉장' in i.packing:
+                    i.packing_status = '냉장'
+                elif '냉동' in i.packing:
+                    i.packing_status = '냉동'
+                i.save()
+            except TypeError:
+                continue
+
+    @staticmethod
+    def random_discount_rate():
+        id_lst = []
+        range_limit = Goods.objects.all().count()
+        while True:
+            val = secrets.randbelow(range_limit)
+            if val in id_lst:
+                continue
+            elif val == 0:
+                continue
+            else:
+                id_lst.append(val)
+            if len(id_lst) == 200:
+                break
+
+        s1, s2, s3, s4, s5, s6, s7, s8, s9, s10 = SaleInfo.objects.all()[:10]
+
+        for index, id in enumerate(id_lst):
+            if index < 20:
+                print('5-----------------------------------', index)
+                goods = Goods.objects.get(id=id)
+                goods.sales = s1
+                goods.save()
+            elif index >= 20 and index < 40:
+                print('10---------------', index)
+                goods = Goods.objects.get(id=id)
+                goods.sales = s2
+                goods.save()
+            elif index >= 40 and index < 60:
+                print('15-----------', index)
+                goods = Goods.objects.get(id=id)
+                goods.sales = s3
+                goods.save()
+            elif index >= 60 and index < 80:
+                print('20------------', index)
+                goods = Goods.objects.get(id=id)
+                goods.sales = s4
+                goods.save()
+            elif index >= 80 and index < 100:
+                print('25-----------', index)
+                goods = Goods.objects.get(id=id)
+                goods.sales = s5
+                goods.save()
+            elif index >= 100 and index < 120:
+                print('30-----------', index)
+                goods = Goods.objects.get(id=id)
+                goods.sales = s6
+                goods.save()
+            elif index >= 120 and index < 140:
+                print('35-----------', index)
+                goods = Goods.objects.get(id=id)
+                goods.sales = s7
+                goods.save()
+            elif index >= 140 and index < 160:
+                print('40-----------', index)
+                goods = Goods.objects.get(id=id)
+                goods.sales = s8
+                goods.save()
+            elif index >= 160 and index < 180:
+                print('45-----------', index)
+                goods = Goods.objects.get(id=id)
+                goods.sales = s9
+                goods.save()
+            elif index >= 180 and index < 200:
+                print('50-----------', index)
+                goods = Goods.objects.get(id=id)
+                goods.sales = s10
+                goods.save()
 
 
 class GoodsExplain(models.Model):
     img = models.ImageField('상품 설명 이미지', upload_to=goods_img_1_path)
     text_title = models.CharField(max_length=64)
     text_context = models.CharField('상품 문맥', max_length=255)
-    text_description = models.CharField('설명', max_length=512)
+    text_description = models.CharField('설명', max_length=1024)
     goods = models.ForeignKey(
         'goods.Goods',
         on_delete=models.CASCADE,
@@ -105,6 +219,7 @@ class Type(models.Model):
 
 class Category(models.Model):
     name = models.CharField(max_length=30)
+    category_img = models.ImageField(upload_to='category_img', null=True)
 
 
 class GoodsType(models.Model):
@@ -135,4 +250,26 @@ class DeliveryInfoImageImageFile(models.Model):
         'goods.DeliveryInfoImageFile',
         on_delete=models.CASCADE,
         related_name='images'
+    )
+
+
+class SaleInfo(models.Model):
+    discount_rate = models.IntegerField(null=True, )
+    contents = models.CharField(max_length=30, null=True, )
+
+
+class Tag(models.Model):
+    name = models.CharField(max_length=36)
+
+
+class Tagging(models.Model):
+    tag = models.ForeignKey(
+        'goods.Tag',
+        on_delete=models.CASCADE,
+        related_name='tagging'
+    )
+    goods = models.ForeignKey(
+        'goods.Goods',
+        on_delete=models.CASCADE,
+        related_name='tagging'
     )
