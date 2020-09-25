@@ -1,23 +1,16 @@
 from action_serializer import ModelActionSerializer
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
-from rest_framework.fields import SerializerMethodField
 from rest_framework.serializers import ModelSerializer
 from members.models import UserAddress, UserSearch, KeyWord
 
 User = get_user_model()
 
 
-class UserAddressCreateSerializers(ModelSerializer):
-    class Meta:
-        model = UserAddress
-        fields = ('address',)
-
-
 class UserAddressSerializers(ModelSerializer):
     class Meta:
         model = UserAddress
-        fields = ('id', 'address', 'detail_address', 'require_message', 'status', 'user')
+        fields = ('id', 'address', 'detail_address', 'require_message', 'user')
 
     def create(self, validated_data):
         if validated_data['status'] == 'T':
@@ -83,3 +76,10 @@ class PopularSerializer(ModelActionSerializer):
     class Meta:
         model = KeyWord
         fields = ('id', 'name', 'count')
+
+
+class UserOrderSerializers(ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('username',)
+

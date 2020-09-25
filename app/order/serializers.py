@@ -1,52 +1,79 @@
 from action_serializer import ModelActionSerializer
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
-
 from carts.models import CartItem
 from carts.serializers import CartItemSerializer
 from goods.serializers import GoodsSaleSerializers
-from members.serializers import UserSerializer, UserAddressSerializers
-from order.models import Order, OrderReview
+from members.serializers import UserOrderSerializers
+from order.models import Order, OrderReview, OrderDetail
 
 
-class OrderListSerializers(ModelSerializer):
-    item = CartItemSerializer(many=True)
-    user = UserSerializer()
-    address = UserAddressSerializers()
-    payment = serializers.SerializerMethodField()
+class OrderDetailSerializers(ModelSerializer):
+    class Meta:
+        model = OrderDetail
+        fields = (
+            'delivery_cost',
+            'point',
+
+            'consumer',
+            'created_at',
+            'receiver',
+            'receiver_phone',
+            'delivery_type',
+            'zip_code',
+            'address',
+            'receiving_place',
+            'entrance_password',
+            'free_pass',
+            'etc',
+
+            'extra_message',
+            'message',
+            'order'
+        )
+
+
+class OrderSerializers(ModelSerializer):
+    total_payment = serializers.SerializerMethodField()
     discount_payment = serializers.SerializerMethodField()
     discount_price = serializers.SerializerMethodField()
+    items = CartItemSerializer(many=True)
+    orderdetail = OrderDetailSerializers()
+    user = UserOrderSerializers()
 
     class Meta:
         model = Order
-        fields = ('id',
-                  'user',
-                  'address',
-                  'item',
-                  'status',
-                  'payment',
-                  'discount_payment',
-                  'discount_price',
-                  )
+        fields = (
+            'id',
+            'items',
+            'total_payment',
+            'discount_price',
+            'discount_payment',
+            'orderdetail',
+            'user'
+        )
 
-    def get_payment(self, obj):
-        return obj.total_payment()
+    def get_total_payment(self, obj):
+        return obj.total_payment
 
     def get_discount_payment(self, obj):
-        return obj.discount_payment()
+        return obj.discount_payment
 
     def get_discount_price(self, obj):
-        return int(obj.total_payment() - obj.discount_payment())
+        return int(obj.total_payment - obj.discount_payment)
 
 
 class OrderCreateSerializers(ModelSerializer):
+    user = serializers.HiddenField(
+        default=serializers.CurrentUserDefault()
+    )
+
     class Meta:
         model = Order
-        fields = ('id',
-                  'user',
-                  'address',
-                  'item',
-                  )
+        fields = (
+            'user',
+            'items',
+        )
 
 
 class ReviewUpdateSerializers(ModelSerializer):
@@ -80,8 +107,9 @@ class ReviewSerializers(ModelActionSerializer):
     def validate(self, attrs):
         goods_id = attrs['goods'].id
         user_id = attrs['user'].id
-        qs = CartItem.objects.filter(status='p').filter(order__user_id=user_id).filter(
-            goods_id=goods_id)
+        cartItem_id = attrs['cartItem'].id
+        qs = CartItem.objects.filter(status='c').filter(goods__id=goods_id).filter(order__user__id=user_id).filter(
+            id=cartItem_id)
         if not qs.exists():
             raise serializers.ValidationError('리뷰 작성이 가능한 데이터가 존재하지 않습니다.')
         return super().validate(attrs)

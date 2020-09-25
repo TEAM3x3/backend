@@ -13,5 +13,5 @@ def orderReview_post_save(sender, **kwargs):
     시그널 출처 : https://dgkim5360.tistory.com/entry/django-signal-example
    """
     cartItem_instance = kwargs['instance'].cartItem
-    cartItem_instance.status = 'd'
+    cartItem_instance.status = 'r'
     cartItem_instance.save()
