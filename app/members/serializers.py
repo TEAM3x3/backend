@@ -42,7 +42,7 @@ class UserSerializer(ModelActionSerializer):
     class Meta:
         model = User
 
-        fields = ('id', 'username', 'password', 'email', 'phone', 'nickname', 'gender', 'address')
+        fields = ('id', 'username', 'password', 'email', 'phone', 'nickname', 'gender', 'address',)
 
         action_fields = {
             'login': {'fields': ('username', 'password')},
