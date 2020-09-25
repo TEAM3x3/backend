@@ -94,7 +94,7 @@ class UserViewSet(ModelViewSet):
         nickname = request.query_params.get('nickname')
         email = request.query_params.get('email')
         user_qs = User.objects.filter(nickname=nickname, email=email)
-        serializer = self.serializer_class(user_qs, many=True)
+        serializer = self.serializer_class(user_qs, many=True,)
         print(serializer)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
