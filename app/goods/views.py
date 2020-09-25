@@ -108,6 +108,7 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
     @action(detail=False)
     def sales_goods(self, request, *args, **kwargs):
         count_all = self.queryset.filter(sales__discount_rate__isnull=False).count()
+        max_random_item_count = 8
         sales_items = []
 
         while True:
@@ -119,7 +120,7 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
                 continue
             else:
                 sales_items.append(random_save)
-            if len(sales_items) == 8:
+            if len(sales_items) == max_random_item_count:
                 break
         save_ins = self.queryset.filter(pk__in=sales_items)
         serializer = GoodsSaleSerializers(save_ins, many=True)
