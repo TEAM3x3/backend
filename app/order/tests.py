@@ -63,3 +63,9 @@ class OrderTest(APITestCase):
         self.client.force_authenticate(user=self.user)
         response = self.client.delete(f'/api/order/{self.order.id}')
         self.assertEqual(204, response.status_code)
+
+    def test_payment(self):
+        self.client.force_authenticate(user=self.user)
+
+        response = self.client.post(f'/api/order/{self.order.id}/payment')
+        self.fail()
