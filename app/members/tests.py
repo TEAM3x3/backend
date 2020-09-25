@@ -1,3 +1,4 @@
+from django.http import request
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.test import TestCase
@@ -92,6 +93,16 @@ class UserTestCase(APITestCase):
                                       HTTP_AUTHORIZATION='Token ' + token.key)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertFalse(Token.objects.filter(user=self.user).exists())
+
+    def test_find_id(self):
+        password = '1111'
+        self.test_user = User.objects.create_user(username='test_user', email='test_user@admin.com', password=password, nickname='test_user')
+        data = {
+            'nickname': 'test_user',
+            'email': 'test_user@admin.com'
+        }
+        response = self.client.get(f'/api/users/find_id', data=data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
 class UserAddressTestCase(APITestCase):

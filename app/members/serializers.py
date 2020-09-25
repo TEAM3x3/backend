@@ -47,11 +47,10 @@ class UserSerializer(ModelActionSerializer):
         fields = ('id', 'username', 'password', 'email', 'phone', 'nickname', 'gender', 'address',)
 
         action_fields = {
-            'login': {'fields': ('username', 'password')},
+            'login': {'fields': ('username', 'password',)},
             'check_username': {'fields': ('username',)},
             'check_email': {'fields': ('email',)},
-            'userinfo_check': {'fields': ('password',)},
-            # 'userinfo_edit': {'fields': ('id')},
+            'find_id': {'fields': ('nickname', 'email', 'username',)},
         }
 
     def create(self, validated_data):
@@ -77,9 +76,12 @@ class PopularSerializer(ModelActionSerializer):
     class Meta:
         model = KeyWord
         fields = ('id', 'name', 'count')
+<<<<<<< HEAD
 
 
 class UserOrderSerializers(ModelSerializer):
     class Meta:
         model = User
         fields = ('username',)
+=======
+>>>>>>> 2564d24692c1df4f56b9f82d53b89a7701d7a9fc
