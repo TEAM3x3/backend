@@ -63,16 +63,15 @@ class OrderView(mixins.CreateModelMixin,
                 "cancel_url": "https://developers.kakao.com/fail",
                 "fail_url": "https://developers.kakao.com/cancel",
             }
+            del request.session['partner_user_id']
+            del request.session['partner_order_id']
+            request.session.modified = True
+
             res = requests.post(URL, headers=headers, params=params)
             request.session['tid'] = res.json()['tid']  # 결제 고유 번호, 20자 결제 승인시 사용할 tid를 세션에 저장
-            request.session['partner_order_id'] = f'{order_ins.id}'
-            request.session['partner_user_id'] = f'{self.request.user.username}'
+            request.session['partner_order_id'] = order_ins.id
+            request.session['partner_user_id'] = self.request.user.username
             next_url = res.json()['next_redirect_pc_url']  # 카카오톡 결제 페이지 Redirect URL
-            print('kakao pay ready')
-            print(request.session['tid'])
-            print(request.session['partner_order_id'])
-            print(request.session['partner_user_id'])
-            request.session.modified = True
 
             return Response({"next": f"{next_url}"}, status=status.HTTP_200_OK)
 
@@ -102,8 +101,8 @@ class OrderView(mixins.CreateModelMixin,
             params = {
                 "cid": "TC0ONETIME",  # 테스트용 코드
                 "tid": request.session['tid'],  # 결제 요청시 세션에 저장한 tid
-                "partner_order_id": request.session['orderId'],  # 주문번호
-                "partner_user_id": request.session['userId'],  # 유저 아이디
+                "partner_order_id": request.session['partner_order_id'],  # 주문번호
+                "partner_user_id": request.session['partner_user_id'],  # 유저 아이디
                 "pg_token": request.GET.get("pg_token"),  # 쿼리 스트링으로 받은 pg토큰
             }
             res = requests.post(URL, headers=headers, params=params)
