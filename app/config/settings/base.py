@@ -10,6 +10,9 @@ environ.Env.read_env(env_file=env_file)
 
 SECRET_KEY = 'vr@i_7k(=y!cy_w#@d=oat*!pff8%oow3cuotxch30mgbu+%e-'
 
+# kakaopay test
+TEMPLATES_DIR = os.path.join(os.path.dirname(BASE_DIR), 'templates')
+
 # user model
 AUTH_USER_MODEL = 'members.User'
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -57,7 +60,8 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            TEMPLATES_DIR, ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -128,5 +132,6 @@ AWS_S3_REGION_NAME = 'ap-northeast-2'
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
-    ]
+    ],
+    # 'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',)
 }
