@@ -76,12 +76,10 @@ class PopularSerializer(ModelActionSerializer):
     class Meta:
         model = KeyWord
         fields = ('id', 'name', 'count')
-<<<<<<< HEAD
 
 
 class UserOrderSerializers(ModelSerializer):
     class Meta:
         model = User
         fields = ('username',)
-=======
->>>>>>> 2564d24692c1df4f56b9f82d53b89a7701d7a9fc
+
