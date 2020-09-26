@@ -29,7 +29,8 @@ class OrderDetailSerializers(ModelSerializer):
 
             'extra_message',
             'message',
-            'order'
+            'order',
+            'payment_type'
         )
 
 

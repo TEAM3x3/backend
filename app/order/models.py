@@ -46,6 +46,9 @@ class OrderDetail(models.Model):
         RIGHT_AFTER = '직후', ('직후')
         AM_7 = '오전7시', ('오전 7시')
 
+    class Payment_Type(models.TextChoices):
+        KAKAO = '카카오페이', ('카카오페이')
+
     """
     1. 결제 정보 - 상품 금액(total_payment), 배송비, 상품 할인 금액(discount_price), 쿠폰 할인, 결제 금액(discount_payment), 적립 금액(point)
     2. 주문 정보 - 주문 번호( order.id), 주문자 명 (request.user), 보내는 분 (request.user), 결제 일시 (order.created_at)
@@ -79,6 +82,8 @@ class OrderDetail(models.Model):
 
     message = models.CharField(choices=Message_Choice.choices, max_length=5, help_text='배송 완료 메세지 전송')
 
+    # 결제 정보
+    payment_type = models.CharField(choices=Payment_Type.choices, help_text='결제 정보', null=True, max_length=10)
     order = models.OneToOneField(
         'order.Order',
         on_delete=models.CASCADE,

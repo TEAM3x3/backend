@@ -133,6 +133,7 @@ class OrderView(mixins.CreateModelMixin,
                     item.save()
 
                 order_ins.orderdetail.status = OrderDetail.Order_Status.PAYMENT_COMPLETE
+                order_ins.orderdetail.payment_type = OrderDetail.Payment_Type.KAKAO
                 OrderDetail.save()
 
                 response = response.json()
