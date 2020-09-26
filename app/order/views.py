@@ -1,4 +1,5 @@
 import requests
+from django.db import transaction
 from rest_framework import mixins, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -34,10 +35,6 @@ class OrderView(mixins.CreateModelMixin,
 
     @action(detail=True, methods=['POST'])
     def payment(self, request, pk):
-        """
-         payment 데이터 생성? 아니면 order Detail instance data update?
-         --> 이유 : view안에 논리적인 코드가 있는건 이상하고, 결제에 대한 데이터가 있어야 한다면 디비에 저장이 되어야 하니까
-        """
         URL = 'https://kapi.kakao.com/v1/payment/ready'
         headers = {
             "Authorization": "KakaoAK " + "f9f70eb192ef14919735fb40a6e599f5",
@@ -63,16 +60,17 @@ class OrderView(mixins.CreateModelMixin,
                 "cancel_url": "https://developers.kakao.com/fail",
                 "fail_url": "https://developers.kakao.com/cancel",
             }
+            del request.session['tid']
             del request.session['partner_user_id']
             del request.session['partner_order_id']
             request.session.modified = True
 
-            res = requests.post(URL, headers=headers, params=params)
-            request.session['tid'] = res.json()['tid']  # 결제 고유 번호, 20자 결제 승인시 사용할 tid를 세션에 저장
+            response = requests.post(URL, headers=headers, params=params)
+            request.session['tid'] = response.json()['tid']  # 결제 고유 번호, 20자 결제 승인시 사용할 tid를 세션에 저장
             request.session['partner_order_id'] = order_ins.id
             request.session['partner_user_id'] = self.request.user.username
-            next_url = res.json()['next_redirect_pc_url']  # 카카오톡 결제 페이지 Redirect URL
-
+            next_url = response.json()['next_redirect_pc_url']  # 카카오톡 결제 페이지 Redirect URL
+            print(request.session['tid'])
             return Response({"next": f"{next_url}"}, status=status.HTTP_200_OK)
 
         data = {
@@ -80,19 +78,41 @@ class OrderView(mixins.CreateModelMixin,
         }
         return Response(status=status.HTTP_400_BAD_REQUEST, data=data)
 
+    @transaction.atomic
     @action(detail=True, methods=['get', 'post'])
     def approve(self, request, *args, **kwargs):
-        # 질문 : kakao pay에서 redirect로 올 때에는 세션에 tid만 담겨 나오지만,
-        # localhost에서는 둘 다 나옵니다. 카카오페이 서버에서 결제 완료 후 session에 값을 주입하는 과정에서 제가 실수한 부분이 무엇일까요?
-        print('approve')
+        """
+        * html로 테스트를 하는 이유는 API로 하면 세션에 값이 저장이 되지를 않습니다. --> 구글링을 통해 세션에 대한 학습 중, 아직 원인을 찾지 못하고 있습니다.
+        * 원인 추론 // 설마 'DEFAULT_AUTHENTICATION_CLASSES': ['rest_framework.authentication.SessionAuthentication',] ?? 결과 X
+        * html로 요청 할 때에만 tid가 올바르게 들어간다.
+        질문 : 'html 카카오페이 결제 클릭' -> '카카오페이 서버의 결제 페이지' -> '성공 시 redirect url' 의 순서로 카카오페이 결제가 진행이 되고 있습니다.
+        구현 과정 중 'html 카카오페이 결제 클릭' 의 view에서
+        '성공 시 redirect url' 의 view 에서 사용을 해야 하는 값들을 세션을 통하여 넘겨주고 있습니다.
+        ios와 통신할 때에는 제가 필요한 값들을 어떻게 의사소통을 해야 할까요??
+        ios에서 세션을 통해 값을 넘겨 주는지 아직 ios가 결제 기능을 구현하지 않아서 제가 세션 말고 다른 준비해야 하는 부분이 있는지 궁금합니다.
+        """
         print(request.session['tid'])
-        print(request.session['partner_order_id'])
-        print(request.session['partner_user_id'])
         try:
             order_ins = Order.objects.get(pk=kwargs['pk'])
         except Order.DoesNotExist:
             order_ins = None
         if order_ins:
+            # # 카카오페이 취소 통신
+            # URL = 'https://kapi.kakao.com/v1/payment/cancel'
+            # headers = {
+            #     "Authorization": "KakaoAK " + "f9f70eb192ef14919735fb40a6e599f5",
+            #     "Content-type": "application/x-www-form-urlencoded;charset=utf-8",
+            # }
+            # params = {
+            #     "cid": "TC0ONETIME",
+            #     "tid":"T2810665902167272971",
+            #     "cancel_amount":"51100",
+            #     "cancel_tax_free_amount":"0",
+            # }
+            # response = requests.post(URL, headers=headers, params=params)
+            # response = response.json()
+
+            # 카카오 페이 승인 통신
             URL = 'https://kapi.kakao.com/v1/payment/approve'
             headers = {
                 "Authorization": "KakaoAK " + "f9f70eb192ef14919735fb40a6e599f5",
@@ -105,14 +125,24 @@ class OrderView(mixins.CreateModelMixin,
                 "partner_user_id": request.session['partner_user_id'],  # 유저 아이디
                 "pg_token": request.GET.get("pg_token"),  # 쿼리 스트링으로 받은 pg토큰
             }
-            res = requests.post(URL, headers=headers, params=params)
-            amount = res.json()['amount']['total']
-            res = res.json()
-            context = {
-                'res': res,
-                'amount': amount,
-            }
-            return Response(data=context, status=status.HTTP_200_OK)
+            response = requests.post(URL, headers=headers, params=params)
+            if response.status_code == 200:
+                order_ins = Order.objects.get(pk=request.session['partner_order_id'])
+                for item in order_ins.items.all():
+                    item.cart = None
+                    item.save()
+
+                order_ins.orderdetail.status = OrderDetail.Order_Status.PAYMENT_COMPLETE
+                order_ins.orderdetail.payment_type = OrderDetail.Payment_Type.KAKAO
+                OrderDetail.save()
+
+                response = response.json()
+                amount = response['amount']['total']
+                context = {
+                    'res': response,
+                    'amount': amount,
+                }
+                return Response(data=context, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 

@@ -66,6 +66,5 @@ class OrderTest(APITestCase):
 
     def test_payment(self):
         self.client.force_authenticate(user=self.user)
-
         response = self.client.post(f'/api/order/{self.order.id}/payment')
         self.fail()
