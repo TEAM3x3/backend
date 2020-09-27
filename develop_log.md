@@ -173,6 +173,4 @@ transaction.atomic() 내부에서는 try-except 를 사용하지말자. 써야�
 ### [쿠키, 세션, 캐시 장단점](https://homzzang.com/b/css)
 #### [세션문서](http://rmaru.com/open/django_%EC%84%B8%EC%85%98_%EC%82%AC%EC%9A%A9%ED%95%98%EA%B8%B0)
 
-'T2810262780831895614'
-
-http://localhost:8000/api/order/1/approve?pg_token=bd08760979587ac15a04
+#### [django filters](https://django-filter.readthedocs.io/en/stable/guide/rest_framework.html)

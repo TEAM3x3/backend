@@ -7,7 +7,9 @@ from goods.serializers import GoodsSaleSerializers
 
 class EventSerializers(ModelActionSerializer):
     goods = GoodsSaleSerializers(many=True)
-
+    """
+    goods(역관계)에서 가져오는 값들을 ordering 할 수 있는 방법 >> django filters를 사용해서?
+    """
     class Meta:
         model = Event
         fields = ('id', 'title', 'image', 'goods')
