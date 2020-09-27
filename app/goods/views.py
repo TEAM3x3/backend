@@ -1,12 +1,15 @@
 import random
 import secrets
-from rest_framework import mixins, status
+
+import django_filters
+from rest_framework import mixins, status, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
-from goods.models import Goods, Type, Category, DeliveryInfoImageFile
+
+from goods.filters import GoodsFilter
+from goods.models import Goods, Category, DeliveryInfoImageFile
 from goods.serializers import GoodsSerializers, DeliveryInfoSerializers, CategoriesSerializers, GoodsSaleSerializers
-from rest_framework.filters import OrderingFilter
 from members.models import UserSearch, KeyWord
 from order.models import OrderReview
 from order.serializers import ReviewSerializers
@@ -16,32 +19,15 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
     queryset = Goods.objects.all()
     serializer_class = GoodsSaleSerializers
     # filter는 각 viewset별 다를 수 있어서
-    filter_backends = (OrderingFilter,)
-    ordering_fields = ['price', ]
-    filterset_fields = ['goods', ]
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend, filters.OrderingFilter,)
+    ordering_fields = ['price', 'sales__discount_rate']
+    filter_class = GoodsFilter
 
     def get_serializer_class(self):
         if self.action in ['retrieve']:
             return GoodsSerializers
         else:
             return self.serializer_class
-
-    def get_queryset(self):
-        qs = None
-        id = self.kwargs.get('pk', None)
-        if id:
-            qs = self.queryset.filter(id=id)
-        category = self.request.query_params.get('category', None)
-        if category:
-            qs = self.queryset.filter(types__type__category__name=category)
-        type_ins = self.request.query_params.get('type', None)
-        if type_ins:
-            type_ins = Type.objects.filter(name=type_ins).first()
-            qs = self.queryset.filter(types__type=type_ins)
-        sale = self.request.query_params.get('sale', None)
-        if sale:
-            qs = self.queryset.filter(sales__discount_rate__isnull=False)
-        return qs
 
     @action(detail=False)
     def main_page_md(self, request, *args, **kwargs):
@@ -78,10 +64,6 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
 
     @action(detail=False, url_path='sale', )
     def sale(self, request):
-        # issue
-        # viewset에 설정한 filter_backends = (OrderingFilter,)가 get_queryset에선 동작하나 여기서는 동작 하지 않음.
-        # order_by를 통하여 해결을 하였으나 성능에 대한 이슈 제기.
-        # get_queryset에서 params에 sale을 받는 형식으로 하면 동작 가능하지만 올바르지 않은 접근 같다고 판단 하였습니다.
         qs = self.queryset.filter(sales__discount_rate__isnull=False)
         params = self.request.query_params.get('ordering', None)
         transfer = self.request.query_params.get('transfer')
