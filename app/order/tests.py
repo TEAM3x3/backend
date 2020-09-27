@@ -64,7 +64,26 @@ class OrderTest(APITestCase):
         response = self.client.delete(f'/api/order/{self.order.id}')
         self.assertEqual(204, response.status_code)
 
-    def test_payment(self):
+    # def test_payment(self):
+        # self.client.force_authenticate(user=self.user)
+        # response = self.client.post(f'/api/order/{self.order.id}/payment')
+        # self.fail()
+
+    def test_order_detail(self):
         self.client.force_authenticate(user=self.user)
-        response = self.client.post(f'/api/order/{self.order.id}/payment')
-        self.fail()
+        self.order2 = baker.make('order.Order', user=self.user)
+        data = {
+            "consumer": "jyh",
+            "receiver": "receiver",
+            "receiver_phone": "12334567",
+            "delivery_type": "샛별배송",
+            "zip_code": "3456-123",
+            "address": "test",
+            "receiving_place": "문 앞",
+            "message": "직후",
+            "payment_type": "카카오페이",
+            "order": f'{self.order.id}'
+        }
+        response = self.client.post(f'/api/order/{self.order2.id}/detail', data=data)
+        self.assertEqual(201, response.status_code)
+        self.assertEqual(data['consumer'], response.data['consumer'])

@@ -1,5 +1,6 @@
 import requests
 from django.db import transaction
+from django.db.models import F
 from rest_framework import mixins, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -7,7 +8,7 @@ from rest_framework.viewsets import GenericViewSet
 from order.models import Order, OrderReview, OrderDetail
 from order.permissions import OrderReviewPermission, OrderPermission
 from order.serializers import OrderCreateSerializers, ReviewSerializers, \
-    ReviewUpdateSerializers, OrderSerializers, OrderDetailSerializers
+    ReviewUpdateSerializers, OrderSerializers, OrderDetailSerializers, OrderDetailCreateSerializers
 
 
 class OrderView(mixins.CreateModelMixin,
@@ -29,7 +30,7 @@ class OrderView(mixins.CreateModelMixin,
         try:
             user_pk = self.kwargs['user_pk']
             if user_pk:
-                return self.queryset.filter(user_id=self.kwargs['user_pk']).filter(orderdetail__status='배송완료')
+                return self.queryset.filter(user_id=self.kwargs['user_pk'])
         except KeyError:
             return super().get_queryset()
 
@@ -90,6 +91,9 @@ class OrderView(mixins.CreateModelMixin,
         '성공 시 redirect url' 의 view 에서 사용을 해야 하는 값들을 세션을 통하여 넘겨주고 있습니다.
         ios와 통신할 때에는 제가 필요한 값들을 어떻게 의사소통을 해야 할까요??
         ios에서 세션을 통해 값을 넘겨 주는지 아직 ios가 결제 기능을 구현하지 않아서 제가 세션 말고 다른 준비해야 하는 부분이 있는지 궁금합니다.
+
+        * view에는 로직이 들어가면 좋지 않은데 결제 정보를 디비에 넣는 형식으로 해서 serializers 를 만들고,
+        serializers에 views에서 작성하였던 코드를 넣는게 올바른 방식인지 질문드립니다. >> 아니면 payment.py를 만들고 거기서 함수를 호출하는 형식으로 할까요?
         """
         print(request.session['tid'])
         try:
@@ -130,11 +134,19 @@ class OrderView(mixins.CreateModelMixin,
                 order_ins = Order.objects.get(pk=request.session['partner_order_id'])
                 for item in order_ins.items.all():
                     item.cart = None
-                    item.save()
 
-                order_ins.orderdetail.status = OrderDetail.Order_Status.PAYMENT_COMPLETE
-                order_ins.orderdetail.payment_type = OrderDetail.Payment_Type.KAKAO
-                OrderDetail.save()
+                    item.goods.sales_count = F('sales_count') + 1
+                    stock = item.goods.stock
+                    stock.count = F('count') - 1
+
+                    item.save()
+                    item.goods.save()
+                    stock.save()
+
+                # order detail 을 어떻게 만들지? >> endpoint 분리
+                # order_ins.orderdetail.status = OrderDetail.Order_Status.PAYMENT_COMPLETE
+                # order_ins.orderdetail.payment_type = OrderDetail.Payment_Type.KAKAO
+                # OrderDetail.save()
 
                 response = response.json()
                 amount = response['amount']['total']
@@ -146,9 +158,13 @@ class OrderView(mixins.CreateModelMixin,
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
-class OrderDetailView(mixins.CreateModelMixin, mixins.RetrieveModelMixin, GenericViewSet):
+class OrderDetailView(mixins.CreateModelMixin, GenericViewSet):
     queryset = OrderDetail.objects.all()
-    serializer_class = OrderDetailSerializers
+    serializer_class = OrderDetailCreateSerializers
+
+    def perform_create(self, serializer):
+        order_instance = Order.objects.get(pk=self.kwargs['order_pk'])
+        serializer.save(order=order_instance)
 
 
 class ReviewAPI(mixins.CreateModelMixin,
