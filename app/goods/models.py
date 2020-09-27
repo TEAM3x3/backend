@@ -41,20 +41,21 @@ def category_img(instance, filename):
 
 
 class Goods(models.Model):
-    img = models.ImageField('메인이미지', upload_to=goods_img_path)
-    info_img = models.ImageField('상품 이미지', upload_to=goods_info_img_path, null=True)
-    title = models.CharField('상품 명', max_length=60)
-    short_desc = models.CharField('간단 설명', max_length=100)
-    price = models.PositiveIntegerField('가격')
-    each = models.CharField('판매 단위', max_length=64, null=True, )
-    weight = models.CharField('중량/용량', max_length=64, null=True, )
-    transfer = models.CharField('배송 구분', max_length=64, null=True, )
-    packing = models.CharField('포장 타입', max_length=255, null=True, )
-    packing_status = models.CharField('포장 상태', max_length=48, null=True)
-    origin = models.CharField('원산지', max_length=48, null=True, )
-    allergy = models.CharField('알레르기 정보', max_length=512, null=True, )
-    info = models.CharField('제품 정보', max_length=512, null=True, )
-    expiration = models.CharField('유통기한', max_length=512, null=True, )
+    img = models.ImageField(help_text='메인이미지', upload_to=goods_img_path)
+    info_img = models.ImageField(help_text='상품 이미지', upload_to=goods_info_img_path, null=True)
+    title = models.CharField(help_text='상품 명', max_length=60)
+    short_desc = models.CharField(help_text='간단 설명', max_length=100)
+    price = models.PositiveIntegerField(help_text='가격')
+    each = models.CharField(help_text='판매 단위', max_length=64, null=True, )
+    weight = models.CharField(help_text='중량/용량', max_length=64, null=True, )
+    transfer = models.CharField(help_text='배송 구분', max_length=64, null=True, )
+    packing = models.CharField(help_text='포장 타입', max_length=255, null=True, )
+    packing_status = models.CharField(help_text='포장 상태', max_length=48, null=True)
+    origin = models.CharField(help_text='원산지', max_length=48, null=True, )
+    allergy = models.CharField(help_text='알레르기 정보', max_length=512, null=True, )
+    info = models.CharField(help_text='제품 정보', max_length=512, null=True, )
+    expiration = models.CharField(help_text='유통기한', max_length=512, null=True, )
+    sales_count = models.PositiveSmallIntegerField(help_text='판매량', default=0, blank=True, )
 
     event = models.ForeignKey(
         'event.Event',
@@ -69,6 +70,13 @@ class Goods(models.Model):
         null=True,
         related_name='goods',
     )
+
+    def save(self, *args, **kwargs):
+        created = self.pk
+        if created is None:
+            super().save(*args, **kwargs)
+            Stock.objects.create(goods=self)
+        super().save(*args, **kwargs)
 
     @property
     def discount_price(self):
@@ -273,3 +281,9 @@ class Tagging(models.Model):
         on_delete=models.CASCADE,
         related_name='tagging'
     )
+
+
+class Stock(models.Model):
+    count = models.PositiveSmallIntegerField(help_text='상품 재고량', default=0)
+    goods = models.OneToOneField('goods.Goods', on_delete=models.CASCADE, )
+    updated_at = models.DateTimeField(auto_now=True, help_text='입고 날짜')

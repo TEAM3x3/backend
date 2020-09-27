@@ -1,11 +1,37 @@
 from action_serializer import ModelActionSerializer
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 from rest_framework.serializers import ModelSerializer
 from carts.models import CartItem
 from carts.serializers import CartItemSerializer
 from goods.serializers import GoodsSaleSerializers
 from members.serializers import UserOrderSerializers
 from order.models import Order, OrderReview, OrderDetail
+
+
+class OrderDetailCreateSerializers(ModelSerializer):
+    class Meta:
+        model = OrderDetail
+        fields = (
+            'delivery_cost',
+            'point',
+
+            'consumer',
+            'created_at',
+            'receiver',
+            'receiver_phone',
+            'delivery_type',
+            'zip_code',
+            'address',
+            'receiving_place',
+            'entrance_password',
+            'free_pass',
+            'etc',
+
+            'extra_message',
+            'message',
+            'payment_type'
+        )
 
 
 class OrderDetailSerializers(ModelSerializer):
@@ -75,6 +101,12 @@ class OrderCreateSerializers(ModelSerializer):
             'user',
             'items',
         )
+
+    def validate_items(self, value):
+        for cart_item in value:
+            if cart_item.goods.stock.count == 0:
+                raise ValidationError('상품의 재고가 없습니다!')
+        return value
 
 
 class ReviewUpdateSerializers(ModelSerializer):

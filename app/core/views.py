@@ -17,12 +17,12 @@ def index(request):
             "Content-type": "application/x-www-form-urlencoded;charset=utf-8",
         }
         try:
-            order_ins = Order.objects.get(pk=1)
+            order_ins = Order.objects.last()
         except Order.DoesNotExist:
             order_ins = None
 
         if order_ins:
-            cart_ins = order_ins.items.first().cart
+            cart_ins = order_ins.items.last().cart
 
             params = {
                 "cid": "TC0ONETIME",  # 테스트용 코드
@@ -36,9 +36,8 @@ def index(request):
                 "cancel_url": "https://developers.kakao.com/fail",
                 "fail_url": "https://developers.kakao.com/cancel",
             }
-            del request.session['tid']
 
-            request.session.modified = True
+
 
             res = requests.post(URL, headers=headers, params=params)
             request.session['tid'] = res.json()['tid']  # 결제 고유 번호, 20자 결제 승인시 사용할 tid를 세션에 저장
@@ -46,6 +45,7 @@ def index(request):
             request.session['partner_user_id'] = 'admin'
             next_url = res.json()['next_redirect_pc_url']  # 카카오톡 결제 페이지 Redirect URL
 
+            request.session.modified = True
         return redirect(next_url)
     return render(request, 'base.html')
 
