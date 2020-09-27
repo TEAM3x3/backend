@@ -1,4 +1,5 @@
 from action_serializer import ModelActionSerializer
+from django.db import transaction
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.serializers import ModelSerializer
@@ -32,6 +33,13 @@ class OrderDetailCreateSerializers(ModelSerializer):
             'message',
             'payment_type'
         )
+
+    @transaction.atomic()
+    def create(self, validated_data):
+        ins = super().create(validated_data)
+        ins.status = '결제완료'
+        ins.save()
+        return ins
 
 
 class OrderDetailSerializers(ModelSerializer):

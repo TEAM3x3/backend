@@ -100,7 +100,6 @@ class OrderDetail(models.Model):
     )
 
 
-
 class OrderReview(models.Model):
     """
     1. 주문이 완료된 상품은 리뷰를 달 수 있다.

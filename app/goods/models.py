@@ -76,7 +76,8 @@ class Goods(models.Model):
         if created is None:
             super().save(*args, **kwargs)
             Stock.objects.create(goods=self)
-        super().save(*args, **kwargs)
+        else:
+            super().save(*args, **kwargs)
 
     @property
     def discount_price(self):
