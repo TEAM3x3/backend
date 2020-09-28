@@ -4,7 +4,7 @@ from goods.models import Goods, GoodsDetail, Type, Category, GoodsType, GoodsExp
 
 
 class GoodsAdmin(admin.ModelAdmin):
-    list_display = ['id', 'title', 'packing_status', 'sales']
+    list_display = ['id', 'title', 'packing_status', 'sales', 'transfer']
 
 
 class GoodsDetailAdmin(admin.ModelAdmin):

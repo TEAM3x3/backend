@@ -166,4 +166,14 @@ transaction.atomic() 내부에서는 try-except 를 사용하지말자. 써야�
 
 # [Django ORM](https://medium.com/@chrisjune_13837/django-%EB%8B%B9%EC%8B%A0%EC%9D%B4-%EB%AA%B0%EB%9E%90%EB%8D%98-orm-%EA%B8%B0%EC%B4%88%EC%99%80-%EC%8B%AC%ED%99%94-592a6017b5f5)
 
-# [kakao pay blog](https://in0-pro.tistory.com/16)
+### [kakao pay blog](https://in0-pro.tistory.com/16)
+
+### [django session](https://valuefactory.tistory.com/708)
+
+### [쿠키, 세션, 캐시 장단점](https://homzzang.com/b/css)
+#### [세션문서](http://rmaru.com/open/django_%EC%84%B8%EC%85%98_%EC%82%AC%EC%9A%A9%ED%95%98%EA%B8%B0)
+
+#### [django filters](https://django-filter.readthedocs.io/en/stable/guide/rest_framework.html)
+
+
+### [datetime calculate](https://stackoverflow.com/questions/31432397/calculate-datefield-until-days-in-django)

@@ -46,6 +46,9 @@ class OrderDetail(models.Model):
         RIGHT_AFTER = '직후', ('직후')
         AM_7 = '오전7시', ('오전 7시')
 
+    class Payment_Type(models.TextChoices):
+        KAKAO = '카카오페이', ('카카오페이')
+
     """
     1. 결제 정보 - 상품 금액(total_payment), 배송비, 상품 할인 금액(discount_price), 쿠폰 할인, 결제 금액(discount_payment), 적립 금액(point)
     2. 주문 정보 - 주문 번호( order.id), 주문자 명 (request.user), 보내는 분 (request.user), 결제 일시 (order.created_at)
@@ -79,18 +82,22 @@ class OrderDetail(models.Model):
 
     message = models.CharField(choices=Message_Choice.choices, max_length=5, help_text='배송 완료 메세지 전송')
 
+    # 결제 정보
+    payment_type = models.CharField(choices=Payment_Type.choices, help_text='결제 정보', null=True, max_length=10,
+                                    default=Payment_Type.KAKAO)
+
+    """
+    # 질문 , 강사님이 perform create 의 경우 값을 넣으라고 하셨던 말씀이 기억나서 해 보았는데, {{local}}/api/users/1/orders 의 경우 
+    view에서 nested의 값을 받고, 
+        def perform_create(self, serializer):
+            order_instance = Order.objects.get(pk=self.kwargs['order_pk'])
+            serializer.save(order=order_instance)
+    로 하고 serializers fields 에서는 order 에 대한 필드를 넣지 않고 생성하여 구현하였습니다. 말씀하신게 맞나요???
+    """
     order = models.OneToOneField(
         'order.Order',
         on_delete=models.CASCADE,
     )
-
-
-#
-# class Payment(models.Model):
-#     """
-#     결제에 대한 데이터 생성 후,  order OTO 로 참조.
-#     """
-#     order = models.OneToOneField('order.Order')
 
 
 class OrderReview(models.Model):
