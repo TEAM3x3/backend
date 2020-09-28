@@ -32,14 +32,13 @@ class UserTestCase(APITestCase):
     def test_create(self):
         data = {
             "username": "test3",
-            "user_id": "test3",
+            "nickname": "test3",
             "password": "1111",
             "phone": "010-1111-1111",
             "birthday": "1994-11-15",
             "email": "test@test.com",
             "address": "test",
             "gender": "N",
-            "name": "test"
         }
         response = self.client.post('/api/users', data=data)
 

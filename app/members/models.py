@@ -35,6 +35,7 @@ class UserAddress(models.Model):
     address = models.CharField(max_length=200)
     detail_address = models.CharField(max_length=200)
     require_message = models.CharField('요청 사항', max_length=100)
+    status = models.CharField('기본 배송지', max_length=1, default=False)
     receiving_place = models.CharField('받으실 장소', max_length=3,
                                        choices=Location_Choice.choices,
                                        default=Location_Choice.ETC,

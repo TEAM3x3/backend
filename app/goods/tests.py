@@ -99,4 +99,3 @@ class GoodsTest(APITestCase):
 
         self.assertEqual(goods_name, response.data[0]['title'])
         self.assertTrue(goods_name in response.data[0]['title'])
-        self.fail()

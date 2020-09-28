@@ -10,7 +10,7 @@ User = get_user_model()
 class UserAddressSerializers(ModelSerializer):
     class Meta:
         model = UserAddress
-        fields = ('id', 'address', 'detail_address', 'require_message', 'user')
+        fields = ('id', 'address', 'detail_address', 'require_message', 'status', 'user')
 
     def create(self, validated_data):
         if validated_data['status'] == 'T':
