@@ -2,6 +2,8 @@ from action_serializer import ModelActionSerializer
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
+from rest_framework.validators import UniqueTogetherValidator
+
 from members.models import UserAddress, UserSearch, KeyWord
 
 User = get_user_model()
@@ -44,14 +46,13 @@ class UserSerializer(ModelActionSerializer):
     class Meta:
         model = User
 
-        fields = ('id', 'username', 'password', 'email', 'phone', 'nickname', 'gender', 'address')
+        fields = ('id', 'username', 'password', 'email', 'phone', 'nickname', 'gender', 'address',)
 
         action_fields = {
-            'login': {'fields': ('username', 'password')},
+            'login': {'fields': ('username', 'password',)},
             'check_username': {'fields': ('username',)},
             'check_email': {'fields': ('email',)},
-            'userinfo_check': {'fields': ('password',)},
-            # 'userinfo_edit': {'fields': ('id')},
+            'find_id': {'fields': ('nickname', 'email', 'username',)},
         }
 
     def create(self, validated_data):
@@ -68,6 +69,12 @@ class UserSearchSerializer(ModelActionSerializer):
     class Meta:
         model = UserSearch
         fields = ('id', 'user', 'keyword',)
+        validators = [
+            UniqueTogetherValidator(
+                queryset=UserSearch.objects.all(),
+                fields=['user', 'keyword']
+            )
+        ]
 
     def __str__(self):
         return self.keyword
@@ -83,3 +90,4 @@ class UserOrderSerializers(ModelSerializer):
     class Meta:
         model = User
         fields = ('username',)
+

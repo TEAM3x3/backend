@@ -89,6 +89,15 @@ class UserViewSet(ModelViewSet):
         serializers = ReviewSerializers(qs, many=True)
         return Response(serializers.data, status=status.HTTP_200_OK)
 
+    @action(detail=False)
+    def find_id(self, request, *args, **kwargs):
+        nickname = request.query_params.get('nickname')
+        email = request.query_params.get('email')
+        user_qs = User.objects.filter(nickname=nickname, email=email)
+        serializer = self.serializer_class(user_qs, many=True,)
+        print(serializer)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 class UserAddressViewSet(ModelViewSet):
     queryset = UserAddress.objects.all()

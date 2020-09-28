@@ -8,6 +8,7 @@ from goods.models import Goods, Type, Category, DeliveryInfoImageFile
 from goods.serializers import GoodsSerializers, DeliveryInfoSerializers, CategoriesSerializers, GoodsSaleSerializers
 from rest_framework.filters import OrderingFilter
 from members.models import UserSearch, KeyWord
+from members.serializers import UserSearchSerializer
 from order.models import OrderReview
 from order.serializers import ReviewSerializers
 
@@ -93,11 +94,6 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
     def goods_search(self, request, *args, **kwargs):
         search_word = self.request.GET.get('word', '')
         if search_word:
-            # 유저는 '가지'라는 키워드를 검색
-            # 유저는 최근 검색어 '가지'
-            # '가지'라는 키워드는 1번 검색이 됨
-            # word_ins, __Keyword.objects.get_or_create(
-            # UserSearch.objects.create(user=request.user, keyword=word_ins)
             key_word, __ = KeyWord.objects.get_or_create(name=search_word)
             word = UserSearch.objects.create(user=request.user, keyword=key_word)
             qs = self.queryset.filter(title__icontains=key_word)
@@ -108,6 +104,7 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
     @action(detail=False)
     def sales_goods(self, request, *args, **kwargs):
         count_all = self.queryset.filter(sales__discount_rate__isnull=False).count()
+        max_random_item_count = 8
         sales_items = []
 
         while True:
@@ -119,7 +116,7 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
                 continue
             else:
                 sales_items.append(random_save)
-            if len(sales_items) == 8:
+            if len(sales_items) == max_random_item_count:
                 break
         save_ins = self.queryset.filter(pk__in=sales_items)
         serializer = GoodsSaleSerializers(save_ins, many=True)
