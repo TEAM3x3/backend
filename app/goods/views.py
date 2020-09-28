@@ -64,17 +64,21 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
 
     @action(detail=False, url_path='sale', )
     def sale(self, request):
+        # qs = self.queryset.filter(sales__discount_rate__isnull=False)
+        # params = self.request.query_params.get('ordering', None)
+        # transfer = self.request.query_params.get('transfer', None)
+        # if not (params or transfer):
+        #     return Response({"message": "params and transfer is requirement"}, status=status.HTTP_400_BAD_REQUEST)
+        # elif not transfer in ['샛별배송 ONLY', '샛별배송/택배배송']:
+        #     return Response({"message": "transfer is invalid"}, status=status.HTTP_400_BAD_REQUEST)
+        # qs = qs.filter(transfer=transfer)
+        # qs = qs.order_by(params)
+        # serializer = self.get_serializer(qs, many=True)
+        # return Response(serializer.data)
         qs = self.queryset.filter(sales__discount_rate__isnull=False)
-        params = self.request.query_params.get('ordering', None)
-        transfer = self.request.query_params.get('transfer')
-        if not (params or transfer):
-            return Response({"message": "params and transfer is requirement"}, status=status.HTTP_400_BAD_REQUEST)
-        elif not transfer in ['샛별배송 ONLY', '샛별배송/택배배송']:
-            return Response({"message": "transfer is invalid"}, status=status.HTTP_400_BAD_REQUEST)
-        qs = qs.filter(transfer=transfer)
-        qs = qs.order_by(params)
-        serializer = self.get_serializer(qs, many=True)
-        return Response(serializer.data)
+        qs = self.filter_queryset(qs)
+        serializers = self.get_serializer(qs, many=True)
+        return Response(serializers.data, status=status.HTTP_200_OK)
 
     @action(detail=False)
     def goods_search(self, request, *args, **kwargs):
@@ -119,6 +123,20 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
         qs = OrderReview.objects.filter(goods__pk=goods_pk)
         serializers = ReviewSerializers(qs, many=True)
         return Response(serializers.data, status=status.HTTP_200_OK)
+
+    @action(detail=False)
+    def best(self, request):
+        # Cannot reorder a query once a slice has been taken.
+        # qs = self.queryset.order_by('-sales_count')[:30]
+        # qs = self.filter_queryset(qs)
+        # serializers = self.serializer_class(qs, many=True)
+        # return Response(serializers.data, status=status.HTTP_200_OK)
+
+        # queryset = self.filter_queryset(self.get_queryset())
+        # queryset = queryset.order_by('-sales_count')[:30] // 앞에서 filter_queryset으로 qs을 가져왔는데, 새로운 qs를 가져옴  > 무의미
+        # serializers = self.serializer_class(queryset, many=True)
+        # return Response(serializers.data, status=status.HTTP_200_OK)
+        pass
 
 
 class CategoryViewSet(mixins.ListModelMixin, GenericViewSet):
