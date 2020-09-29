@@ -43,6 +43,7 @@ class UserAddress(models.Model):
     free_pass = models.BooleanField('공동현관 자유출입 가능 여부', default=False)
     etc = models.CharField('기타', max_length=100, null=True)
     message = models.BooleanField('배송완료 메시지 전송 여부', default=False, null=True)
+    status = models.CharField('기본 배송지', max_length=1, default=False)
 
     user = models.ForeignKey(
         'members.User',
@@ -67,9 +68,11 @@ class UserSearch(models.Model):
 class KeyWord(models.Model):
     name = models.CharField(max_length=100, unique=True)
     count = models.IntegerField(default=0)
+    updated_at = models.DateField(auto_now=True)
 
     def __str__(self):
         return self.name
+
 
 # class Profile(models.Model):
 
@@ -82,3 +85,4 @@ class KeyWord(models.Model):
 #     coupon = models.CharField('쿠폰', max_length=1, choices=COUPON_CHOICES)
 #     accumulated_money = models.IntegerField('적립금', default=0)
 #     point = models.IntegerField('포인트', default=0)
+

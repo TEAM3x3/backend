@@ -12,7 +12,7 @@ User = get_user_model()
 class UserAddressSerializers(ModelSerializer):
     class Meta:
         model = UserAddress
-        fields = ('id', 'address', 'detail_address', 'require_message', 'user')
+        fields = ('id', 'address', 'detail_address', 'require_message', 'user', 'status')
 
     def create(self, validated_data):
         if validated_data['status'] == 'T':
@@ -64,7 +64,7 @@ class UserSerializer(ModelActionSerializer):
 
 
 class UserSearchSerializer(ModelActionSerializer):
-    keyword = serializers.StringRelatedField()
+    # keyword = serializers.StringRelatedField()
 
     class Meta:
         model = UserSearch
@@ -75,9 +75,6 @@ class UserSearchSerializer(ModelActionSerializer):
                 fields=['user', 'keyword']
             )
         ]
-
-    def __str__(self):
-        return self.keyword
 
 
 class PopularSerializer(ModelActionSerializer):
@@ -90,4 +87,3 @@ class UserOrderSerializers(ModelSerializer):
     class Meta:
         model = User
         fields = ('username',)
-

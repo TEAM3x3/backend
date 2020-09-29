@@ -83,10 +83,23 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
 
     @action(detail=False)
     def goods_search(self, request, *args, **kwargs):
-        search_word = self.request.GET.get('word', '')
+        search_word = self.request.GET.get('word', None)
         if search_word:
             key_word, __ = KeyWord.objects.get_or_create(name=search_word)
-            word = UserSearch.objects.create(user=request.user, keyword=key_word)
+            user_search_data = {
+                "keyword": key_word.id,
+                "user": request.user.id
+            }
+
+            try:
+                search_ins = UserSearch.objects.get(user=request.user, keyword=key_word)
+                serializers = UserSearchSerializer(search_ins, data=user_search_data, partial=True)
+            except UserSearch.DoesNotExist:
+                serializers = UserSearchSerializer(data=user_search_data)
+            serializers.is_valid(raise_exception=True)
+            serializers.save()
+            # word = UserSearch.objects.create(user=request.user, keyword=key_word)
+
             qs = self.queryset.filter(title__icontains=key_word)
             serializer = self.serializer_class(qs, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
