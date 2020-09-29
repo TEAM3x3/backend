@@ -26,7 +26,7 @@ class GoodsTest(APITestCase):
         detail.goods = self.g1
         detail.save()
 
-        self.g2 = baker.make('goods.Goods', price=1000)
+        self.g2 = baker.make('goods.Goods', price=1_000)
         baker.make('goods.GoodsExplain', _quantity=1, goods=self.g2)
         baker.make('goods.GoodsDetail', _quantity=1, goods=self.g2)
 

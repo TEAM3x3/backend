@@ -57,3 +57,32 @@ class CartTestCase(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
+    def test_cart_item_update(self):
+        test_user = self.user
+        self.client.force_authenticate(user=test_user)
+        test_goods = Goods.objects.all()
+        goods1 = Goods.objects.first()
+
+        add_cart = CartItem.objects.create(goods=goods1, cart=test_user.cart, quantity=3)
+        cart_item = CartItem.objects.filter(cart=test_user.cart)[0]
+        data = {
+            "goods": goods1.pk,
+            "quantity": 10,
+            "cart": test_user.pk
+        }
+        item1 = CartItem.objects.first()
+        response = self.client.patch(f'/api/cart/{test_user.pk}/item/{item1.pk}', data=data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_cart_item_delete(self):
+        test_user = self.user
+        self.client.force_authenticate(user=test_user)
+        test_goods = Goods.objects.all()
+        goods1 = Goods.objects.first()
+
+        add_cart = CartItem.objects.create(goods=goods1, cart=test_user.cart, quantity=3)
+        item1 = CartItem.objects.first()
+        response = self.client.delete(f'/api/cart/{test_user.pk}/item/{item1.pk}')
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
