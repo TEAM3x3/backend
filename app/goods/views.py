@@ -11,6 +11,7 @@ from goods.filters import GoodsFilter
 from goods.models import Goods, Category, DeliveryInfoImageFile
 from goods.serializers import GoodsSerializers, DeliveryInfoSerializers, CategoriesSerializers, GoodsSaleSerializers
 from members.models import UserSearch, KeyWord
+from members.serializers import UserSearchSerializer
 from order.models import OrderReview
 from order.serializers import ReviewSerializers
 
@@ -82,15 +83,23 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
 
     @action(detail=False)
     def goods_search(self, request, *args, **kwargs):
-        search_word = self.request.GET.get('word', '')
+        search_word = self.request.GET.get('word', None)
         if search_word:
-            # 유저는 '가지'라는 키워드를 검색
-            # 유저는 최근 검색어 '가지'
-            # '가지'라는 키워드는 1번 검색이 됨
-            # word_ins, __Keyword.objects.get_or_create(
-            # UserSearch.objects.create(user=request.user, keyword=word_ins)
             key_word, __ = KeyWord.objects.get_or_create(name=search_word)
-            word = UserSearch.objects.create(user=request.user, keyword=key_word)
+            user_search_data = {
+                "keyword": key_word.id,
+                "user": request.user.id
+            }
+
+            try:
+                search_ins = UserSearch.objects.get(user=request.user, keyword=key_word)
+                serializers = UserSearchSerializer(search_ins, data=user_search_data, partial=True)
+            except UserSearch.DoesNotExist:
+                serializers = UserSearchSerializer(data=user_search_data)
+            serializers.is_valid(raise_exception=True)
+            serializers.save()
+            # word = UserSearch.objects.create(user=request.user, keyword=key_word)
+
             qs = self.queryset.filter(title__icontains=key_word)
             serializer = self.serializer_class(qs, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)

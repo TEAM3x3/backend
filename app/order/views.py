@@ -199,3 +199,4 @@ class ReviewAPI(mixins.CreateModelMixin,
             return [OrderReviewPermission(), ]
         # 참고 링크 :https://stackoverflow.com/questions/35970970/django-rest-framework-permission-classes-of-viewset-method
         return [permissions() for permissions in self.permission_classes]
+9
