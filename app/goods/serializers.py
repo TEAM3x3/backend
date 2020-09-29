@@ -1,7 +1,6 @@
 from action_serializer import ModelActionSerializer, serializers
 from rest_framework.serializers import ModelSerializer
-from goods.models import Category, GoodsExplain, GoodsDetailTitle, GoodsDetail, Goods, DeliveryInfoImageFile, \
-    DeliveryInfoImageImageFile, Type, SaleInfo, Tag, Tagging
+from goods.models import Category, GoodsExplain, GoodsDetailTitle, GoodsDetail, Goods, Type, SaleInfo, Tag, Tagging
 
 
 # 상품 세일 정보
@@ -120,22 +119,6 @@ class GoodsSerializers(ModelActionSerializer):
 
     def get_discount_price(self, obj):
         return obj.discount_price
-
-
-class DeliveryInfoImageSerializers(ModelSerializer):
-    class Meta:
-        model = DeliveryInfoImageFile
-        fields = (
-            'image',
-        )
-
-
-class DeliveryInfoSerializers(ModelSerializer):
-    images = DeliveryInfoImageSerializers(many=True)
-
-    class Meta:
-        model = DeliveryInfoImageImageFile
-        fields = ('address_img', 'images')
 
 
 class TypeSerializers(ModelSerializer):

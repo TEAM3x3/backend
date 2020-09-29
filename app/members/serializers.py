@@ -17,6 +17,11 @@ class UserAddressSerializers(ModelSerializer):
     class Meta:
         model = UserAddress
         fields = ('id', 'address', 'detail_address', 'status', 'user')
+        examples = {
+            'address': '성수동',
+            'detail_address': "제강빌딩",
+            'status': 'T',
+        }
 
     def update(self, instance, validated_data):
         qs = self.Meta.model.objects.all().exclude(id=instance.id)
@@ -27,7 +32,6 @@ class UserAddressSerializers(ModelSerializer):
 
         self.Meta.model.objects.bulk_update(bulk_list, ['status'])
         return super().update(instance, validated_data)
-
 
     def create(self, validated_data):
         if validated_data['status'] == 'T':

@@ -8,8 +8,8 @@ from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
 from goods.filters import GoodsFilter
-from goods.models import Goods, Category, DeliveryInfoImageFile
-from goods.serializers import GoodsSerializers, DeliveryInfoSerializers, CategoriesSerializers, GoodsSaleSerializers
+from goods.models import Goods, Category
+from goods.serializers import GoodsSerializers, CategoriesSerializers, GoodsSaleSerializers
 from members.models import UserSearch, KeyWord
 from members.serializers import UserSearchSerializer
 from order.models import OrderReview
@@ -146,8 +146,3 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
 class CategoryViewSet(mixins.ListModelMixin, GenericViewSet):
     queryset = Category.objects.all()
     serializer_class = CategoriesSerializers
-
-
-class DeliveryViewSet(mixins.ListModelMixin, GenericViewSet):
-    queryset = DeliveryInfoImageFile.objects.all()
-    serializer_class = DeliveryInfoSerializers
