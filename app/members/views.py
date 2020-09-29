@@ -1,12 +1,13 @@
 from django.contrib.auth import get_user_model
-from rest_framework import status, mixins
-from django.core.mail import EmailMessage
+from rest_framework import mixins
 from rest_framework import status
 
 from rest_framework.authtoken.models import Token
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
+
+from members.instructors import MyAutoSchema
 from members.models import UserAddress, UserSearch, KeyWord
 from members.serializers import UserSerializer, UserAddressSerializers, UserSearchSerializer, PopularSerializer, \
     UserOrderAddressSerializers
@@ -124,8 +125,12 @@ class UserAddressViewSet(mixins.CreateModelMixin,
                          mixins.DestroyModelMixin,
                          mixins.ListModelMixin,
                          GenericViewSet):
+    """
+    list - 마이컬리 > 배송지관리 저장되어 있는 배송지 정보 조회, 정상적인 요청시 200 OK와 리스트 응답
+    """
     queryset = UserAddress.objects.all()
     serializer_class = UserAddressSerializers
+    swagger_schema = MyAutoSchema  # 추가
 
     def get_queryset(self):
         try:
@@ -141,6 +146,13 @@ class UserAddressViewSet(mixins.CreateModelMixin,
 
     @action(detail=False, methods=['post'])
     def order(self, request, *args, **kwargs):
+        """
+        Order API 주문서 작성 시, 새로운 주소를 생성할 경우에 사용하는 api
+
+        ---
+        test
+
+        """
         serializers = self.get_serializer(data=request.data)
         serializers.is_valid(raise_exception=True)
         serializers.save()

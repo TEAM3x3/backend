@@ -187,3 +187,11 @@ transaction.atomic() 내부에서는 try-except 를 사용하지말자. 써야�
 ### [인증 방법, header, session&cookie, JWT](https://tansfil.tistory.com/58)
 
 ### [django 검색엔진 - django full text]
+
+### [db indexing](https://medium.com/@dlarkqrl4966/how-to-create-an-index-in-django-without-downtime-c9a5a194877a)
+
+### [drf yasg](https://velog.io/@rubycho/%EB%AC%B8%EC%84%9C%ED%99%94%EB%A5%BC-%EC%9C%84%ED%95%9C-drf-yasg-%EC%A0%81%EC%9A%A9%ED%95%98%EA%B8%B0)
+
+### [drf yasg 문서 자동화](https://medium.com/towncompany-engineering/%EC%B9%9C%EC%A0%88%ED%95%98%EA%B2%8C-django-rest-framework-api-%EB%AC%B8%EC%84%9C-%EC%9E%90%EB%8F%99%ED%99%94%ED%95%98%EA%B8%B0-drf-yasg-c835269714fc)
+
+### [drf yasg example value](https://item4.blog/2020-03-04/Add-Example-on-drf-yasg/)

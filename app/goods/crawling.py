@@ -1769,36 +1769,35 @@ def get_type():
     return type_list
 
 
-def get_delivery():
-    from selenium import webdriver
-    from goods.models import DeliveryInfo
-    from goods.models import DeliveryInfoImage
-
-    driver = webdriver.Chrome('/Users/mac/projects/ChromeWebDriver/chromedriver')
-
-    driver.get('https://www.kurly.com/shop/board/view.php?id=notice&no=64')
-
-    address_img = driver.find_element_by_xpath('//*[@id="noticeView"]/div/a/img').get_attribute('src')
-
-    GOODS_IMAGE_DIR = os.path.join(MEDIA_ROOT, f'goods/address/')
-    if not os.path.exists(GOODS_IMAGE_DIR):
-        os.makedirs(GOODS_IMAGE_DIR, exist_ok=True)
-    # image_save_name = os.path.join(GOODS_IMAGE_DIR, f'address_image.jpg')
-    # urllib.request.urlretrieve(address_img, image_save_name)
-    #
-    # deli_image = open(os.path.join(GOODS_IMAGE_DIR, f'{image_save_name}'), 'rb')
-
-    # deli_ins = DeliveryInfo.objects.create(address_img=File(deli_image))
-    deli_ins = DeliveryInfo.objects.first()
-    images = driver.find_elements_by_xpath('//*[@id="noticeView"]/div/img')
-    for index, img in enumerate(images):
-        img = img.get_attribute('src')
-        image_save_name = os.path.join(GOODS_IMAGE_DIR, f'image_{index}.jpg')
-        urllib.request.urlretrieve(img, image_save_name)
-
-        image = open(os.path.join(GOODS_IMAGE_DIR, f'{image_save_name}'), 'rb')
-
-        DeliveryInfoImage.objects.create(
-            image=File(image),
-            info=deli_ins,
-        )
+# def get_delivery():
+#     from selenium import webdriver
+#
+#
+#     driver = webdriver.Chrome('/Users/mac/projects/ChromeWebDriver/chromedriver')
+#
+#     driver.get('https://www.kurly.com/shop/board/view.php?id=notice&no=64')
+#
+#     address_img = driver.find_element_by_xpath('//*[@id="noticeView"]/div/a/img').get_attribute('src')
+#
+#     GOODS_IMAGE_DIR = os.path.join(MEDIA_ROOT, f'goods/address/')
+#     if not os.path.exists(GOODS_IMAGE_DIR):
+#         os.makedirs(GOODS_IMAGE_DIR, exist_ok=True)
+#     # image_save_name = os.path.join(GOODS_IMAGE_DIR, f'address_image.jpg')
+#     # urllib.request.urlretrieve(address_img, image_save_name)
+#     #
+#     # deli_image = open(os.path.join(GOODS_IMAGE_DIR, f'{image_save_name}'), 'rb')
+#
+#     # deli_ins = DeliveryInfo.objects.create(address_img=File(deli_image))
+#     deli_ins = DeliveryInfo.objects.first()
+#     images = driver.find_elements_by_xpath('//*[@id="noticeView"]/div/img')
+#     for index, img in enumerate(images):
+#         img = img.get_attribute('src')
+#         image_save_name = os.path.join(GOODS_IMAGE_DIR, f'image_{index}.jpg')
+#         urllib.request.urlretrieve(img, image_save_name)
+#
+#         image = open(os.path.join(GOODS_IMAGE_DIR, f'{image_save_name}'), 'rb')
+#
+#         DeliveryInfoImage.objects.create(
+#             image=File(image),
+#             info=deli_ins,
+#         )

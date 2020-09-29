@@ -246,20 +246,20 @@ class GoodsType(models.Model):
     )
 
 
-class DeliveryInfoImageFile(models.Model):
-    address_img = models.ImageField(upload_to='delivery_img', null=True)
-
-
-class DeliveryInfoImageImageFile(models.Model):
-    image = models.ImageField(
-        upload_to='delivery_img',
-        null=True,
-    )
-    info = models.ForeignKey(
-        'goods.DeliveryInfoImageFile',
-        on_delete=models.CASCADE,
-        related_name='images'
-    )
+# class DeliveryInfoImageFile(models.Model):
+#     address_img = models.ImageField(upload_to='delivery_img', null=True)
+#
+#
+# class DeliveryInfoImageImageFile(models.Model):
+#     image = models.ImageField(
+#         upload_to='delivery_img',
+#         null=True,
+#     )
+#     info = models.ForeignKey(
+#         'goods.DeliveryInfoImageFile',
+#         on_delete=models.CASCADE,
+#         related_name='images'
+#     )
 
 
 class SaleInfo(models.Model):

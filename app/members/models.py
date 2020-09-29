@@ -78,7 +78,6 @@ class KeyWord(models.Model):
     def __str__(self):
         return self.name
 
-
 # class Profile(models.Model):
 
 #     COUPON_CHOICES = (
@@ -90,4 +89,3 @@ class KeyWord(models.Model):
 #     coupon = models.CharField('쿠폰', max_length=1, choices=COUPON_CHOICES)
 #     accumulated_money = models.IntegerField('적립금', default=0)
 #     point = models.IntegerField('포인트', default=0)
-
