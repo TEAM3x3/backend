@@ -8,7 +8,7 @@ from rest_framework.viewsets import GenericViewSet
 from order.models import Order, OrderReview, OrderDetail
 from order.permissions import OrderReviewPermission, OrderPermission
 from order.serializers import OrderCreateSerializers, ReviewSerializers, \
-    ReviewUpdateSerializers, OrderSerializers, OrderDetailSerializers, OrderDetailCreateSerializers
+    ReviewUpdateSerializers, OrderSerializers, OrderDetailCreateSerializers
 
 
 class OrderView(mixins.CreateModelMixin,
@@ -61,9 +61,9 @@ class OrderView(mixins.CreateModelMixin,
                 "cancel_url": "https://developers.kakao.com/fail",
                 "fail_url": "https://developers.kakao.com/cancel",
             }
-            del request.session['tid']
-            del request.session['partner_user_id']
             del request.session['partner_order_id']
+            del request.session['partner_user_id']
+            del request.session['tid']
             request.session.modified = True
 
             response = requests.post(URL, headers=headers, params=params)
@@ -71,7 +71,6 @@ class OrderView(mixins.CreateModelMixin,
             request.session['partner_order_id'] = order_ins.id
             request.session['partner_user_id'] = self.request.user.username
             next_url = response.json()['next_redirect_pc_url']  # 카카오톡 결제 페이지 Redirect URL
-            print(request.session['tid'])
             return Response({"next": f"{next_url}"}, status=status.HTTP_200_OK)
 
         data = {
@@ -95,27 +94,11 @@ class OrderView(mixins.CreateModelMixin,
         * view에는 로직이 들어가면 좋지 않은데 결제 정보를 디비에 넣는 형식으로 해서 serializers 를 만들고,
         serializers에 views에서 작성하였던 코드를 넣는게 올바른 방식인지 질문드립니다. >> 아니면 payment.py를 만들고 거기서 함수를 호출하는 형식으로 할까요?
         """
-        print(request.session['tid'])
         try:
             order_ins = Order.objects.get(pk=kwargs['pk'])
         except Order.DoesNotExist:
             order_ins = None
         if order_ins:
-            # # 카카오페이 취소 통신
-            # URL = 'https://kapi.kakao.com/v1/payment/cancel'
-            # headers = {
-            #     "Authorization": "KakaoAK " + "f9f70eb192ef14919735fb40a6e599f5",
-            #     "Content-type": "application/x-www-form-urlencoded;charset=utf-8",
-            # }
-            # params = {
-            #     "cid": "TC0ONETIME",
-            #     "tid":"T2810665902167272971",
-            #     "cancel_amount":"51100",
-            #     "cancel_tax_free_amount":"0",
-            # }
-            # response = requests.post(URL, headers=headers, params=params)
-            # response = response.json()
-
             # 카카오 페이 승인 통신
             URL = 'https://kapi.kakao.com/v1/payment/approve'
             headers = {
@@ -143,17 +126,17 @@ class OrderView(mixins.CreateModelMixin,
                     item.goods.save()
                     stock.save()
 
-                # order detail 을 어떻게 만들지? >> endpoint 분리
-                # order_ins.orderdetail.status = OrderDetail.Order_Status.PAYMENT_COMPLETE
-                # order_ins.orderdetail.payment_type = OrderDetail.Payment_Type.KAKAO
-                # OrderDetail.save()
-
                 response = response.json()
                 amount = response['amount']['total']
                 context = {
                     'res': response,
                     'amount': amount,
                 }
+                del request.session['partner_order_id']
+                del request.session['partner_user_id']
+                del request.session['tid']
+                request.session.modified = True
+
                 return Response(data=context, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_400_BAD_REQUEST)
 

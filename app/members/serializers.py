@@ -8,16 +8,13 @@ User = get_user_model()
 
 
 class UserAddressSerializers(ModelSerializer):
+    user = serializers.HiddenField(
+        default=serializers.CurrentUserDefault()
+    )
+
     class Meta:
         model = UserAddress
-        fields = ('id', 'address', 'detail_address', 'require_message', 'user')
-
-    def create(self, validated_data):
-        if validated_data['status'] == 'T':
-            for ins in self.Meta.model.objects.filter(user__id=self.data.get('user')):
-                ins.status = 'F'
-                ins.save()
-        return super().create(validated_data)
+        fields = ('id', 'address', 'detail_address', 'status', 'user')
 
     def update(self, instance, validated_data):
         qs = self.Meta.model.objects.all().exclude(id=instance.id)
@@ -32,7 +29,34 @@ class UserAddressSerializers(ModelSerializer):
 
     def create(self, validated_data):
         if validated_data['status'] == 'T':
-            for ins in UserAddress.objects.filter(user=self.data.get('user')):
+            for ins in UserAddress.objects.filter(user=validated_data['user']):
+                ins.status = 'F'
+                ins.save()
+        return super().create(validated_data)
+
+
+class UserOrderAddressSerializers(ModelSerializer):
+    user = serializers.HiddenField(
+        default=serializers.CurrentUserDefault()
+    )
+
+    class Meta:
+        model = UserAddress
+        fields = (
+            'id', 'address', 'detail_address', 'status', 'receiving_place', 'entrance_password', 'free_pass', 'etc',
+            'message', 'extra_message', 'user',)
+
+    def update(self, instance, validated_data):
+        bulk_list = []
+        for ins in self.Meta.model.objects.all().exclude(id=instance.id):
+            ins.status = 'F'
+            bulk_list.append(ins)
+        self.Meta.model.objects.bulk_update(bulk_list, ['status'])
+        return super().update(instance, validated_data)
+
+    def create(self, validated_data):
+        if validated_data['status'] == 'T':
+            for ins in UserAddress.objects.filter(user=validated_data['user']):
                 ins.status = 'F'
                 ins.save()
         return super().create(validated_data)
@@ -82,4 +106,3 @@ class UserOrderSerializers(ModelSerializer):
     class Meta:
         model = User
         fields = ('username',)
-

@@ -7,6 +7,7 @@ Goods.random_discount_rate()
 Goods.set_goods_packing_status()
 ```
 
+# [REST API](https://meetup.toast.com/posts/92)
 
 # 마켓컬리를 구현하면서 작성하는 일지
 ## 0819
@@ -170,10 +171,19 @@ transaction.atomic() 내부에서는 try-except 를 사용하지말자. 써야�
 
 ### [django session](https://valuefactory.tistory.com/708)
 
+
 ### [쿠키, 세션, 캐시 장단점](https://homzzang.com/b/css)
+
 #### [세션문서](http://rmaru.com/open/django_%EC%84%B8%EC%85%98_%EC%82%AC%EC%9A%A9%ED%95%98%EA%B8%B0)
 
 #### [django filters](https://django-filter.readthedocs.io/en/stable/guide/rest_framework.html)
 
 
 ### [datetime calculate](https://stackoverflow.com/questions/31432397/calculate-datefield-until-days-in-django)
+
+
+### [Session: HTTP & RESTful HTTP API](https://velog.io/@magnoliarfsit/Session-HTTP-RESTful-HTTP-API-1)
+
+### [인증 방법, header, session&cookie, JWT](https://tansfil.tistory.com/58)
+
+### [django 검색엔진 - django full text]
