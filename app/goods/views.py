@@ -11,6 +11,7 @@ from goods.filters import GoodsFilter
 from goods.models import Goods, Category, DeliveryInfoImageFile
 from goods.serializers import GoodsSerializers, DeliveryInfoSerializers, CategoriesSerializers, GoodsSaleSerializers
 from members.models import UserSearch, KeyWord
+from members.serializers import UserSearchSerializer
 from order.models import OrderReview
 from order.serializers import ReviewSerializers
 
@@ -64,29 +65,41 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
 
     @action(detail=False, url_path='sale', )
     def sale(self, request):
+        # qs = self.queryset.filter(sales__discount_rate__isnull=False)
+        # params = self.request.query_params.get('ordering', None)
+        # transfer = self.request.query_params.get('transfer', None)
+        # if not (params or transfer):
+        #     return Response({"message": "params and transfer is requirement"}, status=status.HTTP_400_BAD_REQUEST)
+        # elif not transfer in ['샛별배송 ONLY', '샛별배송/택배배송']:
+        #     return Response({"message": "transfer is invalid"}, status=status.HTTP_400_BAD_REQUEST)
+        # qs = qs.filter(transfer=transfer)
+        # qs = qs.order_by(params)
+        # serializer = self.get_serializer(qs, many=True)
+        # return Response(serializer.data)
         qs = self.queryset.filter(sales__discount_rate__isnull=False)
-        params = self.request.query_params.get('ordering', None)
-        transfer = self.request.query_params.get('transfer')
-        if not (params or transfer):
-            return Response({"message": "params and transfer is requirement"}, status=status.HTTP_400_BAD_REQUEST)
-        elif not transfer in ['샛별배송 ONLY', '샛별배송/택배배송']:
-            return Response({"message": "transfer is invalid"}, status=status.HTTP_400_BAD_REQUEST)
-        qs = qs.filter(transfer=transfer)
-        qs = qs.order_by(params)
-        serializer = self.get_serializer(qs, many=True)
-        return Response(serializer.data)
+        qs = self.filter_queryset(qs)
+        serializers = self.get_serializer(qs, many=True)
+        return Response(serializers.data, status=status.HTTP_200_OK)
 
     @action(detail=False)
     def goods_search(self, request, *args, **kwargs):
-        search_word = self.request.GET.get('word', '')
+        search_word = self.request.GET.get('word', None)
         if search_word:
-            # 유저는 '가지'라는 키워드를 검색
-            # 유저는 최근 검색어 '가지'
-            # '가지'라는 키워드는 1번 검색이 됨
-            # word_ins, __Keyword.objects.get_or_create(
-            # UserSearch.objects.create(user=request.user, keyword=word_ins)
             key_word, __ = KeyWord.objects.get_or_create(name=search_word)
-            word = UserSearch.objects.create(user=request.user, keyword=key_word)
+            user_search_data = {
+                "keyword": key_word.id,
+                "user": request.user.id
+            }
+
+            try:
+                search_ins = UserSearch.objects.get(user=request.user, keyword=key_word)
+                serializers = UserSearchSerializer(search_ins, data=user_search_data, partial=True)
+            except UserSearch.DoesNotExist:
+                serializers = UserSearchSerializer(data=user_search_data)
+            serializers.is_valid(raise_exception=True)
+            serializers.save()
+            # word = UserSearch.objects.create(user=request.user, keyword=key_word)
+
             qs = self.queryset.filter(title__icontains=key_word)
             serializer = self.serializer_class(qs, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -119,6 +132,20 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
         qs = OrderReview.objects.filter(goods__pk=goods_pk)
         serializers = ReviewSerializers(qs, many=True)
         return Response(serializers.data, status=status.HTTP_200_OK)
+
+    @action(detail=False)
+    def best(self, request):
+        # Cannot reorder a query once a slice has been taken.
+        # qs = self.queryset.order_by('-sales_count')[:30]
+        # qs = self.filter_queryset(qs)
+        # serializers = self.serializer_class(qs, many=True)
+        # return Response(serializers.data, status=status.HTTP_200_OK)
+
+        # queryset = self.filter_queryset(self.get_queryset())
+        # queryset = queryset.order_by('-sales_count')[:30] // 앞에서 filter_queryset으로 qs을 가져왔는데, 새로운 qs를 가져옴  > 무의미
+        # serializers = self.serializer_class(queryset, many=True)
+        # return Response(serializers.data, status=status.HTTP_200_OK)
+        pass
 
 
 class CategoryViewSet(mixins.ListModelMixin, GenericViewSet):

@@ -2,6 +2,8 @@ from action_serializer import ModelActionSerializer
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
+from rest_framework.validators import UniqueTogetherValidator
+
 from members.models import UserAddress, UserSearch, KeyWord
 
 User = get_user_model()
@@ -10,7 +12,8 @@ User = get_user_model()
 class UserAddressSerializers(ModelSerializer):
     class Meta:
         model = UserAddress
-        fields = ('id', 'address', 'detail_address', 'require_message', 'status', 'user')
+        fields = ('id', 'address', 'detail_address', 'require_message', 'user', 'status')
+
 
     def create(self, validated_data):
         if validated_data['status'] == 'T':
@@ -62,14 +65,17 @@ class UserSerializer(ModelActionSerializer):
 
 
 class UserSearchSerializer(ModelActionSerializer):
-    keyword = serializers.StringRelatedField()
+    # keyword = serializers.StringRelatedField()
 
     class Meta:
         model = UserSearch
         fields = ('id', 'user', 'keyword',)
-
-    def __str__(self):
-        return self.keyword
+        validators = [
+            UniqueTogetherValidator(
+                queryset=UserSearch.objects.all(),
+                fields=['user', 'keyword']
+            )
+        ]
 
 
 class PopularSerializer(ModelActionSerializer):
@@ -82,4 +88,3 @@ class UserOrderSerializers(ModelSerializer):
     class Meta:
         model = User
         fields = ('username',)
-
