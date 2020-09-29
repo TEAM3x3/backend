@@ -1,5 +1,8 @@
 from django.contrib.auth import get_user_model
 from rest_framework import status, mixins
+from django.core.mail import EmailMessage
+from rest_framework import status
+
 from rest_framework.authtoken.models import Token
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -97,6 +100,22 @@ class UserViewSet(ModelViewSet):
         user_qs = User.objects.filter(nickname=nickname, email=email)
         serializer = self.serializer_class(user_qs, many=True, )
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    # 아이디 찾기 (email 발송 api)
+    # @action(detail=False)
+    # def find_id(self, request, *args, **kwargs):
+    #     nickname = request.query_params.get('nickname')
+    #     email = request.query_params.get('email')
+    #     user_qs = User.objects.get(nickname=nickname, email=email)
+    #     user_username = user_qs.username
+    #     # print(user_qs.username)
+    #     serializer = self.serializer_class(user_qs)
+    #     subject = 'Django를 통해 발송된 메일입니다.'
+    #     to = [request.query_params.get('email')]
+    #     from_email = 'sanghee.kim1115@gmail.com'
+    #     message = f'{nickname} 님의 아이디는  {user_username} 입니다.'
+    #     EmailMessage(subject=subject, body=message, to=to, from_email=from_email).send()
+    #     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class UserAddressViewSet(mixins.CreateModelMixin,
