@@ -1,12 +1,15 @@
 from django.contrib.auth import get_user_model
+from rest_framework import status, mixins
 from django.core.mail import EmailMessage
 from rest_framework import status
+
 from rest_framework.authtoken.models import Token
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from members.models import UserAddress, UserSearch, KeyWord
-from members.serializers import UserSerializer, UserAddressSerializers, UserSearchSerializer, PopularSerializer
+from members.serializers import UserSerializer, UserAddressSerializers, UserSearchSerializer, PopularSerializer, \
+    UserOrderAddressSerializers
 from members.permissions import UserInfoOwnerOrReadOnly
 from carts.models import CartItem
 from carts.serializers import CartItemSerializer
@@ -95,7 +98,7 @@ class UserViewSet(ModelViewSet):
         nickname = request.query_params.get('nickname')
         email = request.query_params.get('email')
         user_qs = User.objects.filter(nickname=nickname, email=email)
-        serializer = self.serializer_class(user_qs, many=True,)
+        serializer = self.serializer_class(user_qs, many=True, )
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     # 아이디 찾기 (email 발송 api)
@@ -115,7 +118,12 @@ class UserViewSet(ModelViewSet):
     #     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class UserAddressViewSet(ModelViewSet):
+class UserAddressViewSet(mixins.CreateModelMixin,
+                         mixins.RetrieveModelMixin,
+                         mixins.UpdateModelMixin,
+                         mixins.DestroyModelMixin,
+                         mixins.ListModelMixin,
+                         GenericViewSet):
     queryset = UserAddress.objects.all()
     serializer_class = UserAddressSerializers
 
@@ -125,6 +133,18 @@ class UserAddressViewSet(ModelViewSet):
                 return self.queryset.filter(user_id=self.kwargs['user_pk'])
         except KeyError:
             return super().get_queryset()
+
+    def get_serializer_class(self):
+        if self.action in ['order', 'list', 'retrieve']:
+            return UserOrderAddressSerializers
+        return self.serializer_class
+
+    @action(detail=False, methods=['post'])
+    def order(self, request, *args, **kwargs):
+        serializers = self.get_serializer(data=request.data)
+        serializers.is_valid(raise_exception=True)
+        serializers.save()
+        return Response(serializers.data, status=status.HTTP_201_CREATED)
 
 
 class UserSearchViewSet(ModelViewSet):

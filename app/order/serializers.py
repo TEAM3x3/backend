@@ -106,6 +106,7 @@ class OrderCreateSerializers(ModelSerializer):
     class Meta:
         model = Order
         fields = (
+            'id',
             'user',
             'items',
         )

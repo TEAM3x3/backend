@@ -10,8 +10,8 @@ class UserAdmin(admin.ModelAdmin):
 
 
 class UserAddressAdmin(admin.ModelAdmin):
-    list_display = ['id', 'address', 'detail_address', 'require_message',
-                    'receiving_place', 'entrance_password', 'free_pass', 'etc', 'message']
+    list_display = ['id', 'address', 'detail_address', 'receiving_place', 'entrance_password', 'free_pass', 'etc',
+                    'message']
 
 
 admin.site.register(User, UserAdmin)
