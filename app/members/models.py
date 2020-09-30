@@ -39,12 +39,14 @@ class UserAddress(models.Model):
     address = models.CharField(max_length=200, help_text='주소')
     detail_address = models.CharField(max_length=200, help_text='상세주소')
     status = models.CharField(choices=AddressStatus.choices, max_length=1, help_text='기본 배송지 상태')
-    receiving_place = models.CharField('받으실 장소', max_length=3,
+    receiving_place = models.CharField(max_length=3,
                                        choices=Receiving_Choice.choices,
                                        default=Receiving_Choice.ETC,
-                                       null=True)
+                                       null=True,
+                                       help_text='받으실 장소',
+                                       )
     entrance_password = models.CharField(max_length=10, null=True, help_text='공동현관 비밀번호', )
-    free_pass = models.BooleanField(default=False, help_text='공동현관 자유출입 가능 여부', )
+    free_pass = models.BooleanField(default=False, help_text='공동현관 자유출입 가능 여부 값을 넣지 않으면 default 값은 False입니다.', )
     etc = models.CharField(max_length=100, null=True, help_text='기타', )
     message = models.BooleanField(default=False, null=True, help_text='배송완료 메시지 전송 여부', )
     extra_message = models.CharField(max_length=200, null=True,

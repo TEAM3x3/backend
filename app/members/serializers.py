@@ -51,6 +51,15 @@ class UserOrderAddressSerializers(ModelSerializer):
         fields = (
             'id', 'address', 'detail_address', 'status', 'receiving_place', 'entrance_password', 'free_pass', 'etc',
             'message', 'extra_message', 'user',)
+        examples = {
+            'id': 1,
+            "address": "아파트 까지의 정보만 저장할 예정입니다.",
+            "detail_address": "동 호수에 대한 정보입니다.",
+            "status": "T",
+            "receiving_place": "택배함",
+            "entrance_password": "1234",
+            "extra_message": "경비실 특이사항, 택배함 정보 데이터, 기타 장소 세부사항에 대한 값을 저장합니다. receiving_place에 대한 값에 종속성을 가집니다."
+        }
 
     def update(self, instance, validated_data):
         bulk_list = []
@@ -73,9 +82,15 @@ class UserSerializer(ModelActionSerializer):
 
     class Meta:
         model = User
-
         fields = ('id', 'username', 'password', 'email', 'phone', 'nickname', 'gender', 'address',)
-
+        examples = {
+            "username": "test_user1111",
+            "password": "1111",
+            "email": "test_user1111@email.com",
+            "phone": "010-1111-1111",
+            "gender": "N",
+            "address": "서울시 성동구"
+        }
         action_fields = {
             'login': {'fields': ('username', 'password',)},
             'check_username': {'fields': ('username',)},
