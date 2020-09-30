@@ -57,6 +57,24 @@ class EventAPIView(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
         """
         return super().list(request, *args, **kwargs)
 
+    def retrieve(self, request, *args, **kwargs):
+        """
+        이벤트 상세 API
+
+        ---
+        배송 정보 goods > transfer # '샛별배송 ONLY' or '샛별배송/택배배송', or Null 입니다.
+
+        상품 가격
+
+        할인률이 있다면 goods > discount_price
+
+        할인률이 없다면 goods > price
+
+        할인률 goods > sales > discount_rate
+
+        """
+        return super().retrieve(request, *args, **kwargs)
+
 
 class MainEventAPIView(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericViewSet):
     queryset = MainEvent.objects.all()
@@ -106,5 +124,14 @@ class MainEventAPIView(mixins.RetrieveModelMixin, mixins.ListModelMixin, Generic
         이벤트 상세
 
         ---
+        배송 정보 event > mainEvent > goods > transfer
+
+        상품 가격
+
+        할인률이 있다면 event > mainEvent > goods > discount_price
+
+        할인률이 없다면 event > mainEvent > goods > price
+
+        상품 할인률 event > mainEvent > goods > sales > discount_rate
         """
         return super().retrieve(request, *args, **kwargs)

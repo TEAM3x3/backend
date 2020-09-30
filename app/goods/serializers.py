@@ -68,6 +68,7 @@ class GoodsSaleSerializers(ModelSerializer):
             'title',
             'short_desc',
             'packing_status',
+            'transfer',
             'price',
             'img',
             'sales',
