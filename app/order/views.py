@@ -5,6 +5,8 @@ from rest_framework import mixins, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
+
+from core.instructors import MyAutoSchema
 from order.models import Order, OrderReview, OrderDetail
 from order.permissions import OrderReviewPermission, OrderPermission
 from order.serializers import OrderCreateSerializers, ReviewSerializers, \
@@ -182,4 +184,6 @@ class ReviewAPI(mixins.CreateModelMixin,
             return [OrderReviewPermission(), ]
         # 참고 링크 :https://stackoverflow.com/questions/35970970/django-rest-framework-permission-classes-of-viewset-method
         return [permissions() for permissions in self.permission_classes]
+
+
 9

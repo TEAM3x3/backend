@@ -7,6 +7,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
+from core.instructors import MyAutoSchema
 from goods.filters import GoodsFilter
 from goods.models import Goods, Category
 from goods.serializers import GoodsSerializers, CategoriesSerializers, GoodsSaleSerializers
@@ -146,3 +147,70 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
 class CategoryViewSet(mixins.ListModelMixin, GenericViewSet):
     queryset = Category.objects.all()
     serializer_class = CategoriesSerializers
+    swagger_schema = MyAutoSchema
+
+    def list(self, request, *args, **kwargs):
+        """
+        카테고리 요청 API
+
+        -----
+        예시
+
+        ```
+        [
+            {
+                "name": "채소",
+                "category_img": "https://pbs-13-s3.s3.amazonaws.com/category_img/icon_veggies_active_pc2x.1586324570.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAXOLZAM2NBPACFGX7%2F20200930%2Fap-northeast-2%2Fs3%2Faws4_request&X-Amz-Date=20200930T202047Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=3659617eb9b4890eb12bb12a39622d9098f37d4b8ddd1bb3b4bb9fea1d03d7b6",
+                "types": [
+                    {
+                        "name": "기본채소"
+                    },
+                    {
+                        "name": "쌈·샐러드·간편채소"
+                    },
+                    {
+                        "name": "브로콜리·특수채소"
+                    },
+                    {
+                        "name": "콩나물·버섯류"
+                    },
+                    {
+                        "name": "시금치·부추·나물"
+                    },
+                    {
+                        "name": "양파·마늘·생강·파"
+                    },
+                    {
+                        "name": "파프리카·피망·고추"
+                    }
+                ]
+            },
+            {
+                "name": "과일·견과·쌀",
+                "category_img": "https://pbs-13-s3.s3.amazonaws.com/category_img/icon_fruit_active_pc2x.1568684150.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAXOLZAM2NBPACFGX7%2F20200930%2Fap-northeast-2%2Fs3%2Faws4_request&X-Amz-Date=20200930T202047Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=fc521a1cda46700c0eadbe691231a05fb64e2aef38d03aae1149892b65a6ffdd",
+                "types": [
+                    {
+                        "name": "제철과일"
+                    },
+                    {
+                        "name": "국산과일"
+                    },
+                    {
+                        "name": "수입과일"
+                    },
+                    {
+                        "name": "냉동·건과일"
+                    },
+                    {
+                        "name": "견과류"
+                    },
+                    {
+                        "name": "쌀·잡곡"
+                    }
+                ]
+            },
+            ....
+        ]
+        ```
+        """
+        return super().list(request, *args, **kwargs)
