@@ -62,6 +62,7 @@ class Goods(models.Model):
         on_delete=models.CASCADE,
         null=True,
         related_name='goods',
+        help_text='홈-이벤트'
     )
 
     sales = models.ForeignKey(
@@ -69,6 +70,7 @@ class Goods(models.Model):
         on_delete=models.SET_NULL,
         null=True,
         related_name='goods',
+        help_text='세일정보',
     )
 
     def save(self, *args, **kwargs):

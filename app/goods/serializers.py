@@ -1,6 +1,7 @@
 from action_serializer import ModelActionSerializer, serializers
 from rest_framework.serializers import ModelSerializer
-from goods.models import Category, GoodsExplain, GoodsDetailTitle, GoodsDetail, Goods, Type, SaleInfo, Tag, Tagging
+from goods.models import Category, GoodsExplain, GoodsDetailTitle, GoodsDetail, Goods, Type, SaleInfo, Tag, Tagging, \
+    Stock
 
 
 # 상품 세일 정보
@@ -56,10 +57,17 @@ class TaggingSerializers(ModelSerializer):
         fields = ('tag',)
 
 
+class StockSerializers(ModelSerializer):
+    class Meta:
+        model = Stock
+        fields = ('id', 'count', 'updated_at')
+
+
 class GoodsSaleSerializers(ModelSerializer):
     sales = SalesInfoSerializers()
     tagging = TaggingSerializers(many=True)
     discount_price = serializers.SerializerMethodField()
+    stock = StockSerializers()
 
     class Meta:
         model = Goods
@@ -74,86 +82,9 @@ class GoodsSaleSerializers(ModelSerializer):
             'sales',
             'tagging',
             'discount_price',
+            'sales_count',
+            'stock'
         )
-        examples = {
-            "id": 2,
-            "img": "https://pbs-13-s3.s3.amazonaws.com/goods/%ED%95%9C%EB%81%BC%20%EB%8B%B9%EA%B7%BC%201%EA%B0%9C/%ED%95%9C%EB%81%BC_%EB%8B%B9%EA%B7%BC_1%EA%B0%9C_goods_image.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAXOLZAM2NBPACFGX7%2F20200916%2Fap-northeast-2%2Fs3%2Faws4_request&X-Amz-Date=20200916T073320Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=e812d91c6cf3427766138ad5efb58e54b18bcd20d63ebb614f7a069f5ea9c266",
-            "info_img": "https://pbs-13-s3.s3.amazonaws.com/goods/%ED%95%9C%EB%81%BC%20%EB%8B%B9%EA%B7%BC%201%EA%B0%9C/%ED%95%9C%EB%81%BC_%EB%8B%B9%EA%B7%BC_1%EA%B0%9C_info_image.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAXOLZAM2NBPACFGX7%2F20200916%2Fap-northeast-2%2Fs3%2Faws4_request&X-Amz-Date=20200916T073320Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=1ac806d619ba6e97edaecfb1cc7208fc0be92d7e826fb7a5bbd49762060e408d",
-            "title": "한끼 당근 1개",
-            "short_desc": "딱 하나만 필요할 때 한끼 당근",
-            "price": 1000,
-            "sales": {
-                "discount_rate": 30,
-                "contents": 'null'
-            },
-            "discount_price": 700,
-            "each": "1봉",
-            "weight": "1개",
-            "transfer": "샛별배송/택배배송",
-            "packing": "냉장/종이포장\n택배배송은 에코포장이 스티로폼으로 대체됩니다.",
-            "origin": "국산",
-            "allergy": 'null',
-            "info": 'null',
-            "expiration": "농산물로 별도의 유통기한은 없으나 가급적 빠르게 드시기 바랍니다.",
-            "explains": [
-                {
-                    "img": "https://pbs-13-s3.s3.amazonaws.com/goods/%ED%95%9C%EB%81%BC%20%EB%8B%B9%EA%B7%BC%201%EA%B0%9C/%ED%95%9C%EB%81%BC_%EB%8B%B9%EA%B7%BC_1%EA%B0%9C_image_one.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAXOLZAM2NBPACFGX7%2F20200916%2Fap-northeast-2%2Fs3%2Faws4_request&X-Amz-Date=20200916T073320Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=07b69de64c3366518f858465338d7aeb045b9382ba5be216bcb44897b0f959b9",
-                    "text_title": "베타카로틴이 풍부한 주홍빛 채소",
-                    "text_context": "한끼 당근 ",
-                    "text_description": "아삭아삭한 식감과 은은한 단맛을 지닌 당근. 김밥이나 계란말이처럼 우리 일상을 든든하게 채워주는 음식에 꼭 들어가는 반가운 채소인데요. 주홍빛 당근 하나만 더해줘도 요리의 색감이 화사하게 피어나지요. 요리에 자주 사용하는 필수 재료지만, 한 번에 많이 구비해두면 보관하기도 힘들고 쉽게 무르곤 해요. 그래서 컬리는 당근을 딱 한끼 깔끔하게 즐길 수 있는 분량만큼 담아 보내드립니다. 번거롭게 손질할 일도 없고 남은 재료를 어떻게 처리할지 걱정할 필요도 없지요. 끼니마다 신선한 채소로 다채로운 요리를 완성해보세요."
-                }
-            ],
-            "details": [
-                {
-                    "detail_title": {
-                        "title": "포장단위별 용량(중량), 수량, 크기"
-                    },
-                    "detail_desc": "1개"
-                },
-                {
-                    "detail_title": {
-                        "title": "관련법상 표시사항"
-                    },
-                    "detail_desc": "해당사항 없음"
-                },
-                {
-                    "detail_title": {
-                        "title": "생산자, 수입품의 경우 수입자를 함께 표기"
-                    },
-                    "detail_desc": "농업회사법인 (주)록야"
-                },
-                {
-                    "detail_title": {
-                        "title": "상품구성"
-                    },
-                    "detail_desc": "상품설명 및 상품이미지 참조"
-                },
-                {
-                    "detail_title": {
-                        "title": "농수산물의 원산지 표시에 관한 법률에 따른 원산지"
-                    },
-                    "detail_desc": "국산"
-                },
-                {
-                    "detail_title": {
-                        "title": "보관방법 또는 취급방법"
-                    },
-                    "detail_desc": "냉장보관"
-                },
-                {
-                    "detail_title": {
-                        "title": "제조연월일(포장일 또는 생산연도), 유통기한 또는 품질유지기한"
-                    },
-                    "detail_desc": "농산물로 유통기한 없음"
-                },
-                {
-                    "detail_title": {
-                        "title": "소비자상담 관련 전화번호"
-                    },
-                    "detail_desc": "마켓컬리 고객행복센터(1644-1107)"
-                }
-            ]
-        }
 
     def get_discount_price(self, obj):
         try:
@@ -192,6 +123,82 @@ class GoodsSerializers(ModelActionSerializer):
                   'explains',
                   'details',
                   )
+        examples = {
+                "id": 1,
+                "img": "https://pbs-13-s3.s3.amazonaws.com/goods/%5BKF365%5D%20%ED%96%87%20%EA%B0%90%EC%9E%90%201kg/KF365_%ED%96%87_%EA%B0%90%EC%9E%90_1kg_goods_image.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAXOLZAM2NBPACFGX7%2F20201001%2Fap-northeast-2%2Fs3%2Faws4_request&X-Amz-Date=20201001T162027Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=1527c8c97cd28360d770e076f214050bd526db642764ca7b330e3a380487df10",
+                "info_img": "https://pbs-13-s3.s3.amazonaws.com/goods/%5BKF365%5D%20%ED%96%87%20%EA%B0%90%EC%9E%90%201kg/KF365_%ED%96%87_%EA%B0%90%EC%9E%90_1kg_info_image.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAXOLZAM2NBPACFGX7%2F20201001%2Fap-northeast-2%2Fs3%2Faws4_request&X-Amz-Date=20201001T162027Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=7a3945e825f00b4ceda952b65585fd0e74739a9a5f85450ff19338c7d26a6394",
+                "title": "[KF365] 햇 감자 1kg",
+                "short_desc": "믿고 먹을 수 있는 상품을 합리적인 가격에, KF365",
+                "price": 2380,
+                "sales": 'null',
+                "discount_price": 'null',
+                "each": "1봉",
+                "weight": "1kg",
+                "transfer": "샛별배송/택배배송",
+                "packing": "상온/종이포장\n택배배송은 에코포장이 스티로폼으로 대체됩니다.",
+                "origin": "국내산",
+                "allergy": 'null',
+                "info": "식품 특성상 중량은 3% 내외의 차이가 발생할 수 있습니다.\n시세에 따라 가격이 변동 될 수 있습니다.\n햇빛을 피해 보관해 주시기 바라며 햇빛을 받아 껍질이나 내부가 초록색으로 변한 경우 섭취하지 마시기 바랍니다.\n'하우스 햇감자'로 배송 드립니다.",
+                "expiration": 'null',
+                "explains": [
+                    {
+                        "img": "https://pbs-13-s3.s3.amazonaws.com/goods/%5BKF365%5D%20%ED%96%87%20%EA%B0%90%EC%9E%90%201kg/KF365_%ED%96%87_%EA%B0%90%EC%9E%90_1kg_image_one.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAXOLZAM2NBPACFGX7%2F20201001%2Fap-northeast-2%2Fs3%2Faws4_request&X-Amz-Date=20201001T162027Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=3b1285ad2b67f4ba2bfe9718c5aa433f4bc9ffb08f30e97066b9e1d0e2f12941",
+                        "text_title": "포슬포슬하고 고소한 맛",
+                        "text_context": "감자 1kg ",
+                        "text_description": "간단히 쪄 먹기도 좋고, 다양한 요리와 함께 곁들여 먹기도 좋은 감자는 우리 식탁에 빼놓을 수 없는 식재료지요. 탄수화물은 물론이고 단백질, 비타민C까지 풍부해 마치 곡류와 채소를 동시에 먹은 것과 같은 효과를 줍니다. 컬리는 그때그때 유명산지 감자를 가락시장에서 수급하여 보내드립니다. 포슬포슬한 식감에 고소하고 은은한 단맛이 나 볶음, 구이, 튀김 등 다양하게 요리해서 먹을 수 있어요. 매일 식탁에 올려도 질리지 않는 감자를 컬리에서 간편하게 만나보세요."
+                    }
+                ],
+                "details": [
+                    {
+                        "detail_title": {
+                            "title": "포장단위별 용량(중량), 수량, 크기"
+                        },
+                        "detail_desc": "상품설명 및 상품이미지 참조"
+                    },
+                    {
+                        "detail_title": {
+                            "title": "관련법상 표시사항"
+                        },
+                        "detail_desc": "농산물 - 농수산물품질관리법상 유전자변형농산물 표시, 지리적 표시\n축산물 - 축산법에 따른 등급 표시, 쇠고기의 경우 이력관리에 따른 표시 유무\n수산물 - 농수산물품질관리법상 유전자변형수산물 표시, 지리적 표시\n수입식품에 해당하는 경우 “식품위생법에 따른 수입신고를 필함”의 문구"
+                    },
+                    {
+                        "detail_title": {
+                            "title": "생산자, 수입품의 경우 수입자를 함께 표기"
+                        },
+                        "detail_desc": "제품 별도 라벨 표기 참조"
+                    },
+                    {
+                        "detail_title": {
+                            "title": "상품구성"
+                        },
+                        "detail_desc": "상품설명 및 상품이미지 참조"
+                    },
+                    {
+                        "detail_title": {
+                            "title": "농수산물의 원산지 표시에 관한 법률에 따른 원산지"
+                        },
+                        "detail_desc": "상품설명 및 상품이미지 참조"
+                    },
+                    {
+                        "detail_title": {
+                            "title": "보관방법 또는 취급방법"
+                        },
+                        "detail_desc": "냉장보관"
+                    },
+                    {
+                        "detail_title": {
+                            "title": "제조연월일(포장일 또는 생산연도), 유통기한 또는 품질유지기한"
+                        },
+                        "detail_desc": "제품 별도 라벨 표기 참조"
+                    },
+                    {
+                        "detail_title": {
+                            "title": "소비자상담 관련 전화번호"
+                        },
+                        "detail_desc": "마켓컬리 고객행복센터(1644-1107)"
+                    }
+                ]
+            }
         action_fields = {
             'list': {'fields': ('id', 'title', 'short_desc', 'price', 'img',)},
             'main_page_recommend': {'fields': ('id', 'title',)},

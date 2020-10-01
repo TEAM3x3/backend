@@ -10,8 +10,7 @@ from core.instructors import MyAutoSchema
 from order.models import Order, OrderReview, OrderDetail
 from order.permissions import OrderReviewPermission, OrderPermission
 from order.serializers import OrderCreateSerializers, ReviewUpdateSerializers, OrderSerializers, \
-    OrderDetailCreateSerializers, ReviewListSerializers, \
-    ReviewCreateSerializers
+    OrderDetailCreateSerializers, ReviewListSerializers, ReviewCreateSerializers
 
 
 class OrderView(mixins.CreateModelMixin,
@@ -195,9 +194,93 @@ class ReviewAPI(mixins.CreateModelMixin,
         후기 list api
 
         ----
-        요청에 토큰이 필요합니다.
+        # /api/review 와 /api/goods/{goods_pk}/reviews 에 대한 요청의 응답 값은 다릅니다.
 
-        자기 자신이 작성한 후기를 볼 수 있습니다.
+        1. /api/review는 토큰이 헤더에 포함이 되어야 하며, 토큰에 해당하는 유저가 작성한 리뷰 리스트를 반환합니다.
+        ```
+        [
+            {
+                "id": 1,
+                "title": "update review title",
+                "content": "update review content",
+                "goods": {
+                    "id": 1,
+                    "title": "[KF365] 햇 감자 1kg",
+                    "short_desc": "믿고 먹을 수 있는 상품을 합리적인 가격에, KF365",
+                    "packing_status": "상온",
+                    "transfer": "샛별배송/택배배송",
+                    "price": 2380,
+                    "img": "https://pbs-13-s3.s3.amazonaws.com/goods/%5BKF365%5D%20%ED%96%87%20%EA%B0%90%EC%9E%90%201kg/KF365_%ED%96%87_%EA%B0%90%EC%9E%90_1kg_goods_image.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAXOLZAM2NBPACFGX7%2F20201001%2Fap-northeast-2%2Fs3%2Faws4_request&X-Amz-Date=20201001T170201Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=d5f34d0eecafc0a29eed7e2cda0018232ea609ee1f6c8c194188024c6c4b012f",
+                    "sales": null,
+                    "tagging": [],
+                    "discount_price": null,
+                    "sales_count": 6,
+                    "stock": {
+                        "id": 1,
+                        "count": 82,
+                        "updated_at": "2020-08-18T18:05:16.687000Z"
+                    }
+                }
+            },
+            {
+                "id": 2,
+                "title": "title exam",
+                "content": "content exam",
+                "goods": {
+                    "id": 2,
+                    "title": "한끼 당근 1개",
+                    "short_desc": "딱 하나만 필요할 때 한끼 당근",
+                    "packing_status": "냉장",
+                    "transfer": "샛별배송/택배배송",
+                    "price": 1000,
+                    "img": "https://pbs-13-s3.s3.amazonaws.com/goods/%ED%95%9C%EB%81%BC%20%EB%8B%B9%EA%B7%BC%201%EA%B0%9C/%ED%95%9C%EB%81%BC_%EB%8B%B9%EA%B7%BC_1%EA%B0%9C_goods_image.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAXOLZAM2NBPACFGX7%2F20201001%2Fap-northeast-2%2Fs3%2Faws4_request&X-Amz-Date=20201001T170201Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=87bfa3347b159a2086d20405b69a249591a573e5addf1552e01b1a294644baf4",
+                    "sales": {
+                        "discount_rate": 30,
+                        "contents": null
+                    },
+                    "tagging": [],
+                    "discount_price": 700,
+                    "sales_count": 68,
+                    "stock": {
+                        "id": 2,
+                        "count": 27,
+                        "updated_at": "2020-09-17T18:04:43.110000Z"
+                    }
+                }
+            }
+        ]
+        ```
+
+        2. /api/goods/{goods_pk}/reviews는 해당 상품에 대한 리뷰를 리스트 형태로 반환합니다.
+        ```
+        [
+            {
+                "id": 1,
+                "title": "update review title",
+                "content": "update review content",
+                "goods": {
+                    "id": 1,
+                    "title": "[KF365] 햇 감자 1kg",
+                    "short_desc": "믿고 먹을 수 있는 상품을 합리적인 가격에, KF365",
+                    "packing_status": "상온",
+                    "transfer": "샛별배송/택배배송",
+                    "price": 2380,
+                    "img": "https://pbs-13-s3.s3.amazonaws.com/goods/%5BKF365%5D%20%ED%96%87%20%EA%B0%90%EC%9E%90%201kg/KF365_%ED%96%87_%EA%B0%90%EC%9E%90_1kg_goods_image.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAXOLZAM2NBPACFGX7%2F20201001%2Fap-northeast-2%2Fs3%2Faws4_request&X-Amz-Date=20201001T170100Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=0c4b1b2e065fb510c9e420c24e7cdcd003761f2244352710ef229d3e496fa3b7",
+                    "sales": null,
+                    "tagging": [],
+                    "discount_price": null,
+                    "sales_count": 6,
+                    "stock": {
+                        "id": 1,
+                        "count": 82,
+                        "updated_at": "2020-08-18T18:05:16.687000Z"
+                    }
+                }
+            }
+            ...
+        ]
+        ```
+
         """
         return super().list(request, *args, **kwargs)
 
@@ -210,9 +293,20 @@ class ReviewAPI(mixins.CreateModelMixin,
         """
         return super().create(request, *args, **kwargs)
 
+    def retrieve(self, request, *args, **kwargs):
+        """
+        리뷰 상세 요청
+
+        ---
+
+        """
+        return super().retrieve(request, *args, **kwargs)
+
     def update(self, request, *args, **kwargs):
         """
         사용하지 않을 api 입니다.
+
+        ----
         """
         return super().update(request, *args, **kwargs)
 
@@ -224,7 +318,6 @@ class ReviewAPI(mixins.CreateModelMixin,
         title, content 만 수정하며, 토큰이 필요합니다.
         """
         return super().partial_update(request, *args, **kwargs)
-
 
     def destroy(self, request, *args, **kwargs):
         """
