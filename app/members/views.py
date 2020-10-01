@@ -10,12 +10,10 @@ from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from members.instructors import MyAutoSchema
 from members.models import UserAddress, UserSearch, KeyWord
 from members.serializers import UserSerializer, UserAddressSerializers, UserSearchSerializer, PopularSerializer, \
-    UserOrderAddressSerializers
+    UserOrderAddressSerializers, UserSearchListSerializer
 from members.permissions import UserInfoOwnerOrReadOnly
 from carts.models import CartItem
 from carts.serializers import CartItemSerializer
-from order.models import OrderReview
-from order.serializers import ReviewSerializers
 
 User = get_user_model()
 
@@ -49,6 +47,62 @@ class UserViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.Upd
         if user:
             return Response({"message": "이미 사용중인 ID입니다."}, status=status.HTTP_400_BAD_REQUEST)
         return Response({"message": "사용가능한 ID입니다."}, status=status.HTTP_200_OK)
+
+    def create(self, request, *args, **kwargs):
+        """
+        회원가입
+
+        ---
+
+        ```
+        # 요청 json data 예제
+        {
+            "username":"createUser1",
+            "password":"1111",
+            "email":"testUser1@user.com",
+            "phone":"1112223333",
+            "nickname":"관리지",
+            "address": "서울시 성동구"
+
+        }
+
+        # 응답 예시 status  201 created
+        {
+            "id": 4,
+            "username": "createUser2",
+            "email": "testUser2@user.com",
+            "phone": "1112223333",
+            "nickname": "관리지",
+            "gender": "N",
+            "address": [
+                {
+                    "id": 7,
+                    "address": "서울시 성동구",
+                    "detail_address": "",
+                    "status": "T"
+                }
+            ]
+        }
+        ```
+        """
+        return super().create(request, *args, **kwargs)
+
+    def update(self, request, *args, **kwargs):
+        """
+        사용하지 않습니다.
+
+        -----
+        """
+        return super().update(request, *args, **kwargs)
+
+    def partial_update(self, request, *args, **kwargs):
+        """
+        사용자 업데이트
+
+        ----
+
+        """
+        return super().partial_update(request, *args, **kwargs)
 
     @action(detail=False, methods=['post'])
     def login(self, request):
@@ -135,26 +189,6 @@ class UserViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.Upd
         return Response(serializers.data, status=status.HTTP_200_OK)
 
     @action(detail=False)
-    def reviews(self, request):
-        """
-        마이컬리 - 작성 완료 후기
-
-        ----
-        작성 완료 된 데이터는 리뷰 데이터의 형태로 나타납니다.
-        [
-          {
-            "id": 1,
-            "title": "test create",
-            "content": "contnet create",
-            "goods": 1
-          }
-        ]
-        """
-        qs = OrderReview.objects.filter(user=request.user)
-        serializers = ReviewSerializers(qs, many=True)
-        return Response(serializers.data, status=status.HTTP_200_OK)
-
-    @action(detail=False)
     def find_id(self, request, *args, **kwargs):
         """
         아이디 찾기
@@ -169,22 +203,6 @@ class UserViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.Upd
         user_qs = User.objects.filter(nickname=nickname, email=email)
         serializer = self.serializer_class(user_qs, many=True, )
         return Response(serializer.data, status=status.HTTP_200_OK)
-
-    # 아이디 찾기 (email 발송 api)
-    # @action(detail=False)
-    # def find_id(self, request, *args, **kwargs):
-    #     nickname = request.query_params.get('nickname')
-    #     email = request.query_params.get('email')
-    #     user_qs = User.objects.get(nickname=nickname, email=email)
-    #     user_username = user_qs.username
-    #     # print(user_qs.username)
-    #     serializer = self.serializer_class(user_qs)
-    #     subject = 'Django를 통해 발송된 메일입니다.'
-    #     to = [request.query_params.get('email')]
-    #     from_email = 'sanghee.kim1115@gmail.com'
-    #     message = f'{nickname} 님의 아이디는  {user_username} 입니다.'
-    #     EmailMessage(subject=subject, body=message, to=to, from_email=from_email).send()
-    #     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class UserAddressViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin,
@@ -207,7 +225,7 @@ class UserAddressViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mix
 
     def list(self, request, *args, **kwargs):
         """
-        list
+        {user_pk}가 가진 address list api
 
         `http://13.209.33.72/api/users/{user_pk}/address` get
 
@@ -218,7 +236,7 @@ class UserAddressViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mix
 
     def create(self, request, *args, **kwargs):
         """
-        create
+        address create
 
         `http://13.209.33.72/api/users/{user_pk}/address` post
         ----
@@ -226,27 +244,43 @@ class UserAddressViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mix
         """
         return super().create(request, *args, **kwargs)
 
+    def retrieve(self, request, *args, **kwargs):
+        """
+        주소 상제 요청 api
+
+        ----
+        """
+        return super().retrieve(request, *args, **kwargs)
+
     def update(self, request, *args, **kwargs):
         """
-        update 해당 요청은 사용하지 않습니다.
+        해당 요청은 사용하지 않습니다.
+
+        ---
         """
         return super().update(request, *args, **kwargs)
 
     def partial_update(self, request, *args, **kwargs):
         """
-        partial update
+        주소 데이터 변경
 
         `http://13.209.33.72/users/{user_pk}/address/{id}` patch
         -----
 
-        해당 요청은 배송지 입력 및, 마이컬리 - 배송지 변경에서 사용을 할 수 있습니다.
+        해당 요청은 주문서 - 배송지 입력 및, 마이컬리 - 배송지 변경에서 사용을 할 수 있습니다.
 
-        받는 분 이름, 받는 분 휴대폰은 모델링에서 고려를 하지 못했습니다.. 다시 리팩토링을 해야 할 것 같습니다.
+        받는 분 이름, 받는 분 휴대폰은 모델링에서 고려를 하지 못했습니다.
+
+        아래 시리얼라이저를 참고하여 수정을 원하는 데이터를 넘겨주시면 됩니다.
+
         """
         return super().update(request, *args, **kwargs)
 
     def destroy(self, request, *args, **kwargs):
         """
+        주소 삭제
+
+        ----
         토큰이 필요하지 않습니다.
         """
         return super().destroy(request, *args, **kwargs)
@@ -269,25 +303,39 @@ class UserAddressViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mix
         return Response(serializers.data, status=status.HTTP_201_CREATED)
 
 
-class UserSearchViewSet(ModelViewSet):
+class UserSearchViewSet(mixins.ListModelMixin, GenericViewSet):
     queryset = UserSearch.objects.all()
     serializer_class = UserSearchSerializer
+    swagger_schema = MyAutoSchema
 
     def get_queryset(self):
         try:
             if self.kwargs['user_pk']:
-                return self.queryset.filter(user_id=self.kwargs['user_pk']).order_by('-id')
+                return self.queryset.filter(user_id=self.kwargs['user_pk']).order_by('-keyword__updated_at')
         except KeyError:
             return super().get_queryset()
+
+    def get_serializer_class(self):
+        if self.action in ['list']:
+            return UserSearchListSerializer
+        return self.serializer_class
+
+    def list(self, request, *args, **kwargs):
+        """
+        유저 최근 검색어 api
+
+        ----
+        """
+        return super().list(request, *args, **kwargs)
 
     @action(detail=False, )
     def popular_word(self, request, *args, **kwargs):
         """
-        popular_word
-
+        검색 - 인기검색어 API
+        
         ---
 
-        모든 검색어 중 가장 많이 검색된 검색어 순으로 나열됩니다.
+        모든 검색어 중 가장 많이 검색된 검색어 순으로 상위 다섯 개 까지만 나열합니다.
         """
         orderby_word = KeyWord.objects.all().order_by('-count')[:5]
         serializer = PopularSerializer(orderby_word, many=True)

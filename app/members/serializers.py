@@ -97,18 +97,22 @@ class UserSerializer(ModelActionSerializer):
             'check_email': {'fields': ('email',)},
             'find_id': {'fields': ('nickname', 'email', 'username',)},
         }
+        extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data)
         address = self.context['request'].data['address']
-        #        UserAddressCreateSerializers(address).is_valid(raise_exception=True)
         UserAddress.objects.create(user=user, address=address, status='T')
         return user
 
 
-class UserSearchSerializer(ModelActionSerializer):
-    # keyword = serializers.StringRelatedField()
+class KeywordSerializers(ModelSerializer):
+    class Meta:
+        model = KeyWord
+        fields = ('id', 'name', 'count', 'updated_at')
 
+
+class UserSearchSerializer(ModelActionSerializer):
     class Meta:
         model = UserSearch
         fields = ('id', 'user', 'keyword',)
@@ -117,6 +121,36 @@ class UserSearchSerializer(ModelActionSerializer):
                 queryset=UserSearch.objects.all(),
                 fields=['user', 'keyword']
             )
+        ]
+
+
+class UserSearchListSerializer(ModelActionSerializer):
+    keyword = KeywordSerializers()
+
+    class Meta:
+        model = UserSearch
+        fields = ('id', 'user', 'keyword',)
+        examples = [
+            {
+                "id": 2,
+                "user": 1,
+                "keyword": {
+                    "id": 2,
+                    "name": "강아지",
+                    "count": 1,
+                    "updated_at": "2020-10-01"
+                }
+            },
+            {
+                "id": 1,
+                "user": 1,
+                "keyword": {
+                    "id": 1,
+                    "name": "간식",
+                    "count": 2,
+                    "updated_at": "2020-10-01"
+                }
+            }
         ]
 
 
