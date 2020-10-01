@@ -9,8 +9,9 @@ from rest_framework.viewsets import GenericViewSet
 from core.instructors import MyAutoSchema
 from order.models import Order, OrderReview, OrderDetail
 from order.permissions import OrderReviewPermission, OrderPermission
-from order.serializers import OrderCreateSerializers, ReviewSerializers, \
-    ReviewUpdateSerializers, OrderSerializers, OrderDetailCreateSerializers
+from order.serializers import OrderCreateSerializers, ReviewUpdateSerializers, OrderSerializers, \
+    OrderDetailCreateSerializers, ReviewListSerializers, \
+    ReviewCreateSerializers
 
 
 class OrderView(mixins.CreateModelMixin,
@@ -159,7 +160,9 @@ class ReviewAPI(mixins.CreateModelMixin,
                 mixins.ListModelMixin,
                 GenericViewSet):
     queryset = OrderReview.objects.all()
-    serializer_class = ReviewSerializers
+    serializer_class = ReviewCreateSerializers
+    swagger_schema = MyAutoSchema
+
     """
     배송이 완료 되기 전 'r' ready
     배송 완료- 후기 작성 가능 상태 'p' possible
@@ -167,16 +170,18 @@ class ReviewAPI(mixins.CreateModelMixin,
     """
 
     def get_queryset(self):
-        if self.action in ['list', 'retrieve']:
+        try:
             goods_pk = self.kwargs['goods_pk']
             if goods_pk:
                 return self.queryset.filter(goods_id=goods_pk)
+        except KeyError:
             return self.queryset.filter(user=self.request.user)
-        return self.queryset
 
     def get_serializer_class(self):
         if self.action in ['partial_update']:
             return ReviewUpdateSerializers
+        elif self.action in ['list', 'retrieve']:
+            return ReviewListSerializers
         return self.serializer_class
 
     def get_permissions(self):
@@ -185,5 +190,47 @@ class ReviewAPI(mixins.CreateModelMixin,
         # 참고 링크 :https://stackoverflow.com/questions/35970970/django-rest-framework-permission-classes-of-viewset-method
         return [permissions() for permissions in self.permission_classes]
 
+    def list(self, request, *args, **kwargs):
+        """
+        후기 list api
 
-9
+        ----
+        요청에 토큰이 필요합니다.
+
+        자기 자신이 작성한 후기를 볼 수 있습니다.
+        """
+        return super().list(request, *args, **kwargs)
+
+    def create(self, request, *args, **kwargs):
+        """
+        후기 생성
+
+        ----
+        토큰이 필요한 요청입니다.
+        """
+        return super().create(request, *args, **kwargs)
+
+    def update(self, request, *args, **kwargs):
+        """
+        사용하지 않을 api 입니다.
+        """
+        return super().update(request, *args, **kwargs)
+
+    def partial_update(self, request, *args, **kwargs):
+        """
+        후기 업데이트
+
+        ---
+        title, content 만 수정하며, 토큰이 필요합니다.
+        """
+        return super().partial_update(request, *args, **kwargs)
+
+
+    def destroy(self, request, *args, **kwargs):
+        """
+        후기 삭제
+
+        ---
+        토큰이 필요한 요청 입니다.
+        """
+        return super().destroy(request, *args, **kwargs)

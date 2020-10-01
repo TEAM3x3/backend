@@ -14,8 +14,6 @@ from members.serializers import UserSerializer, UserAddressSerializers, UserSear
 from members.permissions import UserInfoOwnerOrReadOnly
 from carts.models import CartItem
 from carts.serializers import CartItemSerializer
-from order.models import OrderReview
-from order.serializers import ReviewSerializers
 
 User = get_user_model()
 
@@ -132,26 +130,6 @@ class UserViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.Upd
         """
         qs = CartItem.objects.filter(order__user=request.user).filter(status='c')
         serializers = CartItemSerializer(qs, many=True)
-        return Response(serializers.data, status=status.HTTP_200_OK)
-
-    @action(detail=False)
-    def reviews(self, request):
-        """
-        마이컬리 - 작성 완료 후기
-
-        ----
-        작성 완료 된 데이터는 리뷰 데이터의 형태로 나타납니다.
-        [
-          {
-            "id": 1,
-            "title": "test create",
-            "content": "contnet create",
-            "goods": 1
-          }
-        ]
-        """
-        qs = OrderReview.objects.filter(user=request.user)
-        serializers = ReviewSerializers(qs, many=True)
         return Response(serializers.data, status=status.HTTP_200_OK)
 
     @action(detail=False)

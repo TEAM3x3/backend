@@ -14,7 +14,7 @@ from goods.serializers import GoodsSerializers, CategoriesSerializers, GoodsSale
 from members.models import UserSearch, KeyWord
 from members.serializers import UserSearchSerializer
 from order.models import OrderReview
-from order.serializers import ReviewSerializers
+from order.serializers import ReviewListSerializers
 
 
 class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericViewSet):
@@ -120,7 +120,7 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
     def reviews(self, request, *args, **kwargs):
         goods_pk = kwargs['pk']
         qs = OrderReview.objects.filter(goods__pk=goods_pk)
-        serializers = ReviewSerializers(qs, many=True)
+        serializers = ReviewListSerializers(qs, many=True)
         return Response(serializers.data, status=status.HTTP_200_OK)
 
     @action(detail=False)

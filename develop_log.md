@@ -195,3 +195,6 @@ transaction.atomic() 내부에서는 try-except 를 사용하지말자. 써야�
 ### [drf yasg 문서 자동화](https://medium.com/towncompany-engineering/%EC%B9%9C%EC%A0%88%ED%95%98%EA%B2%8C-django-rest-framework-api-%EB%AC%B8%EC%84%9C-%EC%9E%90%EB%8F%99%ED%99%94%ED%95%98%EA%B8%B0-drf-yasg-c835269714fc)
 
 ### [drf yasg example value](https://item4.blog/2020-03-04/Add-Example-on-drf-yasg/)
+
+# 10.1 
+ModelActionSerializers는 drf-yasg를 사용할 때 serializers field 표현이 각 액션마다 적용이 안되어 어려우므로 api docs 를 yasg를 사용하게 되었으므로 modelserialziers를 사용하여 대체한다.
