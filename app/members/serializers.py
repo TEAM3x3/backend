@@ -1,7 +1,8 @@
 from action_serializer import ModelActionSerializer
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
-from rest_framework.serializers import ModelSerializer
+from rest_framework.serializers import ModelSerializer, raise_errors_on_nested_writes
+from rest_framework.utils import model_meta
 from rest_framework.validators import UniqueTogetherValidator
 
 from members.models import UserAddress, UserSearch, KeyWord
@@ -104,6 +105,38 @@ class UserSerializer(ModelActionSerializer):
         address = self.context['request'].data['address']
         UserAddress.objects.create(user=user, address=address, status='T')
         return user
+
+
+class UserUpdateSerializers(ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('username', 'password', 'nickname', 'email', 'phone', 'gender', 'birthday',)
+        extra_kwargs = {'password': {'write_only': True}}
+
+
+    def update(self, instance, validated_data):
+        password = validated_data.get('password', None)
+
+        raise_errors_on_nested_writes('update', self, validated_data)
+        info = model_meta.get_field_info(instance)
+        m2m_fields = []
+
+        for attr, value in validated_data.items():
+            if attr in info.relations and info.relations[attr].to_many:
+                m2m_fields.append((attr, value))
+            else:
+                setattr(instance, attr, value)
+
+        if password:
+            instance.set_password(self.validated_data.get('password'))
+
+        instance.save()
+
+        for attr, value in m2m_fields:
+            field = getattr(instance, attr)
+            field.set(value)
+
+        return instance
 
 
 class KeywordSerializers(ModelSerializer):

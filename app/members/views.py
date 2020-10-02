@@ -10,7 +10,7 @@ from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from members.instructors import MyAutoSchema
 from members.models import UserAddress, UserSearch, KeyWord
 from members.serializers import UserSerializer, UserAddressSerializers, UserSearchSerializer, PopularSerializer, \
-    UserOrderAddressSerializers, UserSearchListSerializer
+    UserOrderAddressSerializers, UserSearchListSerializer, UserUpdateSerializers
 from members.permissions import UserInfoOwnerOrReadOnly
 from carts.models import CartItem
 from carts.serializers import CartItemSerializer
@@ -29,6 +29,11 @@ class UserViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.Upd
         if self.action in ['user_info', ]:
             return [UserInfoOwnerOrReadOnly()]
         return super().get_permissions()
+
+    def get_serializer_class(self):
+        if self.action in ['partial_update']:
+            return UserUpdateSerializers
+        return self.serializer_class
 
     @action(detail=False)
     def check_username(self, request):
@@ -100,6 +105,21 @@ class UserViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.Upd
         사용자 업데이트
 
         ----
+        - REQUEST BODY SCHEMA 에 나열되어 있는 필드 1개부터 전체 다 보내셔도 됩니다.
+
+        ```
+
+        # 성공 status 200
+
+        {
+            "username": "createUser2",
+            "nickname": "업데이트",
+            "email": "testUser2@user.com",
+            "phone": "1112223333",
+            "gender": "N",
+            "birthday": null
+        }
+        ```
 
         """
         return super().partial_update(request, *args, **kwargs)
@@ -332,7 +352,7 @@ class UserSearchViewSet(mixins.ListModelMixin, GenericViewSet):
     def popular_word(self, request, *args, **kwargs):
         """
         검색 - 인기검색어 API
-        
+
         ---
 
         모든 검색어 중 가장 많이 검색된 검색어 순으로 상위 다섯 개 까지만 나열합니다.
