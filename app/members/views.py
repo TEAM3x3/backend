@@ -130,19 +130,38 @@ class UserViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.Upd
         로그인
 
         ---
+        # request examples
 
+        ```
         {
                 "username" : "admin",
                 "password" : "1111"
         }
-        ----
-        올바른 요청으로 로그인 시 201_created와 token이 생성됩니다.
+        ```
+
+        # response examples
+        #### 올바른 요청으로 로그인 시 201_created와 token이 생성됩니다.
+        ```
+        {
+            "token": "88f0566e6db5ebaa0e46eae16f5a092610f46345",
+            "user": {
+                "username": "admin",
+                "email": "rs@rs.com",
+                "phone": "000-1111-2222",
+                "nickname": "nickname",
+                "gender": "N"
+            }
+        }
+        ```
+
         """
         user = User.objects.get(username=request.data.get('username'))
+        serializers = self.get_serializer(user)
         if user.check_password(request.data.get('password')):
             token, __ = Token.objects.get_or_create(user=user)
             data = {
-                "token": token.key
+                "token": token.key,
+                "user": serializers.data
             }
             return Response(data, status=status.HTTP_201_CREATED)
         return Response(status=status.HTTP_400_BAD_REQUEST)
