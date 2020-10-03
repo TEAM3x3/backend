@@ -93,7 +93,7 @@ class UserSerializer(ModelActionSerializer):
             "address": "서울시 성동구"
         }
         action_fields = {
-            'login': {'fields': ('username', 'password',)},
+            'login': {'fields': ('username', 'email', 'phone', 'nickname', 'gender',)},
             'check_username': {'fields': ('username',)},
             'check_email': {'fields': ('email',)},
             'find_id': {'fields': ('nickname', 'email', 'username',)},
@@ -112,7 +112,6 @@ class UserUpdateSerializers(ModelSerializer):
         model = User
         fields = ('username', 'password', 'nickname', 'email', 'phone', 'gender', 'birthday',)
         extra_kwargs = {'password': {'write_only': True}}
-
 
     def update(self, instance, validated_data):
         password = validated_data.get('password', None)
