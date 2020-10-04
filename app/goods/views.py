@@ -10,7 +10,8 @@ from rest_framework.viewsets import GenericViewSet
 from core.instructors import MyAutoSchema
 from goods.filters import GoodsFilter
 from goods.models import Goods, Category
-from goods.serializers import GoodsSerializers, CategoriesSerializers, GoodsSaleSerializers
+from goods.serializers import GoodsSerializers, CategoriesSerializers, GoodsSaleSerializers, CategoryGoodsSerializers, \
+    CategorySerializers
 from members.models import UserSearch, KeyWord
 from members.serializers import UserSearchSerializer
 from order.models import OrderReview
@@ -500,8 +501,13 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
 
 class CategoryViewSet(mixins.ListModelMixin, GenericViewSet):
     queryset = Category.objects.all()
-    serializer_class = CategoriesSerializers
+    serializer_class = CategorySerializers
     swagger_schema = MyAutoSchema
+
+    def get_serializer_class(self):
+        if self.action in ['md_recommend']:
+            return CategoryGoodsSerializers
+        return self.serializer_class
 
     def list(self, request, *args, **kwargs):
         """
@@ -568,3 +574,15 @@ class CategoryViewSet(mixins.ListModelMixin, GenericViewSet):
         ```
         """
         return super().list(request, *args, **kwargs)
+
+    @action(detail=False, )
+    def md_recommend(self, request):
+        """
+        MD의 추천 API
+
+        ---
+        - 카테고리당 6개의 상품을 매 요청시 랜덤으로 응답합니다.
+        """
+        qs = self.get_queryset()
+        serializers = self.get_serializer(qs, many=True)
+        return Response(serializers.data, status=status.HTTP_200_OK)
