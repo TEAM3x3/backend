@@ -1,9 +1,11 @@
-from rest_framework import mixins, filters
+from rest_framework import mixins, filters, status
+from rest_framework.decorators import action
+from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
 from core.instructors import MyAutoSchema
 from event.serializers import EventSerializers, MainEventSerializers, EventRetrieveSerializers, \
-    MainEventRetrieveSerializers
+    MainEventRetrieveSerializers, EventImageSquareSerializers
 from .models import Event, MainEvent
 
 
@@ -17,6 +19,8 @@ class EventAPIView(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
     def get_serializer_class(self):
         if self.action == 'retrieve':
             return EventRetrieveSerializers
+        elif self.action == 'square_event_list':
+            return EventImageSquareSerializers
         return self.serializer_class
 
     def list(self, request, *args, **kwargs):
@@ -74,6 +78,53 @@ class EventAPIView(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
 
         """
         return super().retrieve(request, *args, **kwargs)
+
+    @action(detail=False, )
+    def square_event_list(self, request):
+        """
+        홈 - 컬리추천 이벤트 API
+
+        ---
+        이미지가 4각형으로 나열 되는 api
+        ```
+        [
+            {
+                "id": 1,
+                "title": "[모음전] 해물육수",
+                "square_image": "https://pbs-13-s3.s3.amazonaws.com/event/square/seefood_broth.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAXOLZAM2NBPACFGX7%2F20201004%2Fap-northeast-2%2Fs3%2Faws4_request&X-Amz-Date=20201004T100743Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=8f511d211fb6bbfc1fb6af4f34c60f52283b55a1481f187269be6ed12637fe06",
+                "goods": [
+                    {
+                        "id": 1217,
+                        "title": "[바다원] 대관령 북어채 100g",
+                        "short_desc": "반찬 걱정 덜어주는 구수한 감칠맛",
+                        "packing_status": "냉장",
+                        "transfer": "샛별배송/택배배송",
+                        "price": 6715,
+                        "img": "https://pbs-13-s3.s3.amazonaws.com/goods/%5B%EB%B0%94%EB%8B%A4%EC%9B%90%5D%20%EB%8C%80%EA%B4%80%EB%A0%B9%20%EB%B6%81%EC%96%B4%EC%B1%84%20100g/%EB%B0%94%EB%8B%A4%EC%9B%90_%EB%8C%80%EA%B4%80%EB%A0%B9_%EB%B6%81%EC%96%B4%EC%B1%84_100g_goods_image.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAXOLZAM2NBPACFGX7%2F20201004%2Fap-northeast-2%2Fs3%2Faws4_request&X-Amz-Date=20201004T100744Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=a0c1b664a579290441f9a643e1b5dfd84219793ab709b7d6b4b1297c3e0f0b8e",
+                        "sales": {
+                            "discount_rate": null,
+                            "contents": "1+1"
+                        },
+                        "tagging": [],
+                        "discount_price": null,
+                        "sales_count": 97,
+                        "stock": {
+                            "id": 1217,
+                            "count": 32,
+                            "updated_at": "2020-08-12T18:04:36.574000Z"
+                        }
+                    },
+                    ...
+                ]
+                ...
+            }
+            ...
+        ]
+        ```
+        """
+        qs = self.get_queryset()
+        serializers = self.get_serializer(qs, many=True)
+        return Response(serializers.data, status=status.HTTP_200_OK)
 
 
 class MainEventAPIView(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericViewSet):

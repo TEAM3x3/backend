@@ -141,7 +141,7 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
     @action(detail=False)
     def main_page_health(self, request, *args, **kwargs):
         """
-        홈 - 컬리추천 건강식품 API
+        홈 - 컬리추천 건강식품[면역력 증진] API
 
         ---
         정렬 데이터 api/goods/best 참고

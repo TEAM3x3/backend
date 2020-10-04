@@ -5,6 +5,14 @@ from .models import Event, MainEvent, MainEventType, GoodsEventType
 from goods.serializers import GoodsSaleSerializers
 
 
+class EventImageSquareSerializers(ModelSerializer):
+    goods = GoodsSaleSerializers(many=True)
+
+    class Meta:
+        model = Event
+        fields = ('id', 'title', 'square_image', 'goods')
+
+
 class EventSerializers(ModelSerializer):
     class Meta:
         model = Event

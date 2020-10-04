@@ -6,6 +6,7 @@ from django.db import models
 class Event(models.Model):
     title = models.CharField(max_length=48)
     image = models.ImageField(upload_to='event', null=True)
+    square_image = models.ImageField(upload_to='event/square', null=True)
     start_date = models.DateTimeField(null=True, blank=True)
     end_date = models.DateTimeField(null=True, blank=True)
 
