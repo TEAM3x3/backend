@@ -93,7 +93,7 @@ class UserSerializer(ModelActionSerializer):
             "address": "서울시 성동구"
         }
         action_fields = {
-            'login': {'fields': ('username', 'email', 'phone', 'nickname', 'gender',)},
+            'login': {'fields': ('id', 'username', 'email', 'phone', 'nickname', 'gender', 'address')},
             'check_username': {'fields': ('username',)},
             'check_email': {'fields': ('email',)},
             'find_id': {'fields': ('nickname', 'email', 'username',)},
