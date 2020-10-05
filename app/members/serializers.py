@@ -191,8 +191,3 @@ class PopularSerializer(ModelActionSerializer):
         model = KeyWord
         fields = ('id', 'name', 'count')
 
-
-class UserOrderSerializers(ModelSerializer):
-    class Meta:
-        model = User
-        fields = ('username',)
