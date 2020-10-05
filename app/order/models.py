@@ -117,7 +117,7 @@ class OrderReview(models.Model):
     # 회원 탈퇴한 유저라면 null 허용 , default로 해서 탈퇴한 유저 전용 instance 를 만드는게 나은지
     user = models.ForeignKey(
         'members.User',
-        on_delete=models.SET_NULL,
+        on_delete=models.CASCADE,
         null=True,
         related_name='reviews'
     )

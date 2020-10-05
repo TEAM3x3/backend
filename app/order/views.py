@@ -202,6 +202,10 @@ class ReviewAPI(mixins.CreateModelMixin,
         [
             {
                 "id": 1,
+                "user": {
+                    "username": "admin"
+                },
+                "created_at": "2020-09-23T14:27:56.192000Z",
                 "title": "update review title",
                 "content": "update review content",
                 "goods": {
@@ -225,6 +229,10 @@ class ReviewAPI(mixins.CreateModelMixin,
             },
             {
                 "id": 2,
+                "user": {
+                    "username": "user0"
+                },
+                "created_at": "2020-10-05T12:31:05.851348Z",
                 "title": "title exam",
                 "content": "content exam",
                 "goods": {
@@ -257,6 +265,10 @@ class ReviewAPI(mixins.CreateModelMixin,
         [
             {
                 "id": 1,
+                "user": {
+                    "username": "user0"
+                },
+                "created_at": "2020-10-05T12:31:05.851348Z",
                 "title": "update review title",
                 "content": "update review content",
                 "goods": {
