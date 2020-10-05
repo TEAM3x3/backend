@@ -3,7 +3,7 @@ from goods.models import Goods, GoodsDetail, Type, Category, GoodsType, GoodsExp
 
 
 class GoodsAdmin(admin.ModelAdmin):
-    list_display = ['id', 'title', 'packing_status', 'sales', 'transfer']
+    list_display = ['id', 'title', 'packing_status', 'sales', 'transfer', 'event']
 
 
 class GoodsDetailAdmin(admin.ModelAdmin):
@@ -24,7 +24,6 @@ class CategoryAdmin(admin.ModelAdmin):
 
 class GoodsTypeAdmin(admin.ModelAdmin):
     list_display = ['id', 'type', 'goods', ]
-
 
 
 class SaleInfoAdmin(admin.ModelAdmin):

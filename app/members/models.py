@@ -27,10 +27,10 @@ class User(AbstractUser):
 
 class UserAddress(models.Model):
     class Receiving_Choice(models.TextChoices):
-        FRONT_DOOR = '문앞', ('문 앞')
+        FRONT_DOOR = '문 앞', ('문 앞')
         SEQURITY_OFFICE = '경비실', ('경비실')
         DELIVERY_BOX = '택배함', ('택배함')
-        ETC = '기타', ('기타')
+        ETC = '기타 장소', ('기타')
 
     class AddressStatus(models.TextChoices):
         NORMAL = 'T', ('기본 배송지')
@@ -39,7 +39,7 @@ class UserAddress(models.Model):
     address = models.CharField(max_length=200, help_text='주소')
     detail_address = models.CharField(max_length=200, help_text='상세주소')
     status = models.CharField(choices=AddressStatus.choices, max_length=1, help_text='기본 배송지 상태')
-    receiving_place = models.CharField(max_length=3,
+    receiving_place = models.CharField(max_length=5,
                                        choices=Receiving_Choice.choices,
                                        default=Receiving_Choice.ETC,
                                        null=True,
