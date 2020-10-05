@@ -34,11 +34,9 @@ def delivery_img(instance, filename):
 
 
 def category_img(instance, filename):
-    if 'media/' in filename:
-        filename = filename.split('media/')
-        return filename[1]
-    return filename
-
+    import datetime
+    data = filename + datetime.datetime.now().strftime('%y/%m/%d')
+    return data
 
 class Goods(models.Model):
     img = models.ImageField(help_text='메인이미지', upload_to=goods_img_path)
@@ -228,7 +226,7 @@ class Type(models.Model):
 
 class Category(models.Model):
     name = models.CharField(max_length=30)
-    category_img = models.ImageField(upload_to='category_img', null=True)
+    category_img = models.ImageField(upload_to=category_img, null=True)
 
 
 class GoodsType(models.Model):

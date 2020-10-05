@@ -94,7 +94,7 @@ class UserViewSet(ModelViewSet):
         nickname = request.query_params.get('nickname')
         email = request.query_params.get('email')
         user_qs = User.objects.filter(nickname=nickname, email=email)
-        serializer = self.serializer_class(user_qs, many=True,)
+        serializer = self.serializer_class(user_qs, many=True, )
         print(serializer)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -127,3 +127,25 @@ class UserSearchViewSet(ModelViewSet):
         orderby_word = KeyWord.objects.all().order_by('-count')[:5]
         serializer = PopularSerializer(orderby_word, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+# class PhoneAuthViewSet(ModelViewSet):
+#     queryset = AuthPhoneNum.objects.all()
+#     serializer_class = AuthPhoneNumSerializer
+#
+#     def get_serializer_class(self):
+#         if self.action == 'check_auth_number':
+#             return CheckAuthNumberSerializer
+#         else:
+#             return super().get_serializer_class()
+#
+#     @action(methods=['put'], detail=True)
+#     def check_auth_number(self, request, *args, **kwargs):
+#         instance = self.get_object()
+#         serializer = self.get_serializer(instance, data=request.data)
+#         serializer.is_valid(raise_exception=True)
+#
+#         if int(instance.auth_number) == int(request.data['check_auth_number']):
+#             return Response(status=status.HTTP_200_OK)
+#         else:
+#             return Response(status=status.HTTP_400_BAD_REQUEST)

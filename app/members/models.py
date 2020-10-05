@@ -1,5 +1,15 @@
+import base64
+import datetime
+import hashlib
+import hmac
+import json
+import secrets
+import time
+
+import requests
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.utils import timezone
 
 
 class User(AbstractUser):
@@ -67,12 +77,69 @@ class UserSearch(models.Model):
 
 class KeyWord(models.Model):
     name = models.CharField(max_length=100, unique=True)
-    count = models.IntegerField(default=0)
+    count = models.IntegerField(default=0, db_index=True)
     updated_at = models.DateField(auto_now=True)
 
     def __str__(self):
         return self.name
 
+
+# class AuthPhoneNum(models.Model):
+#     phone_number = models.CharField(max_length=11)
+#     registration_id = models.CharField(
+#         verbose_name='주민등록번호',
+#         max_length=7,
+#     )
+#     auth_number = models.IntegerField()
+#     ttl = models.DateTimeField()
+#
+#     def save(self, *args, **kwargs):
+#         self.auth_number = secrets.choice(range(100000, 999999))
+#         self.ttl = timezone.now() + datetime.timedelta(minutes=5)
+#         super().save(*args, **kwargs)
+#
+#         self.send_sms()
+#
+#     def send_sms(self):
+#         timestamp = int(time.time() * 1000)
+#         timestamp = str(timestamp)
+#
+#         url = "https://sens.apigw.ntruss.com"
+#         requestUrl1 = "/sms/v2/services/"
+#         requestUrl2 = "/messages"
+#         serviceId = "ncp:sms:kr:260483911484:sofastcar_sms"
+#         access_key = "RcSVHr6YgMHKg38rmR4X"
+#
+#         uri = requestUrl1 + serviceId + requestUrl2
+#         apiUrl = url + uri
+#
+#         secret_key = "7PWFNRn7Md46Dgegpf8MAncOaSPH4ReDICyJf4xZ"
+#         secret_key = bytes(secret_key, 'UTF-8')
+#         method = "POST"
+#         message = method + " " + uri + "\n" + timestamp + "\n" + access_key
+#         message = bytes(message, 'UTF-8')
+#
+#         signingKey = base64.b64encode(hmac.new(secret_key, message, digestmod=hashlib.sha256).digest())
+#
+#         messages = {"to": f"{self.phone_number}"}
+#         body = {
+#             "type": "SMS",
+#             "contentType": "COMM",
+#             "from": "01063855074",
+#             "subject": "subject",
+#             "content": f"[인증번호]: {self.auth_number}",
+#             "messages": [messages]
+#         }
+#         body2 = json.dumps(body)
+#
+#         headers = {
+#             'Content-Type': 'application/json; charset=utf-8',
+#             'x-ncp-apigw-timestamp': timestamp,
+#             'x-ncp-iam-access-key': access_key,
+#             'x-ncp-apigw-signature-v2': signingKey
+#         }
+#
+#         requests.post(apiUrl, headers=headers, data=body2)
 
 # class Profile(models.Model):
 
@@ -85,4 +152,3 @@ class KeyWord(models.Model):
 #     coupon = models.CharField('쿠폰', max_length=1, choices=COUPON_CHOICES)
 #     accumulated_money = models.IntegerField('적립금', default=0)
 #     point = models.IntegerField('포인트', default=0)
-
