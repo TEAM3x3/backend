@@ -147,6 +147,10 @@ class OrderDetailView(mixins.CreateModelMixin, GenericViewSet):
     queryset = OrderDetail.objects.all()
     serializer_class = OrderDetailCreateSerializers
 
+    @transaction.atomic()
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
+
     def perform_create(self, serializer):
         order_instance = Order.objects.get(pk=self.kwargs['order_pk'])
         serializer.save(order=order_instance)

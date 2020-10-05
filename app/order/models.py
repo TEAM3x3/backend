@@ -1,5 +1,5 @@
 from django.contrib.auth import get_user_model
-from django.db import models
+from django.db import models, transaction
 
 User = get_user_model()
 
@@ -37,10 +37,10 @@ class OrderDetail(models.Model):
         POST = '택배배송', ('택배배송')
 
     class Location_Choice(models.TextChoices):
-        FRONT_DOOR = '문 앞', ('문 앞')
-        SEQURITY_OFFICE = '경비실', ('경비실')
-        DELIVERY_BOX = '우편함', ('우편함')
-        ETC = '기타', ('기타')
+        FRONT_DOOR = 1, ('문 앞')
+        SEQURITY_OFFICE = 2, ('경비실')
+        DELIVERY_BOX = 3, ('우편함')
+        ETC = 4, ('기타')
 
     class Message_Choice(models.TextChoices):
         RIGHT_AFTER = '직후', ('직후')
@@ -61,7 +61,7 @@ class OrderDetail(models.Model):
     status = models.CharField(max_length=4, choices=Order_Status.choices, default=Order_Status.PAYMENT_WAIT,
                               help_text='주문 상태')
     # 2. 주문 정보
-    consumer = models.CharField(max_length=10, help_text='주문자 명')
+    consumer = models.CharField(max_length=10, help_text='주문자 명', null=True)
 
     # 3. 배송지 정보 문자열로 저장
     receiver = models.CharField(max_length=30, help_text='받는 분')
@@ -74,7 +74,7 @@ class OrderDetail(models.Model):
     receiving_place = models.CharField(max_length=3, choices=Location_Choice.choices, help_text='받으실 장소')
     entrance_password = models.CharField(max_length=10, help_text='공동현관 비밀번호', null=True, )
     free_pass = models.BooleanField(default=False, help_text='공동 현관 자유 출입 가능')
-    etc = models.CharField(max_length=200, help_text='공동현관 기타', null=True)
+    etc = models.CharField(max_length=200, help_text='공동현관 기타', null=True, )
 
     # 경비실, 택배함, 기타장소 특이사항
     extra_message = models.TextField(help_text='특이사항, 택배함 정보', null=True)
