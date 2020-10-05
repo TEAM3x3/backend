@@ -1,10 +1,15 @@
 from action_serializer import ModelActionSerializer, serializers
+from django.contrib.auth import get_user_model
 from rest_framework.serializers import ModelSerializer
 from goods.models import Category, GoodsExplain, GoodsDetailTitle, GoodsDetail, Goods, Type, SaleInfo, Tag, Tagging, \
     Stock
 
-
 # 상품 세일 정보
+from order.models import OrderReview
+
+User = get_user_model()
+
+
 class SalesInfoSerializers(ModelSerializer):
     class Meta:
         model = SaleInfo
@@ -15,6 +20,28 @@ class CategorySerializers(ModelSerializer):
     class Meta:
         model = Category
         fields = ('name', 'category_img')
+
+
+class UserOrderSerializers(ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('username',)
+
+
+class OrderReviewSerializers(ModelSerializer):
+    user = UserOrderSerializers()
+
+    class Meta:
+        model = OrderReview
+        fields = ('id', 'title', 'content', 'user')
+
+
+class GoodsReviewSerializers(ModelSerializer):
+    reviews = OrderReviewSerializers(many=True)
+
+    class Meta:
+        model = Goods
+        fields = ('id', 'title', 'price', 'info_img', 'reviews')
 
 
 class CategoryGoodsSerializers(ModelSerializer):

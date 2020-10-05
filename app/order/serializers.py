@@ -1,23 +1,24 @@
 from action_serializer import ModelActionSerializer
+from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.serializers import ModelSerializer
 from carts.models import CartItem
 from carts.serializers import CartItemSerializer
+
 from goods.serializers import GoodsSaleSerializers
-from members.serializers import UserOrderSerializers
 from order.models import Order, OrderReview, OrderDetail
 
+User = get_user_model()
 
-class OrderSerializers(ModelSerializer):
+
+class UserOrderSerializers(ModelSerializer):
     class Meta:
-        model = Order
-        fields = ('id',)
+        model = User
+        fields = ('username',)
 
 
 class OrderDetailCreateSerializers(ModelSerializer):
-    order = OrderSerializers(read_only=True)
-
     class Meta:
         model = OrderDetail
         fields = (
@@ -39,14 +40,12 @@ class OrderDetailCreateSerializers(ModelSerializer):
             'extra_message',
             'message',
             'payment_type',
-            'order'
         )
 
     def create(self, validated_data):
         ins = super().create(validated_data)
-
         ins.status = '결제완료'
-        ins.title = f'{ins.order.items.first().goods.title} 외 {ins.order.items.count()-1}건'
+        ins.title = f'{ins.order.items.first().goods.title} 외 {ins.order.items.count() - 1}건'
         ins.save()
         return ins
 

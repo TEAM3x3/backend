@@ -1,6 +1,8 @@
 from django.contrib.auth import get_user_model
 from django.db import models, transaction
 
+from goods.models import Goods
+
 User = get_user_model()
 
 
@@ -37,10 +39,10 @@ class OrderDetail(models.Model):
         POST = '택배배송', ('택배배송')
 
     class Location_Choice(models.TextChoices):
-        FRONT_DOOR = 1, ('문 앞')
-        SEQURITY_OFFICE = 2, ('경비실')
-        DELIVERY_BOX = 3, ('우편함')
-        ETC = 4, ('기타')
+        FRONT_DOOR = 0, ('문 앞')
+        SEQURITY_OFFICE = 1, ('경비실')
+        DELIVERY_BOX = 2, ('우편함')
+        ETC = 3, ('기타')
 
     class Message_Choice(models.TextChoices):
         RIGHT_AFTER = '직후', ('직후')
@@ -116,13 +118,51 @@ class OrderReview(models.Model):
     user = models.ForeignKey(
         'members.User',
         on_delete=models.SET_NULL,
-        null=True
+        null=True,
+        related_name='reviews'
     )
     goods = models.ForeignKey(
         'goods.Goods',
         on_delete=models.CASCADE,
+        related_name='reviews',
     )
     cartItem = models.ForeignKey(
         'carts.CartItem',
         on_delete=models.CASCADE,
+        # 리뷰 더미값들을 위해서
+        null=True,
+        related_name='reviews'
     )
+
+    @staticmethod
+    def created_mocking():
+        user_lst = []
+        for index in range(5):
+            user = User.objects.create_user(username=f'user{index}', password='1111', nickname=f'nickname{index}',
+                                            email=f'mail{index}@mail.com',
+                                            phone='111-2222-3333',
+                                            )
+            user_lst.append(user)
+        Goods_lst = Goods.objects.all()[:5]
+        title_lst = [
+            '잘 먹었습니다. ',
+            '너무 맛있었어요',
+            '다음에 또 시키도록 하겠습니다.',
+            '맛있어서 리뷰 달았어요',
+            '추천합니다!!!!!!!'
+        ]
+        content_lst = [
+            '잘 먹었습니다. 에 대한 내용입니다.',
+            '너무 맛있었어요 에 대한 내용입니다.',
+            '다음에 또 시키도록 하겠습니다. 에 대한 내용입니다.',
+            '맛있어서 리뷰 달았어요 에 대한 내용입니다.',
+            '추천합니다!!!!!!! 에 대한 내용입니다.'
+        ]
+        for goods in Goods_lst:
+            for index in range(5):
+                OrderReview.objects.create(
+                    title=title_lst[index],
+                    content=content_lst[index],
+                    user=user_lst[index],
+                    goods=goods
+                )

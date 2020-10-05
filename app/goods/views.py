@@ -495,6 +495,18 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
         serializers = self.serializer_class(qs, many=True)
         return Response(serializers.data, status=status.HTTP_200_OK)
 
+    @action(detail=False)
+    def recommend_review(self, request):
+        """
+        추천- 후기가 좋은 상품
+
+        ----
+
+        """
+        qs = self.queryset[:5]
+        serializers = GoodsReviewSerializers(qs, many=True)
+        return Response(serializers.data, status=status.HTTP_200_OK)
+
 
 class CategoryViewSet(mixins.ListModelMixin, GenericViewSet):
     queryset = Category.objects.all()

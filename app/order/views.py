@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
 from core.instructors import MyAutoSchema
+from goods.models import Goods
 from order.models import Order, OrderReview, OrderDetail
 from order.permissions import OrderReviewPermission, OrderPermission
 from order.serializers import OrderCreateSerializers, ReviewUpdateSerializers, OrderSerializers, \
@@ -146,10 +147,6 @@ class OrderView(mixins.CreateModelMixin,
 class OrderDetailView(mixins.CreateModelMixin, GenericViewSet):
     queryset = OrderDetail.objects.all()
     serializer_class = OrderDetailCreateSerializers
-
-    @transaction.atomic()
-    def create(self, request, *args, **kwargs):
-        return super().create(request, *args, **kwargs)
 
     def perform_create(self, serializer):
         order_instance = Order.objects.get(pk=self.kwargs['order_pk'])
