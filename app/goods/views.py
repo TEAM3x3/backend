@@ -10,12 +10,9 @@ from rest_framework.viewsets import GenericViewSet
 from core.instructors import MyAutoSchema
 from goods.filters import GoodsFilter
 from goods.models import Goods, Category
-from goods.serializers import GoodsSerializers, CategoriesSerializers, GoodsSaleSerializers, CategoryGoodsSerializers, \
-    CategorySerializers
+from goods.serializers import GoodsSerializers, GoodsSaleSerializers, CategoryGoodsSerializers, CategorySerializers
 from members.models import UserSearch, KeyWord
 from members.serializers import UserSearchSerializer
-from order.models import OrderReview
-from order.serializers import ReviewListSerializers
 
 
 class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericViewSet):

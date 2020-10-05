@@ -1,5 +1,4 @@
 from action_serializer import ModelActionSerializer
-from django.db import transaction
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.serializers import ModelSerializer
@@ -10,7 +9,15 @@ from members.serializers import UserOrderSerializers
 from order.models import Order, OrderReview, OrderDetail
 
 
+class OrderSerializers(ModelSerializer):
+    class Meta:
+        model = Order
+        fields = ('id',)
+
+
 class OrderDetailCreateSerializers(ModelSerializer):
+    order = OrderSerializers(read_only=True)
+
     class Meta:
         model = OrderDetail
         fields = (
@@ -31,13 +38,15 @@ class OrderDetailCreateSerializers(ModelSerializer):
 
             'extra_message',
             'message',
-            'payment_type'
+            'payment_type',
+            'order'
         )
 
-    @transaction.atomic()
     def create(self, validated_data):
         ins = super().create(validated_data)
+
         ins.status = '결제완료'
+        ins.title = f'{ins.order.items.first().goods.title} 외 {ins.order.items.count()-1}건'
         ins.save()
         return ins
 
@@ -187,8 +196,17 @@ class ReviewCreateSerializers(ModelActionSerializer):
         goods_id = attrs['goods'].id
         user_id = attrs['user'].id
         cartItem_id = attrs['cartItem'].id
+        try:
+            cart_item_ins = CartItem.objects.get(pk=cartItem_id)
+        except CartItem.DoesNotExist:
+            raise serializers.ValidationError('존재하지 않은 cart item pk 입니다.')
+        if cart_item_ins.status == 'w':
+            raise serializers.ValidationError('상품 후기는 상품을 구매하시고, 배송이 완료된 회원 분만 한 달 내에 작성이 가능합니다.')
         qs = CartItem.objects.filter(status='c').filter(goods__id=goods_id).filter(order__user__id=user_id).filter(
             id=cartItem_id)
         if not qs.exists():
             raise serializers.ValidationError('리뷰 작성이 가능한 데이터가 존재하지 않습니다.')
         return super().validate(attrs)
+
+    def create(self, validated_data):
+        return super().create(validated_data)
