@@ -7,22 +7,24 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
+from core.instructors import MyAutoSchema
 from goods.filters import GoodsFilter
-from goods.models import Goods, Category, DeliveryInfoImageFile
-from goods.serializers import GoodsSerializers, DeliveryInfoSerializers, CategoriesSerializers, GoodsSaleSerializers
+from goods.models import Goods, Category
+from goods.serializers import GoodsSerializers, CategoriesSerializers, GoodsSaleSerializers, CategoryGoodsSerializers, \
+    CategorySerializers
 from members.models import UserSearch, KeyWord
 from members.serializers import UserSearchSerializer
 from order.models import OrderReview
-from order.serializers import ReviewSerializers
+from order.serializers import ReviewListSerializers
 
 
 class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericViewSet):
     queryset = Goods.objects.all()
     serializer_class = GoodsSaleSerializers
-    # filter는 각 viewset별 다를 수 있어서
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend, filters.OrderingFilter,)
     ordering_fields = ['price', 'sales__discount_rate']
     filter_class = GoodsFilter
+    swagger_schema = MyAutoSchema
 
     def get_serializer_class(self):
         if self.action in ['retrieve']:
@@ -30,20 +32,181 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
         else:
             return self.serializer_class
 
-    @action(detail=False)
-    def main_page_md(self, request, *args, **kwargs):
-        main_md = Goods.objects.filter(id=1)
-        serializer = GoodsSaleSerializers(main_md, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+    def list(self, request, *args, **kwargs):
+        """
+        상품 리스트
+
+        -----
+        데이터 정렬 순서
+
+        배송 정보 > transfer # '샛별배송 ONLY', '샛별배송/택배배송', null 중 1
+
+        할인이 적용된 가격 > discount_price # 할인률이 없으면 None
+
+        원가 > price
+
+        할인률 sales > discount_rate
+
+        상품 판매율 > sales_count
+
+        신상품 순 > stock > updated_at
+
+        # 카테고리별 상품 분류
+
+        - http://13.209.33.72/api/goods?category=<category_name>
+
+        # 타입별 상품 분류
+
+        - http://13.209.33.72/api/goods?type=<type_name>
+
+
+
+        ```
+        [
+            {
+                "id": 105,
+                "title": "유기농 무화과 600g",
+                "short_desc": "인류가 재배한 최초의 과일(600g/1팩)",
+                "packing_status": "냉장",
+                "transfer": "샛별배송/택배배송",
+                "price": 10500,
+                "img": "https://pbs-13-s3.s3.amazonaws.com/goods/%EC%9C%A0%EA%B8%B0%EB%86%8D%20%EB%AC%B4%ED%99%94%EA%B3%BC%20600g/%EC%9C%A0%EA%B8%B0%EB%86%8D_%EB%AC%B4%ED%99%94%EA%B3%BC_600g_goods_image.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAXOLZAM2NBPACFGX7%2F20201001%2Fap-northeast-2%2Fs3%2Faws4_request&X-Amz-Date=20201001T160935Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=6ffb03aefb8669172cc67e57bf66cd2d96f531d53594bbac293e9893eff95add",
+                "sales": {
+                    "discount_rate": 10,
+                    "contents": null
+                },
+                "tagging": [],
+                "discount_price": 9450,
+                "sales_count": 6,
+                "stock": {
+                    "id": 105,
+                    "count": 39,
+                    "updated_at": "2020-08-03T18:04:20.951000Z"
+                }
+            },
+            {
+                "id": 106,
+                "title": "허니듀 멜론 1.8kg 이상",
+                "short_desc": "하니원 멜론에 이어 이름 처럼 달콤한",
+                "packing_status": "냉장",
+                "transfer": "샛별배송 ONLY",
+                "price": 8400,
+                "img": "https://pbs-13-s3.s3.amazonaws.com/goods/%ED%97%88%EB%8B%88%EB%93%80%20%EB%A9%9C%EB%A1%A0%201.8kg%20%EC%9D%B4%EC%83%81/%ED%97%88%EB%8B%88%EB%93%80_%EB%A9%9C%EB%A1%A0_1.8kg_%EC%9D%B4%EC%83%81_goods_image.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAXOLZAM2NBPACFGX7%2F20201001%2Fap-northeast-2%2Fs3%2Faws4_request&X-Amz-Date=20201001T160935Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=d40dfbf65d891f2fea37f51be04c6af4a31029972c706f59583001b852c766e1",
+                "sales": null,
+                "tagging": [],
+                "discount_price": null,
+                "sales_count": 82,
+                "stock": {
+                    "id": 106,
+                    "count": 9,
+                    "updated_at": "2020-09-14T18:04:20.956000Z"
+                }
+            },
+            {
+                "id": 107,
+                "title": "GAP 거봉포도 1팩",
+                "short_desc": "여름을 알리는 달콤한 과즙(1팩/600g내외)",
+                "packing_status": "냉장",
+                "transfer": null,
+                "price": 12900,
+                "img": "https://pbs-13-s3.s3.amazonaws.com/goods/GAP%20%EA%B1%B0%EB%B4%89%ED%8F%AC%EB%8F%84%201%ED%8C%A9/GAP_%EA%B1%B0%EB%B4%89%ED%8F%AC%EB%8F%84_1%ED%8C%A9_goods_image.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAXOLZAM2NBPACFGX7%2F20201001%2Fap-northeast-2%2Fs3%2Faws4_request&X-Amz-Date=20201001T160935Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=29d7191b79a02548e26f3a8eb1187f29dc08010d7b7e6461d89c17c19564077f",
+                "sales": {
+                    "discount_rate": null,
+                    "contents": "1+1"
+                },
+                "tagging": [],
+                "discount_price": 7740,
+                "sales_count": 64,
+                "stock": {
+                    "id": 107,
+                    "count": 90,
+                    "updated_at": "2020-08-27T18:04:39.654000Z"
+                }
+            }
+            ...
+        ]
+        ```
+        """
+        return super().list(request, *args, **kwargs)
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        상품 디테일 페이지
+
+        ----
+        상품 디테일 api 입니다.
+        """
+        return super().retrieve(request, *args, **kwargs)
 
     @action(detail=False)
     def main_page_health(self, request, *args, **kwargs):
-        main_health = Goods.objects.filter(category__name='건강식품')
+        """
+        홈 - 컬리추천 건강식품 API
+
+        ---
+        정렬 데이터 api/goods/best 참고
+        ```
+        [
+            {
+                "id": 611,
+                "title": "[바로이즙] ABC 착즙주스 2종",
+                "short_desc": "세 가지 과채의 영양이 그대로!",
+                "packing_status": "상온",
+                "transfer": "샛별배송/택배배송",
+                "price": 9900,
+                "img": "https://pbs-13-s3.s3.amazonaws.com/goods/%5B%EB%B0%94%EB%A1%9C%EC%9D%B4%EC%A6%99%5D%20ABC%20%EC%B0%A9%EC%A6%99%EC%A3%BC%EC%8A%A4%202%EC%A2%85/%EB%B0%94%EB%A1%9C%EC%9D%B4%EC%A6%99_ABC_%EC%B0%A9%EC%A6%99%EC%A3%BC%EC%8A%A4_2%EC%A2%85_goods_image.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAXOLZAM2NBPACFGX7%2F20201001%2Fap-northeast-2%2Fs3%2Faws4_request&X-Amz-Date=20201001T171717Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=a75825426c04179910b7872a9d20ae0b90287b59e87a7f83f98603eb2c52451d",
+                "sales": null,
+                "tagging": [
+                    {
+                        "tag": {
+                            "name": "한정수량"
+                        }
+                    }
+                ],
+                "discount_price": null,
+                "sales_count": 94,
+                "stock": {
+                    "id": 611,
+                    "count": 77,
+                    "updated_at": "2020-08-15T18:04:28.297000Z"
+                }
+            },
+            {
+                "id": 797,
+                "title": "[채움] 국내산 과일채소로 만든 주스 4종 (10개입)",
+                "short_desc": "[박스판매] 100% 국내산 재료로 채운 주스 한 잔",
+                "packing_status": null,
+                "transfer": "샛별배송/택배배송",
+                "price": 10800,
+                "img": "https://pbs-13-s3.s3.amazonaws.com/goods/%5B%EC%B1%84%EC%9B%80%5D%20%EA%B5%AD%EB%82%B4%EC%82%B0%20%EA%B3%BC%EC%9D%BC%EC%B1%84%EC%86%8C%EB%A1%9C%20%EB%A7%8C%EB%93%A0%20%EC%A3%BC%EC%8A%A4%204%EC%A2%85%20%2810%EA%B0%9C%EC%9E%85%29/%EC%B1%84%EC%9B%80_%EA%B5%AD%EB%82%B4%EC%82%B0_%EA%B3%BC%EC%9D%BC%EC%B1%84%EC%86%8C%EB%A1%9C_%EB%A7%8C%EB%93%A0_%EC%A3%BC%EC%8A%A4_4%EC%A2%85_10%EA%B0%9C%EC%9E%85_goods_image.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAXOLZAM2NBPACFGX7%2F20201001%2Fap-northeast-2%2Fs3%2Faws4_request&X-Amz-Date=20201001T171717Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=b9a57561dc4082ad01fa716da45c02c5a051698f5e7838e6e16368b17e72d94a",
+                "sales": null,
+                "tagging": [],
+                "discount_price": null,
+                "sales_count": 68,
+                "stock": {
+                    "id": 797,
+                    "count": 38,
+                    "updated_at": "2020-07-26T18:04:30.799000Z"
+                }
+            },
+            ...
+        ]
+        ```
+        """
+        main_health = Goods.objects.filter(types__type__category__name='건강식품')
         serializer = GoodsSaleSerializers(main_health, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     @action(detail=False)
     def main_page_recommend(self, request, *args, **kwargs):
+        """
+        홈 - 컬리추천 - 이 상품 어때요 API
+
+        ---
+        매 요청 마다 전체 상품에서 랜덤으로 8개의 상품 리턴합니다.
+
+        예시는 다른 상품 api들과 형식이 동일합니다.
+        """
         max_id = Goods.objects.all().count()
         recommend_items = []
 
@@ -60,29 +223,106 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
                 break
 
         qs = Goods.objects.filter(id__in=recommend_items)
-        serializer = GoodsSerializers(qs, many=True)
+        serializer = self.get_serializer(qs, many=True)
         return Response(serializer.data)
 
     @action(detail=False, url_path='sale', )
     def sale(self, request):
-        # qs = self.queryset.filter(sales__discount_rate__isnull=False)
-        # params = self.request.query_params.get('ordering', None)
-        # transfer = self.request.query_params.get('transfer', None)
-        # if not (params or transfer):
-        #     return Response({"message": "params and transfer is requirement"}, status=status.HTTP_400_BAD_REQUEST)
-        # elif not transfer in ['샛별배송 ONLY', '샛별배송/택배배송']:
-        #     return Response({"message": "transfer is invalid"}, status=status.HTTP_400_BAD_REQUEST)
-        # qs = qs.filter(transfer=transfer)
-        # qs = qs.order_by(params)
-        # serializer = self.get_serializer(qs, many=True)
-        # return Response(serializer.data)
+        """
+        홈 - 알뜰 쇼핑
+
+        -----
+        best endpoint를 제외한, 양식 및 요청 동일
+        """
         qs = self.queryset.filter(sales__discount_rate__isnull=False)
         qs = self.filter_queryset(qs)
         serializers = self.get_serializer(qs, many=True)
         return Response(serializers.data, status=status.HTTP_200_OK)
 
     @action(detail=False)
+    def word_search(self, request):
+        """
+        검색 - 타이핑 단어에 포함된 상품 리턴 api
+
+        ---
+        request 에제 > /api/goods/word_search?word=간식
+
+        params로 전송 바랍니다. key 값은 word 입니다.
+
+        ```
+        [
+            {
+                "id": 1142,
+                "title": "[프로젝트21] 짜먹는 간식 리얼스틱 7종",
+                "short_desc": "신선한 주재료를 가득히 담아낸 (생후 3개월 이상)",
+                "packing_status": "상온",
+                "transfer": "샛별배송/택배배송",
+                "price": 5000,
+                "img": "https://pbs-13-s3.s3.amazonaws.com/goods/%5B%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B821%5D%20%EC%A7%9C%EB%A8%B9%EB%8A%94%20%EA%B0%84%EC%8B%9D%20%EB%A6%AC%EC%96%BC%EC%8A%A4%ED%8B%B1%207%EC%A2%85/%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B821_%EC%A7%9C%EB%A8%B9%EB%8A%94_%EA%B0%84%EC%8B%9D_%EB%A6%AC%EC%96%BC%EC%8A%A4%ED%8B%B1_7%EC%A2%85_goods_image.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAXOLZAM2NBPACFGX7%2F20201001%2Fap-northeast-2%2Fs3%2Faws4_request&X-Amz-Date=20201001T180327Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=e0ee7508784a8c858d0dd657a00968458595e693270b5a1074d71ea03b8278a3",
+                "sales": {
+                    "discount_rate": 10,
+                    "contents": null
+                },
+                "tagging": [
+                    {
+                        "tag": {
+                            "name": "kurly's only"
+                        }
+                    }
+                ],
+                "discount_price": 4500,
+                "sales_count": 76,
+                "stock": {
+                    "id": 1142,
+                    "count": 76,
+                    "updated_at": "2020-09-16T18:04:35.439000Z"
+                }
+            },
+            {
+                "id": 1147,
+                "title": "[복슬강아지] 수제 냉동 간식 6종",
+                "short_desc": "수분을 머금은 원물 간식 (생후 3개월 이상)",
+                "packing_status": "냉동",
+                "transfer": "샛별배송/택배배송",
+                "price": 5000,
+                "img": "https://pbs-13-s3.s3.amazonaws.com/goods/%5B%EB%B3%B5%EC%8A%AC%EA%B0%95%EC%95%84%EC%A7%80%5D%20%EC%88%98%EC%A0%9C%20%EB%83%89%EB%8F%99%20%EA%B0%84%EC%8B%9D%206%EC%A2%85/%EB%B3%B5%EC%8A%AC%EA%B0%95%EC%95%84%EC%A7%80_%EC%88%98%EC%A0%9C_%EB%83%89%EB%8F%99_%EA%B0%84%EC%8B%9D_6%EC%A2%85_goods_image.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAXOLZAM2NBPACFGX7%2F20201001%2Fap-northeast-2%2Fs3%2Faws4_request&X-Amz-Date=20201001T180327Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=b9c13954863041149bf265da88b9aedd195eb1fb05eed35ab58e031719fae9d8",
+                "sales": {
+                    "discount_rate": 30,
+                    "contents": null
+                },
+                "tagging": [],
+                "discount_price": 3500,
+                "sales_count": 8,
+                "stock": {
+                    "id": 1147,
+                    "count": 85,
+                    "updated_at": "2020-07-12T18:04:35.511000Z"
+                }
+            },
+            ...
+        ]
+        ```
+        """
+        word = request.query_params.get('word', None)
+        if not word:
+            return Response({"message": "word가 전송되지 않았습니다."}, status=status.HTTP_400_BAD_REQUEST)
+        qs = Goods.objects.filter(title__icontains=word)
+        serializers = self.get_serializer(qs, many=True)
+        return Response(serializers.data, status=status.HTTP_200_OK)
+
+    @action(detail=False)
     def goods_search(self, request, *args, **kwargs):
+        """
+        검색 - 검색어 입력 시 , 최근 검색어에 포함되는 API
+
+        ---
+        - 예시 ```/api/goods/goods_search?word=간식```
+
+        - 토큰이 필요한 요청입니다.
+
+        response examples는 검색 - 단어 검색 ```goods/word_search``` 와 일치합니다.
+
+        """
         search_word = self.request.GET.get('word', None)
         if search_word:
             key_word, __ = KeyWord.objects.get_or_create(name=search_word)
@@ -98,22 +338,55 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
                 serializers = UserSearchSerializer(data=user_search_data)
             serializers.is_valid(raise_exception=True)
             serializers.save()
-            # word = UserSearch.objects.create(user=request.user, keyword=key_word)
 
             qs = self.queryset.filter(title__icontains=key_word)
             serializer = self.serializer_class(qs, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+        return Response({"message": "word에 대한 데이터가 들어오지 않았습니다."}, status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=False)
     def sales_goods(self, request, *args, **kwargs):
+        """
+        홈 - 컬리 추천에 위치한 알뜰 상품에 대한 상품 리스트
+
+        ---
+        - 할인률을 가진 8개의 상품이 매 요청마다 다르게 출력됩니다.
+        - 필터링에 필요한 요청은 /goods/best에 작성한 글을 참고 바랍니다.
+
+        ```
+        [
+            {
+                "id": 231,
+                "title": "[마켓베라즈] 생새우 2종(냉동)",
+                "short_desc": "깔끔한 손질, 다양한 쓰임새",
+                "packing_status": null,
+                "transfer": "샛별배송/택배배송",
+                "price": 10000,
+                "img": "https://pbs-13-s3.s3.amazonaws.com/goods/%5B%EB%A7%88%EC%BC%93%EB%B2%A0%EB%9D%BC%EC%A6%88%5D%20%EC%83%9D%EC%83%88%EC%9A%B0%202%EC%A2%85%28%EB%83%89%EB%8F%99%29/%EB%A7%88%EC%BC%93%EB%B2%A0%EB%9D%BC%EC%A6%88_%EC%83%9D%EC%83%88%EC%9A%B0_2%EC%A2%85%EB%83%89%EB%8F%99_goods_image.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAXOLZAM2NBPACFGX7%2F20201001%2Fap-northeast-2%2Fs3%2Faws4_request&X-Amz-Date=20201001T165731Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=1fcad4fd18e17493689ff03e59ab019ad766e4ea6b168f61777b9fc44ed5d13a",
+                "sales": {
+                    "discount_rate": 5,
+                    "contents": null
+                },
+                "tagging": [],
+                "discount_price": 9500,
+                "sales_count": 76,
+                "stock": {
+                    "id": 231,
+                    "count": 63,
+                    "updated_at": "2020-06-30T18:04:22.696000Z"
+                }
+            },
+            ...
+        ]
+        ```
+        """
         count_all = self.queryset.filter(sales__discount_rate__isnull=False).count()
         max_random_item_count = 8
         sales_items = []
 
         while True:
             # 1 , 716
-            random_save = random.randint(count_all)
+            random_save = random.randint(1, count_all)
             if random_save in sales_items:
                 continue
             elif random_save == 0:
@@ -126,33 +399,190 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
         serializer = GoodsSaleSerializers(save_ins, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    @action(detail=True)
-    def reviews(self, request, *args, **kwargs):
-        goods_pk = kwargs['pk']
-        qs = OrderReview.objects.filter(goods__pk=goods_pk)
-        serializers = ReviewSerializers(qs, many=True)
-        return Response(serializers.data, status=status.HTTP_200_OK)
-
     @action(detail=False)
     def best(self, request):
-        # Cannot reorder a query once a slice has been taken.
-        # qs = self.queryset.order_by('-sales_count')[:30]
-        # qs = self.filter_queryset(qs)
-        # serializers = self.serializer_class(qs, many=True)
-        # return Response(serializers.data, status=status.HTTP_200_OK)
+        """
+        홈 - 베스트 상품
 
-        # queryset = self.filter_queryset(self.get_queryset())
-        # queryset = queryset.order_by('-sales_count')[:30] // 앞에서 filter_queryset으로 qs을 가져왔는데, 새로운 qs를 가져옴  > 무의미
-        # serializers = self.serializer_class(queryset, many=True)
-        # return Response(serializers.data, status=status.HTTP_200_OK)
-        pass
+        ---
+
+        배송 정보 : transfer # '샛별배송 ONLY', '샛별배송/택배배송', null 중 1
+
+        할인이 있는 상품 : discount_price
+
+        할인이 없는 상품 : price
+
+        신상품 stock > updated_at
+
+        판매량 : sales_count
+
+        할인률 : sales > discount_rate
+
+        ```
+        [
+            {
+                "id": 300,
+                "title": "[경주축협] 경주천년한우 1++등급 치마살 200g",
+                "short_desc": "100g 당 판매가: 22,800원",
+                "packing_status": "냉장",
+                "transfer": "샛별배송/택배배송",
+                "price": 45600,
+                "img": "https://pbs-13-s3.s3.amazonaws.com/goods/%5B%EA%B2%BD%EC%A3%BC%EC%B6%95%ED%98%91%5D%20%EA%B2%BD%EC%A3%BC%EC%B2%9C%EB%85%84%ED%95%9C%EC%9A%B0%201%2B%2B%EB%93%B1%EA%B8%89%20%EC%B9%98%EB%A7%88%EC%82%B4%20200g/%EA%B2%BD%EC%A3%BC%EC%B6%95%ED%98%91_%EA%B2%BD%EC%A3%BC%EC%B2%9C%EB%85%84%ED%95%9C%EC%9A%B0_1%EB%93%B1%EA%B8%89_%EC%B9%98%EB%A7%88%EC%82%B4_200g_goods_image.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAXOLZAM2NBPACFGX7%2F20201001%2Fap-northeast-2%2Fs3%2Faws4_request&X-Amz-Date=20201001T163750Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=15a4f42c677ce9dd9c6e5b3eb2852a9e5d74074735006df880962112d7074664",
+                "sales": {
+                    "discount_rate": null,
+                    "contents": "+gift"
+                },
+                "tagging": [],
+                "discount_price": null,
+                "sales_count": 99,
+                "stock": {
+                    "id": 300,
+                    "count": 98,
+                    "updated_at": "2020-07-14T18:04:23.870000Z"
+                }
+            },
+            {
+                "id": 444,
+                "title": "[푸드렐라] 석쇠닭갈비",
+                "short_desc": "쫄깃한 닭다리살에 불맛을 입힌 직화 닭갈비",
+                "packing_status": "냉동",
+                "transfer": "샛별배송/택배배송",
+                "price": 7120,
+                "img": "https://pbs-13-s3.s3.amazonaws.com/goods/%5B%ED%91%B8%EB%93%9C%EB%A0%90%EB%9D%BC%5D%20%EC%84%9D%EC%87%A0%EB%8B%AD%EA%B0%88%EB%B9%84/%ED%91%B8%EB%93%9C%EB%A0%90%EB%9D%BC_%EC%84%9D%EC%87%A0%EB%8B%AD%EA%B0%88%EB%B9%84_goods_image.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAXOLZAM2NBPACFGX7%2F20201001%2Fap-northeast-2%2Fs3%2Faws4_request&X-Amz-Date=20201001T163750Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=65fcf601f8705c370977ab4d44d98bc9385b4de09a427599e99648cc951cb293",
+                "sales": {
+                    "discount_rate": 40,
+                    "contents": null
+                },
+                "tagging": [],
+                "discount_price": 4272,
+                "sales_count": 99,
+                "stock": {
+                    "id": 444,
+                    "count": 40,
+                    "updated_at": "2020-07-11T18:04:25.950000Z"
+                }
+            },
+            {
+                "id": 111,
+                "title": "GAP 햇사과 한봉지 (자홍) 5~6입",
+                "short_desc": "달콤 상콤한 제철사과 자홍! 5~6입 봉",
+                "packing_status": "냉장",
+                "transfer": "샛별배송/택배배송",
+                "price": 8184,
+                "img": "https://pbs-13-s3.s3.amazonaws.com/goods/GAP%20%ED%96%87%EC%82%AC%EA%B3%BC%20%ED%95%9C%EB%B4%89%EC%A7%80%20%28%EC%9E%90%ED%99%8D%29%205~6%EC%9E%85/GAP_%ED%96%87%EC%82%AC%EA%B3%BC_%ED%95%9C%EB%B4%89%EC%A7%80_%EC%9E%90%ED%99%8D_56%EC%9E%85_goods_image.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAXOLZAM2NBPACFGX7%2F20201001%2Fap-northeast-2%2Fs3%2Faws4_request&X-Amz-Date=20201001T163750Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=aaed0ec6587ed09f0704378bec65cb4c7da1e5838be9d4e300ea91a816c05422",
+                "sales": {
+                    "discount_rate": 45,
+                    "contents": null
+                },
+                "tagging": [],
+                "discount_price": 4501,
+                "sales_count": 99,
+                "stock": {
+                    "id": 111,
+                    "count": 9,
+                    "updated_at": "2020-08-12T18:04:20.997000Z"
+                }
+            },
+            ...
+        ]
+        ```
+        """
+        # transfer = request.query_params.get('transfer', None)
+        # ordering = request.query_params.get('ordering', None)
+        qs = self.queryset.order_by('-sales_count')[:30]
+        # transfer_qs = []
+        # for obj in qs:
+        #     if obj.transfer == transfer:
+        #         transfer_qs.append(obj)
+        # transfer_qs = sorted(transfer_qs, key=lambda value: f'value.{ordering}')
+        serializers = self.serializer_class(qs, many=True)
+        return Response(serializers.data, status=status.HTTP_200_OK)
 
 
 class CategoryViewSet(mixins.ListModelMixin, GenericViewSet):
     queryset = Category.objects.all()
-    serializer_class = CategoriesSerializers
+    serializer_class = CategorySerializers
+    swagger_schema = MyAutoSchema
 
+    def get_serializer_class(self):
+        if self.action in ['md_recommend']:
+            return CategoryGoodsSerializers
+        return self.serializer_class
 
-class DeliveryViewSet(mixins.ListModelMixin, GenericViewSet):
-    queryset = DeliveryInfoImageFile.objects.all()
-    serializer_class = DeliveryInfoSerializers
+    def list(self, request, *args, **kwargs):
+        """
+        카테고리 요청 API
+
+        -----
+        예시
+
+        ```
+        [
+            {
+                "name": "채소",
+                "category_img": "https://pbs-13-s3.s3.amazonaws.com/category_img/icon_veggies_active_pc2x.1586324570.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAXOLZAM2NBPACFGX7%2F20200930%2Fap-northeast-2%2Fs3%2Faws4_request&X-Amz-Date=20200930T202047Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=3659617eb9b4890eb12bb12a39622d9098f37d4b8ddd1bb3b4bb9fea1d03d7b6",
+                "types": [
+                    {
+                        "name": "기본채소"
+                    },
+                    {
+                        "name": "쌈·샐러드·간편채소"
+                    },
+                    {
+                        "name": "브로콜리·특수채소"
+                    },
+                    {
+                        "name": "콩나물·버섯류"
+                    },
+                    {
+                        "name": "시금치·부추·나물"
+                    },
+                    {
+                        "name": "양파·마늘·생강·파"
+                    },
+                    {
+                        "name": "파프리카·피망·고추"
+                    }
+                ]
+            },
+            {
+                "name": "과일·견과·쌀",
+                "category_img": "https://pbs-13-s3.s3.amazonaws.com/category_img/icon_fruit_active_pc2x.1568684150.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAXOLZAM2NBPACFGX7%2F20200930%2Fap-northeast-2%2Fs3%2Faws4_request&X-Amz-Date=20200930T202047Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=fc521a1cda46700c0eadbe691231a05fb64e2aef38d03aae1149892b65a6ffdd",
+                "types": [
+                    {
+                        "name": "제철과일"
+                    },
+                    {
+                        "name": "국산과일"
+                    },
+                    {
+                        "name": "수입과일"
+                    },
+                    {
+                        "name": "냉동·건과일"
+                    },
+                    {
+                        "name": "견과류"
+                    },
+                    {
+                        "name": "쌀·잡곡"
+                    }
+                ]
+            },
+            ....
+        ]
+        ```
+        """
+        return super().list(request, *args, **kwargs)
+
+    @action(detail=False, )
+    def md_recommend(self, request):
+        """
+        MD의 추천 API
+
+        ---
+        - 카테고리당 6개의 상품을 매 요청시 랜덤으로 응답합니다.
+        """
+        qs = self.get_queryset()
+        serializers = self.get_serializer(qs, many=True)
+        return Response(serializers.data, status=status.HTTP_200_OK)

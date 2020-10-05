@@ -36,24 +36,31 @@ class User(AbstractUser):
 
 
 class UserAddress(models.Model):
-    class Location_Choice(models.TextChoices):
-        FRONT_DOOR = 'fd', ('문 앞')
-        SEQURITY_OFFICE = 'so', ('경비실')
-        DELIVERY_BOX = 'db', ('우편함')
-        ETC = 'etc', ('기타')
+    class Receiving_Choice(models.TextChoices):
+        FRONT_DOOR = '문앞', ('문 앞')
+        SEQURITY_OFFICE = '경비실', ('경비실')
+        DELIVERY_BOX = '택배함', ('택배함')
+        ETC = '기타', ('기타')
 
-    address = models.CharField(max_length=200)
-    detail_address = models.CharField(max_length=200)
-    require_message = models.CharField('요청 사항', max_length=100)
-    receiving_place = models.CharField('받으실 장소', max_length=3,
-                                       choices=Location_Choice.choices,
-                                       default=Location_Choice.ETC,
-                                       null=True)
-    entrance_password = models.CharField('공동현관 비밀번호', max_length=10, null=True)
-    free_pass = models.BooleanField('공동현관 자유출입 가능 여부', default=False)
-    etc = models.CharField('기타', max_length=100, null=True)
-    message = models.BooleanField('배송완료 메시지 전송 여부', default=False, null=True)
-    status = models.CharField('기본 배송지', max_length=1, default=False)
+    class AddressStatus(models.TextChoices):
+        NORMAL = 'T', ('기본 배송지')
+        INSTANT = 'F', ('일회성 배송지')
+
+    address = models.CharField(max_length=200, help_text='주소')
+    detail_address = models.CharField(max_length=200, help_text='상세주소')
+    status = models.CharField(choices=AddressStatus.choices, max_length=1, help_text='기본 배송지 상태')
+    receiving_place = models.CharField(max_length=3,
+                                       choices=Receiving_Choice.choices,
+                                       default=Receiving_Choice.ETC,
+                                       null=True,
+                                       help_text='받으실 장소',
+                                       )
+    entrance_password = models.CharField(max_length=10, null=True, help_text='공동현관 비밀번호', )
+    free_pass = models.BooleanField(default=False, help_text='공동현관 자유출입 가능 여부 값을 넣지 않으면 default 값은 False입니다.', )
+    etc = models.CharField(max_length=100, null=True, help_text='기타', )
+    message = models.BooleanField(default=False, null=True, help_text='배송완료 메시지 전송 여부', )
+    extra_message = models.CharField(max_length=200, null=True,
+                                     help_text='경비실, 택배함, 기타장소 텍스트 정보 receiving_place의 값에 영향을 받음')
 
     user = models.ForeignKey(
         'members.User',

@@ -1,6 +1,5 @@
 from django.contrib import admin
-from goods.models import Goods, GoodsDetail, Type, Category, GoodsType, GoodsExplain, DeliveryInfoImageFile, \
-    DeliveryInfoImageImageFile, SaleInfo
+from goods.models import Goods, GoodsDetail, Type, Category, GoodsType, GoodsExplain, SaleInfo
 
 
 class GoodsAdmin(admin.ModelAdmin):
@@ -27,13 +26,6 @@ class GoodsTypeAdmin(admin.ModelAdmin):
     list_display = ['id', 'type', 'goods', ]
 
 
-class DeliveryInfoAdmin(admin.ModelAdmin):
-    list_display = ['id', 'address_img']
-
-
-class DeliveryInfoImageAdmin(admin.ModelAdmin):
-    list_display = ['id', 'image', 'info']
-
 
 class SaleInfoAdmin(admin.ModelAdmin):
     list_display = ['id', 'discount_rate', 'contents']
@@ -45,6 +37,4 @@ admin.site.register(Type, TypeAdmin)
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(GoodsType, GoodsTypeAdmin)
 admin.site.register(GoodsExplain, GoodsExplainAdmin)
-admin.site.register(DeliveryInfoImageFile, DeliveryInfoAdmin)
-admin.site.register(DeliveryInfoImageImageFile, DeliveryInfoImageAdmin)
 admin.site.register(SaleInfo, SaleInfoAdmin)

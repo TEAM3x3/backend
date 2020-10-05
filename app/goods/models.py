@@ -60,6 +60,7 @@ class Goods(models.Model):
         on_delete=models.CASCADE,
         null=True,
         related_name='goods',
+        help_text='홈-이벤트'
     )
 
     sales = models.ForeignKey(
@@ -67,6 +68,7 @@ class Goods(models.Model):
         on_delete=models.SET_NULL,
         null=True,
         related_name='goods',
+        help_text='세일정보',
     )
 
     def save(self, *args, **kwargs):
@@ -244,20 +246,20 @@ class GoodsType(models.Model):
     )
 
 
-class DeliveryInfoImageFile(models.Model):
-    address_img = models.ImageField(upload_to='delivery_img', null=True)
-
-
-class DeliveryInfoImageImageFile(models.Model):
-    image = models.ImageField(
-        upload_to='delivery_img',
-        null=True,
-    )
-    info = models.ForeignKey(
-        'goods.DeliveryInfoImageFile',
-        on_delete=models.CASCADE,
-        related_name='images'
-    )
+# class DeliveryInfoImageFile(models.Model):
+#     address_img = models.ImageField(upload_to='delivery_img', null=True)
+#
+#
+# class DeliveryInfoImageImageFile(models.Model):
+#     image = models.ImageField(
+#         upload_to='delivery_img',
+#         null=True,
+#     )
+#     info = models.ForeignKey(
+#         'goods.DeliveryInfoImageFile',
+#         on_delete=models.CASCADE,
+#         related_name='images'
+#     )
 
 
 class SaleInfo(models.Model):

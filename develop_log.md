@@ -7,6 +7,7 @@ Goods.random_discount_rate()
 Goods.set_goods_packing_status()
 ```
 
+# [REST API](https://meetup.toast.com/posts/92)
 
 # 마켓컬리를 구현하면서 작성하는 일지
 ## 0819
@@ -170,10 +171,30 @@ transaction.atomic() 내부에서는 try-except 를 사용하지말자. 써야�
 
 ### [django session](https://valuefactory.tistory.com/708)
 
+
 ### [쿠키, 세션, 캐시 장단점](https://homzzang.com/b/css)
+
 #### [세션문서](http://rmaru.com/open/django_%EC%84%B8%EC%85%98_%EC%82%AC%EC%9A%A9%ED%95%98%EA%B8%B0)
 
 #### [django filters](https://django-filter.readthedocs.io/en/stable/guide/rest_framework.html)
 
 
 ### [datetime calculate](https://stackoverflow.com/questions/31432397/calculate-datefield-until-days-in-django)
+
+
+### [Session: HTTP & RESTful HTTP API](https://velog.io/@magnoliarfsit/Session-HTTP-RESTful-HTTP-API-1)
+
+### [인증 방법, header, session&cookie, JWT](https://tansfil.tistory.com/58)
+
+### [django 검색엔진 - django full text]
+
+### [db indexing](https://medium.com/@dlarkqrl4966/how-to-create-an-index-in-django-without-downtime-c9a5a194877a)
+
+### [drf yasg](https://velog.io/@rubycho/%EB%AC%B8%EC%84%9C%ED%99%94%EB%A5%BC-%EC%9C%84%ED%95%9C-drf-yasg-%EC%A0%81%EC%9A%A9%ED%95%98%EA%B8%B0)
+
+### [drf yasg 문서 자동화](https://medium.com/towncompany-engineering/%EC%B9%9C%EC%A0%88%ED%95%98%EA%B2%8C-django-rest-framework-api-%EB%AC%B8%EC%84%9C-%EC%9E%90%EB%8F%99%ED%99%94%ED%95%98%EA%B8%B0-drf-yasg-c835269714fc)
+
+### [drf yasg example value](https://item4.blog/2020-03-04/Add-Example-on-drf-yasg/)
+
+# 10.1 
+ModelActionSerializers는 drf-yasg를 사용할 때 serializers field 표현이 각 액션마다 적용이 안되어 어려우므로 api docs 를 yasg를 사용하게 되었으므로 modelserialziers를 사용하여 대체한다.

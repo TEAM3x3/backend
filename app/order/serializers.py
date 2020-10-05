@@ -106,6 +106,7 @@ class OrderCreateSerializers(ModelSerializer):
     class Meta:
         model = Order
         fields = (
+            'id',
             'user',
             'items',
         )
@@ -121,10 +122,40 @@ class ReviewUpdateSerializers(ModelSerializer):
     class Meta:
         model = OrderReview
         fields = ('title', 'content')
+        examples = {
+            "title": "update review title",
+            "content": "update review content"
+        }
 
 
-class ReviewSerializers(ModelActionSerializer):
-    goods_ins = GoodsSaleSerializers(source='goods')
+class ReviewListSerializers(ModelSerializer):
+    goods = GoodsSaleSerializers()
+
+    class Meta:
+        model = OrderReview
+        fields = ('id', 'title', 'content', 'goods')
+        examples = [
+            {
+                "id": 1,
+                "title": "test create",
+                "content": "contnet create",
+                "goods": {
+                    "id": 1,
+                    "title": "[KF365] 햇 감자 1kg",
+                    "short_desc": "믿고 먹을 수 있는 상품을 합리적인 가격에, KF365",
+                    "packing_status": "상온",
+                    "transfer": "샛별배송/택배배송",
+                    "price": 2380,
+                    "img": "https://pbs-13-s3.s3.amazonaws.com/goods/%5BKF365%5D%20%ED%96%87%20%EA%B0%90%EC%9E%90%201kg/KF365_%ED%96%87_%EA%B0%90%EC%9E%90_1kg_goods_image.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAXOLZAM2NBPACFGX7%2F20200930%2Fap-northeast-2%2Fs3%2Faws4_request&X-Amz-Date=20200930T212332Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=d3539d90c6ef746312452ffb2dfc8d34af19b256bef3937204a66d4ff5e15664",
+                    "sales": 'null',
+                    "tagging": [],
+                    "discount_price": 'null'
+                }
+            }
+        ]
+
+
+class ReviewCreateSerializers(ModelActionSerializer):
     user = serializers.HiddenField(
         default=serializers.CurrentUserDefault()
     )
@@ -133,8 +164,13 @@ class ReviewSerializers(ModelActionSerializer):
         model = OrderReview
         fields = ('id', 'title', 'content', 'goods', 'user')
         action_fields = {
-            'list': {'fields': ('id', 'goods', 'title', 'content', 'goods_ins')},
             'create': {'fields': ('title', 'content', 'user', 'goods', 'cartItem')},
+        }
+        examples = {
+            "title": "title exam",
+            "content": "content exam",
+            "goods": "2",
+            "cartItem": "2"
         }
         validators = [
             serializers.UniqueTogetherValidator(

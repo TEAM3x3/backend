@@ -5,10 +5,12 @@ from rest_framework import mixins, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
+
+from core.instructors import MyAutoSchema
 from order.models import Order, OrderReview, OrderDetail
 from order.permissions import OrderReviewPermission, OrderPermission
-from order.serializers import OrderCreateSerializers, ReviewSerializers, \
-    ReviewUpdateSerializers, OrderSerializers, OrderDetailSerializers, OrderDetailCreateSerializers
+from order.serializers import OrderCreateSerializers, ReviewUpdateSerializers, OrderSerializers, \
+    OrderDetailCreateSerializers, ReviewListSerializers, ReviewCreateSerializers
 
 
 class OrderView(mixins.CreateModelMixin,
@@ -61,9 +63,9 @@ class OrderView(mixins.CreateModelMixin,
                 "cancel_url": "https://developers.kakao.com/fail",
                 "fail_url": "https://developers.kakao.com/cancel",
             }
-            del request.session['tid']
-            del request.session['partner_user_id']
             del request.session['partner_order_id']
+            del request.session['partner_user_id']
+            del request.session['tid']
             request.session.modified = True
 
             response = requests.post(URL, headers=headers, params=params)
@@ -71,7 +73,6 @@ class OrderView(mixins.CreateModelMixin,
             request.session['partner_order_id'] = order_ins.id
             request.session['partner_user_id'] = self.request.user.username
             next_url = response.json()['next_redirect_pc_url']  # 카카오톡 결제 페이지 Redirect URL
-            print(request.session['tid'])
             return Response({"next": f"{next_url}"}, status=status.HTTP_200_OK)
 
         data = {
@@ -95,27 +96,11 @@ class OrderView(mixins.CreateModelMixin,
         * view에는 로직이 들어가면 좋지 않은데 결제 정보를 디비에 넣는 형식으로 해서 serializers 를 만들고,
         serializers에 views에서 작성하였던 코드를 넣는게 올바른 방식인지 질문드립니다. >> 아니면 payment.py를 만들고 거기서 함수를 호출하는 형식으로 할까요?
         """
-        print(request.session['tid'])
         try:
             order_ins = Order.objects.get(pk=kwargs['pk'])
         except Order.DoesNotExist:
             order_ins = None
         if order_ins:
-            # # 카카오페이 취소 통신
-            # URL = 'https://kapi.kakao.com/v1/payment/cancel'
-            # headers = {
-            #     "Authorization": "KakaoAK " + "f9f70eb192ef14919735fb40a6e599f5",
-            #     "Content-type": "application/x-www-form-urlencoded;charset=utf-8",
-            # }
-            # params = {
-            #     "cid": "TC0ONETIME",
-            #     "tid":"T2810665902167272971",
-            #     "cancel_amount":"51100",
-            #     "cancel_tax_free_amount":"0",
-            # }
-            # response = requests.post(URL, headers=headers, params=params)
-            # response = response.json()
-
             # 카카오 페이 승인 통신
             URL = 'https://kapi.kakao.com/v1/payment/approve'
             headers = {
@@ -143,17 +128,17 @@ class OrderView(mixins.CreateModelMixin,
                     item.goods.save()
                     stock.save()
 
-                # order detail 을 어떻게 만들지? >> endpoint 분리
-                # order_ins.orderdetail.status = OrderDetail.Order_Status.PAYMENT_COMPLETE
-                # order_ins.orderdetail.payment_type = OrderDetail.Payment_Type.KAKAO
-                # OrderDetail.save()
-
                 response = response.json()
                 amount = response['amount']['total']
                 context = {
                     'res': response,
                     'amount': amount,
                 }
+                del request.session['partner_order_id']
+                del request.session['partner_user_id']
+                del request.session['tid']
+                request.session.modified = True
+
                 return Response(data=context, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
@@ -174,7 +159,9 @@ class ReviewAPI(mixins.CreateModelMixin,
                 mixins.ListModelMixin,
                 GenericViewSet):
     queryset = OrderReview.objects.all()
-    serializer_class = ReviewSerializers
+    serializer_class = ReviewCreateSerializers
+    swagger_schema = MyAutoSchema
+
     """
     배송이 완료 되기 전 'r' ready
     배송 완료- 후기 작성 가능 상태 'p' possible
@@ -182,16 +169,18 @@ class ReviewAPI(mixins.CreateModelMixin,
     """
 
     def get_queryset(self):
-        if self.action in ['list', 'retrieve']:
+        try:
             goods_pk = self.kwargs['goods_pk']
             if goods_pk:
                 return self.queryset.filter(goods_id=goods_pk)
+        except KeyError:
             return self.queryset.filter(user=self.request.user)
-        return self.queryset
 
     def get_serializer_class(self):
         if self.action in ['partial_update']:
             return ReviewUpdateSerializers
+        elif self.action in ['list', 'retrieve']:
+            return ReviewListSerializers
         return self.serializer_class
 
     def get_permissions(self):
@@ -199,4 +188,142 @@ class ReviewAPI(mixins.CreateModelMixin,
             return [OrderReviewPermission(), ]
         # 참고 링크 :https://stackoverflow.com/questions/35970970/django-rest-framework-permission-classes-of-viewset-method
         return [permissions() for permissions in self.permission_classes]
-9
+
+    def list(self, request, *args, **kwargs):
+        """
+        후기 list api
+
+        ----
+        # /api/review 와 /api/goods/{goods_pk}/reviews 에 대한 요청의 응답 값은 다릅니다.
+
+        1. /api/review는 토큰이 헤더에 포함이 되어야 하며, 토큰에 해당하는 유저가 작성한 리뷰 리스트를 반환합니다.
+        ```
+        [
+            {
+                "id": 1,
+                "title": "update review title",
+                "content": "update review content",
+                "goods": {
+                    "id": 1,
+                    "title": "[KF365] 햇 감자 1kg",
+                    "short_desc": "믿고 먹을 수 있는 상품을 합리적인 가격에, KF365",
+                    "packing_status": "상온",
+                    "transfer": "샛별배송/택배배송",
+                    "price": 2380,
+                    "img": "https://pbs-13-s3.s3.amazonaws.com/goods/%5BKF365%5D%20%ED%96%87%20%EA%B0%90%EC%9E%90%201kg/KF365_%ED%96%87_%EA%B0%90%EC%9E%90_1kg_goods_image.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAXOLZAM2NBPACFGX7%2F20201001%2Fap-northeast-2%2Fs3%2Faws4_request&X-Amz-Date=20201001T170201Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=d5f34d0eecafc0a29eed7e2cda0018232ea609ee1f6c8c194188024c6c4b012f",
+                    "sales": null,
+                    "tagging": [],
+                    "discount_price": null,
+                    "sales_count": 6,
+                    "stock": {
+                        "id": 1,
+                        "count": 82,
+                        "updated_at": "2020-08-18T18:05:16.687000Z"
+                    }
+                }
+            },
+            {
+                "id": 2,
+                "title": "title exam",
+                "content": "content exam",
+                "goods": {
+                    "id": 2,
+                    "title": "한끼 당근 1개",
+                    "short_desc": "딱 하나만 필요할 때 한끼 당근",
+                    "packing_status": "냉장",
+                    "transfer": "샛별배송/택배배송",
+                    "price": 1000,
+                    "img": "https://pbs-13-s3.s3.amazonaws.com/goods/%ED%95%9C%EB%81%BC%20%EB%8B%B9%EA%B7%BC%201%EA%B0%9C/%ED%95%9C%EB%81%BC_%EB%8B%B9%EA%B7%BC_1%EA%B0%9C_goods_image.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAXOLZAM2NBPACFGX7%2F20201001%2Fap-northeast-2%2Fs3%2Faws4_request&X-Amz-Date=20201001T170201Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=87bfa3347b159a2086d20405b69a249591a573e5addf1552e01b1a294644baf4",
+                    "sales": {
+                        "discount_rate": 30,
+                        "contents": null
+                    },
+                    "tagging": [],
+                    "discount_price": 700,
+                    "sales_count": 68,
+                    "stock": {
+                        "id": 2,
+                        "count": 27,
+                        "updated_at": "2020-09-17T18:04:43.110000Z"
+                    }
+                }
+            }
+        ]
+        ```
+
+        2. /api/goods/{goods_pk}/reviews는 해당 상품에 대한 리뷰를 리스트 형태로 반환합니다.
+        ```
+        [
+            {
+                "id": 1,
+                "title": "update review title",
+                "content": "update review content",
+                "goods": {
+                    "id": 1,
+                    "title": "[KF365] 햇 감자 1kg",
+                    "short_desc": "믿고 먹을 수 있는 상품을 합리적인 가격에, KF365",
+                    "packing_status": "상온",
+                    "transfer": "샛별배송/택배배송",
+                    "price": 2380,
+                    "img": "https://pbs-13-s3.s3.amazonaws.com/goods/%5BKF365%5D%20%ED%96%87%20%EA%B0%90%EC%9E%90%201kg/KF365_%ED%96%87_%EA%B0%90%EC%9E%90_1kg_goods_image.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAXOLZAM2NBPACFGX7%2F20201001%2Fap-northeast-2%2Fs3%2Faws4_request&X-Amz-Date=20201001T170100Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=0c4b1b2e065fb510c9e420c24e7cdcd003761f2244352710ef229d3e496fa3b7",
+                    "sales": null,
+                    "tagging": [],
+                    "discount_price": null,
+                    "sales_count": 6,
+                    "stock": {
+                        "id": 1,
+                        "count": 82,
+                        "updated_at": "2020-08-18T18:05:16.687000Z"
+                    }
+                }
+            }
+            ...
+        ]
+        ```
+
+        """
+        return super().list(request, *args, **kwargs)
+
+    def create(self, request, *args, **kwargs):
+        """
+        후기 생성
+
+        ----
+        토큰이 필요한 요청입니다.
+        """
+        return super().create(request, *args, **kwargs)
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        리뷰 상세 요청
+
+        ---
+
+        """
+        return super().retrieve(request, *args, **kwargs)
+
+    def update(self, request, *args, **kwargs):
+        """
+        사용하지 않을 api 입니다.
+
+        ----
+        """
+        return super().update(request, *args, **kwargs)
+
+    def partial_update(self, request, *args, **kwargs):
+        """
+        후기 업데이트
+
+        ---
+        title, content 만 수정하며, 토큰이 필요합니다.
+        """
+        return super().partial_update(request, *args, **kwargs)
+
+    def destroy(self, request, *args, **kwargs):
+        """
+        후기 삭제
+
+        ---
+        토큰이 필요한 요청 입니다.
+        """
+        return super().destroy(request, *args, **kwargs)
