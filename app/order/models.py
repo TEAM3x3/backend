@@ -54,6 +54,7 @@ class OrderDetail(models.Model):
     2. 주문 정보 - 주문 번호( order.id), 주문자 명 (request.user), 보내는 분 (request.user), 결제 일시 (order.created_at)
     3. 배송지 정보 -
     """
+    title = models.CharField(max_length=50, null=True, blank=True)
     delivery_cost = models.PositiveIntegerField(default=0, null=True, help_text='배송비')
     point = models.PositiveIntegerField(default=0, help_text='적립 금액')
     created_at = models.DateTimeField(auto_now_add=True, help_text='결제 일시')

@@ -46,6 +46,7 @@ class OrderDetailSerializers(ModelSerializer):
     class Meta:
         model = OrderDetail
         fields = (
+            'title',
             'delivery_cost',
             'point',
 
@@ -130,10 +131,11 @@ class ReviewUpdateSerializers(ModelSerializer):
 
 class ReviewListSerializers(ModelSerializer):
     goods = GoodsSaleSerializers()
+    user = UserOrderSerializers()
 
     class Meta:
         model = OrderReview
-        fields = ('id', 'title', 'content', 'goods')
+        fields = ('id', 'user', 'created_at', 'title', 'content', 'goods')
         examples = [
             {
                 "id": 1,
