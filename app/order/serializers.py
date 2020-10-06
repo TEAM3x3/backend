@@ -46,6 +46,10 @@ class OrderDetailCreateSerializers(ModelSerializer):
         ins = super().create(validated_data)
         ins.status = '결제완료'
         ins.title = f'{ins.order.items.first().goods.title} 외 {ins.order.items.count() - 1}건'
+        items = ins.order.items.all()
+        for item in items:
+            item.cart = None
+            item.save()
         ins.save()
         return ins
 
