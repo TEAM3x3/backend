@@ -11,7 +11,7 @@ from core.instructors import MyAutoSchema
 from goods.filters import GoodsFilter
 from goods.models import Goods, Category
 from goods.serializers import GoodsSerializers, GoodsSaleSerializers, CategoryGoodsSerializers, CategorySerializers, \
-    GoodsReviewSerializers
+    GoodsReviewSerializers, CategoriesSerializers
 from members.models import UserSearch, KeyWord
 from members.serializers import UserSearchSerializer
 
@@ -774,7 +774,7 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
 
 class CategoryViewSet(mixins.ListModelMixin, GenericViewSet):
     queryset = Category.objects.all()
-    serializer_class = CategorySerializers
+    serializer_class = CategoriesSerializers
     swagger_schema = MyAutoSchema
 
     def get_serializer_class(self):
