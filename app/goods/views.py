@@ -528,7 +528,11 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
         """
         qs = self.queryset[:5]
         serializers = GoodsReviewSerializers(qs, many=True)
-        return Response(serializers.data, status=status.HTTP_200_OK)
+        data = {
+            "title": "후기가 좋은 상품",
+            "serializers": serializers.data
+        }
+        return Response(data, status=status.HTTP_200_OK)
 
     @action(detail=False, )
     def cleaning(self, request):
@@ -584,6 +588,7 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
         serializer = self.get_serializer(qs, many=True)
         data = {
             "bool": False,
+            "title": "집안 구석구석 쾌적하게",
             "serializers": serializer.data
         }
         return Response(data, status=status.HTTP_200_OK)
@@ -649,6 +654,7 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
         serializer = self.get_serializer(qs_list, many=True)
         data = {
             "bool": False,
+            "title": "맛있는 떡 드셔보세요",
             "serializers": serializer.data
         }
         return Response(data, status=status.HTTP_200_OK)
@@ -688,6 +694,7 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
         serializers = self.get_serializer(qs, many=True)
         data = {
             "bool": True,
+            "title": "반려동물 판매 랭킹",
             "serializers": serializers.data,
         }
         return Response(data, status=status.HTTP_200_OK)
@@ -704,6 +711,7 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
         serializers = self.get_serializer(qs, many=True)
         data = {
             "bool": True,
+            "title": "가전제품 판매 랭킹",
             "serializers": serializers.data
         }
         return Response(data, status=status.HTTP_200_OK)
@@ -720,6 +728,7 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
         serializers = self.get_serializer(qs, many=True)
         data = {
             "bool": True,
+            "title": "아이스크림 판매 랭킹",
             "serializers": serializers.data
         }
         return Response(data, status=status.HTTP_200_OK)
@@ -736,6 +745,7 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
         serializers = self.get_serializer(qs, many=True)
         data = {
             'bool': False,
+            "title":"밥상 위의 별미, 젓갈",
             "serializers": serializers.data
         }
         return Response(data, status=status.HTTP_200_OK)
@@ -768,6 +778,7 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
         serializer = self.get_serializer(qs_list, many=True)
         data = {
             "bool": False,
+            "title":"닭고기로 맛있는 식사",
             "serializers": serializer.data
         }
         return Response(data, status=status.HTTP_200_OK)
