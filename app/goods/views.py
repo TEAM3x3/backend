@@ -14,6 +14,7 @@ from goods.serializers import GoodsSerializers, GoodsSaleSerializers, CategoryGo
     GoodsReviewSerializers, CategoriesSerializers
 from members.models import UserSearch, KeyWord
 from members.serializers import UserSearchSerializer
+from collections import defaultdict
 
 
 class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericViewSet):
@@ -708,7 +709,7 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
         return Response(data, status=status.HTTP_200_OK)
 
     @action(detail=False)
-    def home_appliances(self, request):
+    def ice_cream(self, request):
         """
         추천 - 아이스크림 판매 랭킹
 
@@ -777,11 +778,32 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
         홈 - 신상품 API
 
         ----
-        홈 신상품 정렬 형식 다른 데이터들과 동일
+        홈 신상품 정렬 형식 다른 데이터들과 동일하며, 신상품은 최산 상품 50개까지만 반환 x됩니다.
         """
         qs = Goods.objects.order_by('-stock__updated_at')[:50]
         serializers = self.get_serializer(qs, many=True)
         return Response(serializers.data, status=status.HTTP_200_OK)
+
+    @action(detail=False, )
+    def often_purchase_goods(self, request):
+        """
+        마이컬리 - 주문내역 - 자주사는 상품 API
+
+        ---
+
+        """
+        qs = self.get_queryset().filter(items__order__user=request.user)
+        goods_dict = defaultdict(int)
+        for goods in qs:
+            goods_dict[goods] += 1
+
+        serializers = self.get_serializer([goods for goods, count in goods_dict.items()], many=True)
+        data = {
+            "serializers": serializers.data,
+            "goods_dict": [count for goods, count in goods_dict.items()]
+        }
+
+        return Response(data, status=status.HTTP_200_OK)
 
 
 class CategoryViewSet(mixins.ListModelMixin, GenericViewSet):
