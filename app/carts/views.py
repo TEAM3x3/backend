@@ -96,9 +96,9 @@ class CartItemViewSet(mixins.CreateModelMixin,
         req_goods = request.data.get('items')
         req_goods = req_goods.split(',')
         pk_list = []
+
         for char in req_goods:
             pk_list.append(int(char))
-
         goods_ins = CartItem.objects.filter(id__in=list(req_goods))
 
         for ins in goods_ins:

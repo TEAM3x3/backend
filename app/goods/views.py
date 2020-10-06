@@ -14,6 +14,7 @@ from goods.serializers import GoodsSerializers, GoodsSaleSerializers, CategoryGo
     GoodsReviewSerializers, CategoriesSerializers
 from members.models import UserSearch, KeyWord
 from members.serializers import UserSearchSerializer
+from collections import defaultdict
 
 
 class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericViewSet):
@@ -527,7 +528,11 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
         """
         qs = self.queryset[:5]
         serializers = GoodsReviewSerializers(qs, many=True)
-        return Response(serializers.data, status=status.HTTP_200_OK)
+        data = {
+            "title": "후기가 좋은 상품",
+            "serializers": serializers.data
+        }
+        return Response(data, status=status.HTTP_200_OK)
 
     @action(detail=False, )
     def cleaning(self, request):
@@ -583,6 +588,7 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
         serializer = self.get_serializer(qs, many=True)
         data = {
             "bool": False,
+            "title": "집안 구석구석 쾌적하게",
             "serializers": serializer.data
         }
         return Response(data, status=status.HTTP_200_OK)
@@ -648,6 +654,7 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
         serializer = self.get_serializer(qs_list, many=True)
         data = {
             "bool": False,
+            "title": "맛있는 떡 드셔보세요",
             "serializers": serializer.data
         }
         return Response(data, status=status.HTTP_200_OK)
@@ -687,6 +694,7 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
         serializers = self.get_serializer(qs, many=True)
         data = {
             "bool": True,
+            "title": "반려동물 판매 랭킹",
             "serializers": serializers.data,
         }
         return Response(data, status=status.HTTP_200_OK)
@@ -703,12 +711,13 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
         serializers = self.get_serializer(qs, many=True)
         data = {
             "bool": True,
+            "title": "가전제품 판매 랭킹",
             "serializers": serializers.data
         }
         return Response(data, status=status.HTTP_200_OK)
 
     @action(detail=False)
-    def home_appliances(self, request):
+    def ice_cream(self, request):
         """
         추천 - 아이스크림 판매 랭킹
 
@@ -719,6 +728,7 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
         serializers = self.get_serializer(qs, many=True)
         data = {
             "bool": True,
+            "title": "아이스크림 판매 랭킹",
             "serializers": serializers.data
         }
         return Response(data, status=status.HTTP_200_OK)
@@ -735,6 +745,7 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
         serializers = self.get_serializer(qs, many=True)
         data = {
             'bool': False,
+            "title":"밥상 위의 별미, 젓갈",
             "serializers": serializers.data
         }
         return Response(data, status=status.HTTP_200_OK)
@@ -754,7 +765,7 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
         list_length_limit = 8
         qs = Goods.objects.filter(title__icontains='닭')
         while True:
-            random_pk = random.randint(0, qs.count()-1)
+            random_pk = random.randint(0, qs.count() - 1)
             if random_pk in lst:
                 continue
             elif random_pk == 0:
@@ -767,7 +778,42 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
         serializer = self.get_serializer(qs_list, many=True)
         data = {
             "bool": False,
+            "title":"닭고기로 맛있는 식사",
             "serializers": serializer.data
+        }
+        return Response(data, status=status.HTTP_200_OK)
+
+    @action(detail=False)
+    def new_product(self, request):
+        """
+        홈 - 신상품 API
+
+        ----
+        홈 신상품 정렬 형식 다른 데이터들과 동일하며, 신상품은 최산 상품 50개까지만 반환 x됩니다.
+        """
+        qs = Goods.objects.order_by('-stock__updated_at')[:50]
+        serializers = self.get_serializer(qs, many=True)
+        return Response(serializers.data, status=status.HTTP_200_OK)
+
+    @action(detail=False, )
+    def often_purchase_goods(self, request):
+        """
+        마이컬리 - 주문내역 - 자주사는 상품 API
+
+        ---
+        마이컬리 주문내역 - 자주사는 상품에 대한 API 이며
+
+        각 serializers index 와 goods_purchase_count 의 index를 맞추면 해당 상품에 대한 구매 횟수가 됩니다.
+        """
+        qs = self.get_queryset().filter(items__order__user=request.user)
+        goods_dict = defaultdict(int)
+        for goods in qs:
+            goods_dict[goods] += 1
+
+        serializers = self.get_serializer([goods for goods, count in goods_dict.items()], many=True)
+        data = {
+            "serializers": serializers.data,
+            "goods_purchase_count": [count for goods, count in goods_dict.items()]
         }
         return Response(data, status=status.HTTP_200_OK)
 
