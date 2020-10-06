@@ -754,7 +754,7 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
         list_length_limit = 8
         qs = Goods.objects.filter(title__icontains='닭')
         while True:
-            random_pk = random.randint(0, qs.count()-1)
+            random_pk = random.randint(0, qs.count() - 1)
             if random_pk in lst:
                 continue
             elif random_pk == 0:
@@ -770,6 +770,18 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
             "serializers": serializer.data
         }
         return Response(data, status=status.HTTP_200_OK)
+
+    @action(detail=False)
+    def new_product(self, request):
+        """
+        홈 - 신상품 API
+
+        ----
+        홈 신상품 정렬 형식 다른 데이터들과 동일
+        """
+        qs = Goods.objects.order_by('-stock__updated_at')[:50]
+        serializers = self.get_serializer(qs, many=True)
+        return Response(serializers.data, status=status.HTTP_200_OK)
 
 
 class CategoryViewSet(mixins.ListModelMixin, GenericViewSet):
