@@ -802,7 +802,6 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
             "serializers": serializers.data,
             "goods_dict": [count for goods, count in goods_dict.items()]
         }
-
         return Response(data, status=status.HTTP_200_OK)
 
 
