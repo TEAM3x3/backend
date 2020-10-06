@@ -10,12 +10,10 @@ from rest_framework.viewsets import GenericViewSet
 from core.instructors import MyAutoSchema
 from goods.filters import GoodsFilter
 from goods.models import Goods, Category
-from goods.serializers import GoodsSerializers, CategoriesSerializers, GoodsSaleSerializers, CategoryGoodsSerializers, \
-    CategorySerializers
+from goods.serializers import GoodsSerializers, GoodsSaleSerializers, CategoryGoodsSerializers, CategorySerializers, \
+    GoodsReviewSerializers
 from members.models import UserSearch, KeyWord
 from members.serializers import UserSearchSerializer
-from order.models import OrderReview
-from order.serializers import ReviewListSerializers
 
 
 class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericViewSet):
@@ -141,7 +139,7 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
     @action(detail=False)
     def main_page_health(self, request, *args, **kwargs):
         """
-        홈 - 컬리추천 건강식품 API
+        홈 - 컬리추천 건강식품[면역력 증진] API
 
         ---
         정렬 데이터 api/goods/best 참고
@@ -497,6 +495,281 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
         # transfer_qs = sorted(transfer_qs, key=lambda value: f'value.{ordering}')
         serializers = self.serializer_class(qs, many=True)
         return Response(serializers.data, status=status.HTTP_200_OK)
+
+    @action(detail=False)
+    def recommend_review(self, request):
+        """
+        추천- 후기가 좋은 상품 API
+
+        ----
+        ```
+        [
+            {
+                "id": 1,
+                "title": "친환경 당근 500g",
+                "price": 2700,
+                "info_img": "https://pbs-13-s3.s3.amazonaws.com/goods/%EC%B9%9C%ED%99%98%EA%B2%BD%20%EB%8B%B9%EA%B7%BC%20500g/%EC%B9%9C%ED%99%98%EA%B2%BD_%EB%8B%B9%EA%B7%BC_500g_info_image.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAXOLZAM2NBPACFGX7%2F20201005%2Fap-northeast-2%2Fs3%2Faws4_request&X-Amz-Date=20201005T143448Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=88c8b1f9860369545e8aa4ceedd21eefed56f5a9c3339a21403190174920ad6e",
+                "reviews": [
+                    {
+                        "id": 16,
+                        "title": "추천합니다!!!!!!!",
+                        "content": "추천합니다!!!!!!! 에 대한 내용입니다.",
+                        "user": {
+                            "username": "admin"
+                        }
+                    },
+                    ...(다른 리뷰들)
+                ]
+            }
+            ...(다른 상품들 - 상품에 해당하는 리뷰들)
+        ]
+        ```
+        """
+        qs = self.queryset[:5]
+        serializers = GoodsReviewSerializers(qs, many=True)
+        return Response(serializers.data, status=status.HTTP_200_OK)
+
+    @action(detail=False, )
+    def cleaning(self, request):
+        """
+        추천 - 집안 구석구석 쾌적하게 API
+
+        ---
+        추천에 해당하는 이름은 # 집안 구석구석 쾌적하게 입니다. 매 요청마다 다른 청소 용품들을 돌려줍니다.
+        ```
+        {
+            "bool": "false",
+            "serializers": [
+                {
+                    "id": 895,
+                    "title": "[레인보우샵] 과탄산소다 4종",
+                    "short_desc": "순하지만 강한 친환경 표백제",
+                    "packing_status": "상온",
+                    "transfer": "샛별배송/택배배송",
+                    "price": 2400,
+                    "img": "https://pbs-13-s3.s3.amazonaws.com/goods/%5B%EB%A0%88%EC%9D%B8%EB%B3%B4%EC%9A%B0%EC%83%B5%5D%20%EA%B3%BC%ED%83%84%EC%82%B0%EC%86%8C%EB%8B%A4%204%EC%A2%85/%EB%A0%88%EC%9D%B8%EB%B3%B4%EC%9A%B0%EC%83%B5_%EA%B3%BC%ED%83%84%EC%82%B0%EC%86%8C%EB%8B%A4_4%EC%A2%85_goods_image.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAXOLZAM2NBPACFGX7%2F20201005%2Fap-northeast-2%2Fs3%2Faws4_request&X-Amz-Date=20201005T154555Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=fbfaf351c05d97554139846af305d0126cb2bdcedf54608daa5012e199599b4b",
+                    "sales": {
+                        "discount_rate": 45,
+                        "contents": null
+                    },
+                    "tagging": [],
+                    "discount_price": 1320,
+                    "sales_count": 11,
+                    "stock": {
+                        "id": 895,
+                        "count": 29,
+                        "updated_at": "2020-09-24T18:04:32.521000Z"
+                    }
+                },
+                ...(추가 상품 데이터)
+            ]
+        }
+        ```
+        """
+        lst = []
+        list_length_limit = 5
+        while True:
+            random_pk = random.randint(894, 909)
+            if random_pk in lst:
+                continue
+            elif random_pk == 0:
+                continue
+            else:
+                lst.append(random_pk)
+            if len(lst) == list_length_limit:
+                break
+
+        qs = Goods.objects.filter(id__in=lst)
+        serializer = self.get_serializer(qs, many=True)
+        data = {
+            "bool": False,
+            "serializers": serializer.data
+        }
+        return Response(data, status=status.HTTP_200_OK)
+
+    @action(detail=False, )
+    def rice_cake(self, request):
+        """
+        추천 - 맛있는 떡 드셔보세요 API
+
+        ---
+        추천에 해당하는 이름은 # 맛있는 떡 드셔보세요 입니다. 매 요청마다 다른 상품들을 돌려줍니다.
+        ```
+        {
+            "bool": "false",
+            "serializers": [
+                {
+                    "id": 679,
+                    "title": "[착한떡] 아기 찰떡바게트 3종",
+                    "short_desc": "속이 쫀득한 오븐 베이킹 바게트",
+                    "packing_status": "냉동",
+                    "transfer": "샛별배송/택배배송",
+                    "price": 1000,
+                    "img": "https://pbs-13-s3.s3.amazonaws.com/goods/%5B%EC%B0%A9%ED%95%9C%EB%96%A1%5D%20%EC%95%84%EA%B8%B0%20%EC%B0%B0%EB%96%A1%EB%B0%94%EA%B2%8C%ED%8A%B8%203%EC%A2%85/%EC%B0%A9%ED%95%9C%EB%96%A1_%EC%95%84%EA%B8%B0_%EC%B0%B0%EB%96%A1%EB%B0%94%EA%B2%8C%ED%8A%B8_3%EC%A2%85_goods_image.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAXOLZAM2NBPACFGX7%2F20201005%2Fap-northeast-2%2Fs3%2Faws4_request&X-Amz-Date=20201005T154440Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=d98acc10fc647a95a8055d10475dac663cdf9a35d7d8a242372415f0d0d13e66",
+                    "sales": {
+                        "discount_rate": null,
+                        "contents": "1+1"
+                    },
+                    "tagging": [
+                        {
+                            "tag": {
+                                "name": "kurly's only"
+                            }
+                        }
+                    ],
+                    "discount_price": null,
+                    "sales_count": 17,
+                    "stock": {
+                        "id": 679,
+                        "count": 63,
+                        "updated_at": "2020-07-17T18:04:29.358000Z"
+                    }
+                },
+                ...(추가 상품 데이터)
+            ]
+        }
+        ```
+        """
+        lst = []
+        qs_list = []
+        list_length_limit = 5
+        qs = Goods.objects.filter(title__icontains='떡')
+        while True:
+            random_pk = random.randint(0, 20)
+            if random_pk in lst:
+                continue
+            elif random_pk == 0:
+                continue
+            else:
+                lst.append(random_pk)
+                qs_list.append(qs[random_pk])
+            if len(lst) == list_length_limit:
+                break
+        serializer = self.get_serializer(qs_list, many=True)
+        data = {
+            "bool": False,
+            "serializers": serializer.data
+        }
+        return Response(data, status=status.HTTP_200_OK)
+
+    @action(detail=False)
+    def pet_goods_best(self, request):
+        """
+        추천 - 반려동물 판매 랭킹
+
+        ----
+        ```
+            "bool": "false",
+            "serializers": [
+                {
+                    "id": 1178,
+                    "title": "[어플라우즈] 통살 참치",
+                    "short_desc": "도톰 촉촉한 고양이 간식",
+                    "packing_status": "상온",
+                    "transfer": "샛별배송/택배배송",
+                    "price": 3200,
+                    "img": "https://pbs-13-s3.s3.amazonaws.com/goods/%5B%EC%96%B4%ED%94%8C%EB%9D%BC%EC%9A%B0%EC%A6%88%5D%20%ED%86%B5%EC%82%B4%20%EC%B0%B8%EC%B9%98/%EC%96%B4%ED%94%8C%EB%9D%BC%EC%9A%B0%EC%A6%88_%ED%86%B5%EC%82%B4_%EC%B0%B8%EC%B9%98_goods_image.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAXOLZAM2NBPACFGX7%2F20201005%2Fap-northeast-2%2Fs3%2Faws4_request&X-Amz-Date=20201005T154310Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=f0c4f8da699e7ecd743c25dab28b5089c41a14816ccd60243e12be438b29e9f7",
+                    "sales": null,
+                    "tagging": [],
+                    "discount_price": null,
+                    "sales_count": 98,
+                    "stock": {
+                        "id": 1178,
+                        "count": 60,
+                        "updated_at": "2020-08-19T18:04:36.022000Z"
+                    }
+                },
+                ...(추가 상품 데이터)
+            ]
+        ```
+        """
+        qs = Goods.objects.filter(types__type__category__name='반려동물').order_by('-sales_count')[:10]
+        serializers = self.get_serializer(qs, many=True)
+        data = {
+            "bool": True,
+            "serializers": serializers.data,
+        }
+        return Response(data, status=status.HTTP_200_OK)
+
+    @action(detail=False)
+    def home_appliances(self, request):
+        """
+        추천 - 가전제품 판매 랭킹
+
+        ----
+        반려동물 랭킹과 동일
+       """
+        qs = Goods.objects.filter(types__type__category__name='가전제품').order_by('-sales_count')[:10]
+        serializers = self.get_serializer(qs, many=True)
+        data = {
+            "bool": True,
+            "serializers": serializers.data
+        }
+        return Response(data, status=status.HTTP_200_OK)
+
+    @action(detail=False)
+    def home_appliances(self, request):
+        """
+        추천 - 아이스크림 판매 랭킹
+
+        ----
+        반려동물 랭킹과 동일
+       """
+        qs = Goods.objects.filter(types__type__name='아이스크림').order_by('-sales_count')
+        serializers = self.get_serializer(qs, many=True)
+        data = {
+            "bool": True,
+            "serializers": serializers.data
+        }
+        return Response(data, status=status.HTTP_200_OK)
+
+    @action(detail=False)
+    def salted_fish(self, request):
+        """
+        추천 - 밥상 위의 별미, 젓갈
+
+        ---
+        # 밥상 위의 별미, 젓갈 API
+        """
+        qs = Goods.objects.filter(title__icontains='젓')
+        serializers = self.get_serializer(qs, many=True)
+        data = {
+            'bool': False,
+            "serializers": serializers.data
+        }
+        return Response(data, status=status.HTTP_200_OK)
+
+    @action(detail=False, )
+    def chicken_goods(self, request):
+        """
+        추천 - 닭고기로 맛있는 식사 API
+
+        ---
+        # 닭고기로 맛있는 식사! API
+
+        매 요청시 8개의 상품 랜덤 반환
+        """
+        lst = []
+        qs_list = []
+        list_length_limit = 8
+        qs = Goods.objects.filter(title__icontains='닭')
+        while True:
+            random_pk = random.randint(0, qs.count()-1)
+            if random_pk in lst:
+                continue
+            elif random_pk == 0:
+                continue
+            else:
+                lst.append(random_pk)
+                qs_list.append(qs[random_pk])
+            if len(lst) == list_length_limit:
+                break
+        serializer = self.get_serializer(qs_list, many=True)
+        data = {
+            "bool": False,
+            "serializers": serializer.data
+        }
+        return Response(data, status=status.HTTP_200_OK)
 
 
 class CategoryViewSet(mixins.ListModelMixin, GenericViewSet):

@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 from carts.models import CartItem, Cart
 from carts.permissions import CartIsOwnerOrReadOnly, CartItemIsOwnerOrReadOnly
-from carts.serializers import CartItemSerializer, CartSerializer, CartItemCreateSerializer
+from carts.serializers import CartSerializer, CartItemCreateSerializer, CartItemSerializer
 from core.instructors import MyAutoSchema
 
 User = get_user_model()
@@ -49,7 +49,9 @@ class CartItemViewSet(mixins.CreateModelMixin,
         ----
         토큰이 반드시 필요합니다. 예제가 포함되어 있습니다.
 
-        기존에 상품이 추가되어 있다면 400대 에러가 발생하며 에러 내용은     "non_field_errors": ["already exists instanace."] 입니다.
+        기존에 상품이 추가되어 있다면 400대 에러가 발생하며 에러 내용은
+
+        "non_field_errors": ["already exists instanace."] 입니다.
         """
         return super().create(request, *args, **kwargs)
 

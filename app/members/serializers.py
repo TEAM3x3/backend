@@ -190,6 +190,7 @@ class PopularSerializer(ModelActionSerializer):
         model = KeyWord
         fields = ('id', 'name', 'count')
 
+<<<<<<< HEAD
 
 class UserOrderSerializers(ModelSerializer):
     class Meta:
@@ -248,3 +249,5 @@ class UserOrderSerializers(ModelSerializer):
 #             return attrs
 #         else:
 #             raise serializers.ValidationError('6자리를 입력해주세요.')
+=======
+>>>>>>> b536d42b0d3a440f93f11b341c42003faab12e61
