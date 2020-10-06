@@ -8,7 +8,6 @@ User = get_user_model()
 
 
 class Cart(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, )
     quantity_of_goods = models.IntegerField('총 상품 수량', default=0)
 
     @property
