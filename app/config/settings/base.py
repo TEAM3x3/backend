@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'django_filters',
     'drf_yasg',
+    'django_crontab',
 ]
 
 CART_SESSION_ID = 'cart'
@@ -146,3 +147,8 @@ EMAIL_HOST_USER = 'sanghee.kim1115@gmail.com'  # ex) bum752@gmail.com
 EMAIL_HOST_PASSWORD = 's464659!'  # ex) P@ssw0rd
 SERVER_EMAIL = 'sanghee.kim1115@gmail.com'  # ex) bum752@gmail.com
 DEFAULT_FROM_MAIL = 'sanghee.kim1115'  # ex) bum752
+
+CRONJOBS = [
+    # 미국시간 22시 한국시간 7시
+    ('* */22 * * *', 'core.cron.cron_job'),
+]
