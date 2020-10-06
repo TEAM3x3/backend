@@ -790,7 +790,9 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
         마이컬리 - 주문내역 - 자주사는 상품 API
 
         ---
+        마이컬리 주문내역 - 자주사는 상품에 대한 API 이며
 
+        각 serializers index 와 goods_purchase_count 의 index를 맞추면 해당 상품에 대한 구매 횟수가 됩니다.
         """
         qs = self.get_queryset().filter(items__order__user=request.user)
         goods_dict = defaultdict(int)
@@ -800,7 +802,7 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
         serializers = self.get_serializer([goods for goods, count in goods_dict.items()], many=True)
         data = {
             "serializers": serializers.data,
-            "goods_dict": [count for goods, count in goods_dict.items()]
+            "goods_purchase_count": [count for goods, count in goods_dict.items()]
         }
         return Response(data, status=status.HTTP_200_OK)
 
