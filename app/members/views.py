@@ -14,6 +14,7 @@ from members.serializers import UserSerializer, UserAddressSerializers, UserSear
 from members.permissions import UserInfoOwnerOrReadOnly
 from carts.models import CartItem
 from carts.serializers import CartItemSerializer
+from collections import defaultdict
 
 User = get_user_model()
 

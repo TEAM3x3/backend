@@ -198,3 +198,6 @@ transaction.atomic() 내부에서는 try-except 를 사용하지말자. 써야�
 
 # 10.1 
 ModelActionSerializers는 drf-yasg를 사용할 때 serializers field 표현이 각 액션마다 적용이 안되어 어려우므로 api docs 를 yasg를 사용하게 되었으므로 modelserialziers를 사용하여 대체한다.
+
+### [crontab](https://woongsin94.tistory.com/328)
+### [crontab2](https://systemtrade.tistory.com/477)
