@@ -527,7 +527,6 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
         serializers = self.serializer_class(qs, many=True)
         return Response(serializers.data, status=status.HTTP_200_OK)
 
-    @method_decorator(cache_page(60))
     @action(detail=False)
     def recommend_review(self, request):
         """
@@ -747,7 +746,6 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
         }
         return Response(data, status=status.HTTP_200_OK)
 
-    @method_decorator(cache_page(60))
     @action(detail=False)
     def ice_cream(self, request):
         """
@@ -765,7 +763,6 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
         }
         return Response(data, status=status.HTTP_200_OK)
 
-    @method_decorator(cache_page(60))
     @action(detail=False)
     def salted_fish(self, request):
         """
@@ -783,7 +780,6 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
         }
         return Response(data, status=status.HTTP_200_OK)
 
-    @method_decorator(cache_page(60))
     @action(detail=False, )
     def chicken_goods(self, request):
         """
@@ -817,7 +813,6 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
         }
         return Response(data, status=status.HTTP_200_OK)
 
-    @method_decorator(cache_page(60 * 60))
     @action(detail=False)
     def new_product(self, request):
         """
@@ -839,6 +834,57 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
         마이컬리 주문내역 - 자주사는 상품에 대한 API 이며
 
         각 serializers index 와 goods_purchase_count 의 index를 맞추면 해당 상품에 대한 구매 횟수가 됩니다.
+        ```
+        {
+            "serializers": [
+                {
+                    "id": 4,
+                    "title": "[KF365] 애호박 1개",
+                    "short_desc": "믿고 먹을 수 있는 상품을 합리적인 가격에, KF365",
+                    "packing_status": "냉장",
+                    "transfer": null,
+                    "price": 2980,
+                    "img": "https://pbs-13-s3.s3.amazonaws.com/goods/%5BKF365%5D%20%EC%95%A0%ED%98%B8%EB%B0%95%201%EA%B0%9C/KF365_%EC%95%A0%ED%98%B8%EB%B0%95_1%EA%B0%9C_goods_image.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAXOLZAM2NBPACFGX7%2F20201007%2Fap-northeast-2%2Fs3%2Faws4_request&X-Amz-Date=20201007T181303Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=c4872e478f141d164f12d55c42b6fc3a63400efc16b76958b9725975bcc08844",
+                    "sales": null,
+                    "tagging": [],
+                    "discount_price": null,
+                    "sales_count": 81,
+                    "stock": {
+                        "id": 4,
+                        "count": 57,
+                        "updated_at": "2020-08-31T18:04:21.463000Z"
+                    }
+                },
+                {
+                    "id": 3,
+                    "title": "GAP 오이 2입",
+                    "short_desc": "수분이 가득한 여름 채소 (1봉/2입)",
+                    "packing_status": "냉장",
+                    "transfer": "샛별배송/택배배송",
+                    "price": 3200,
+                    "img": "https://pbs-13-s3.s3.amazonaws.com/goods/GAP%20%EC%98%A4%EC%9D%B4%202%EC%9E%85/GAP_%EC%98%A4%EC%9D%B4_2%EC%9E%85_goods_image.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAXOLZAM2NBPACFGX7%2F20201007%2Fap-northeast-2%2Fs3%2Faws4_request&X-Amz-Date=20201007T181303Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=918ead9be17e1942c3405b2aab48350556997630db2510353a2956692c5485b3",
+                    "sales": {
+                        "discount_rate": 50,
+                        "contents": null
+                    },
+                    "tagging": [],
+                    "discount_price": 1600,
+                    "sales_count": 60,
+                    "stock": {
+                        "id": 3,
+                        "count": 80,
+                        "updated_at": "2020-08-04T18:04:39.518000Z"
+                    }
+                },
+                ...( 상품 정보)
+            ]
+            "goods_purchase_count": [
+                1,
+                3,
+                ..( 상품 구매 횟수)
+            ]
+        }
+        ```
         """
         qs = self.get_queryset().filter(items__order__user=request.user)
         goods_dict = defaultdict(int)
