@@ -1,4 +1,6 @@
 from django.contrib.auth import get_user_model
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from rest_framework import mixins, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -112,6 +114,7 @@ class CartViewSet(mixins.RetrieveModelMixin, GenericViewSet):
     permission_classes = (CartIsOwnerOrReadOnly,)
     swagger_schema = MyAutoSchema
 
+    @method_decorator(cache_page(5))
     def retrieve(self, request, *args, **kwargs):
         """
         카트 조회 - id는 user id와 동일

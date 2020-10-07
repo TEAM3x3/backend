@@ -38,6 +38,7 @@ def category_img(instance, filename):
     data = filename + datetime.datetime.now().strftime('%y/%m/%d')
     return data
 
+
 class Goods(models.Model):
     img = models.ImageField(help_text='메인이미지', upload_to=goods_img_path)
     info_img = models.ImageField(help_text='상품 이미지', upload_to=goods_info_img_path, null=True)

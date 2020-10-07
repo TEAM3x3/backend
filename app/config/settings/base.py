@@ -177,7 +177,7 @@ INTERNAL_IPS = [
 
 CRONJOBS = [
     # 미국시간 22시 한국시간 7시
-    ('* */8 * * *', 'core.cron.cron_job'),
+    ('* */15 * * *', 'core.cron.cron_job'),
 ]
 
 CACHES = {

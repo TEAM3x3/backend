@@ -38,7 +38,7 @@ class CartItem(models.Model):
     quantity = models.PositiveIntegerField(default=1, validators=[MinValueValidator(1), MaxValueValidator(50)])
     cart = models.ForeignKey(Cart, on_delete=CASCADE, related_name='items', null=True, blank=True)
     goods = models.ForeignKey(Goods, on_delete=CASCADE, related_name='items', )
-    order = models.ForeignKey('order.Order', on_delete=models.SET_NULL, null=True, related_name='items', )
+    order = models.ForeignKey('order.Order', on_delete=models.SET_NULL, null=True, blank=True, related_name='items', )
     status = models.CharField('배송 상태', max_length=1, default=Order_Status.DEPARTURE, choices=Order_Status.choices)
 
     @property
