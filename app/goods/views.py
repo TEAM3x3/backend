@@ -2,6 +2,9 @@ import random
 import secrets
 
 import django_filters
+from django.core.cache import cache
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from rest_framework import mixins, status, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -126,7 +129,29 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
         ]
         ```
         """
-        return super().list(request, *args, **kwargs)
+        category = request.query_params.get('category', None)
+        types = request.query_params.get('type', None)
+        cache_key = None
+        if category:
+            cache_key = category
+        elif types:
+            cache_key = types
+        print(cache_key)
+        cache_qs = cache.get(cache_key, None)
+        if not cache_qs:
+            queryset = self.filter_queryset(self.get_queryset())
+            print(queryset)
+            cache_qs = queryset
+            print(cache_qs)
+            cache.set(cache_key, cache_qs, 60 * 30)
+
+            page = self.paginate_queryset(cache_qs)
+            if page is not None:
+                serializer = self.get_serializer(page, many=True)
+                return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(cache_qs, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def retrieve(self, request, *args, **kwargs):
         """
@@ -194,7 +219,7 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
         """
         main_health = Goods.objects.filter(types__type__category__name='건강식품').prefetch_related('event', 'tagging',
                                                                                                 'stock', 'sales',
-                                                                                                'tagging__tag',)
+                                                                                                'tagging__tag', )
         serializer = GoodsSaleSerializers(main_health, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -502,6 +527,7 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
         serializers = self.serializer_class(qs, many=True)
         return Response(serializers.data, status=status.HTTP_200_OK)
 
+    @method_decorator(cache_page(60))
     @action(detail=False)
     def recommend_review(self, request):
         """
@@ -721,6 +747,7 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
         }
         return Response(data, status=status.HTTP_200_OK)
 
+    @method_decorator(cache_page(60))
     @action(detail=False)
     def ice_cream(self, request):
         """
@@ -738,6 +765,7 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
         }
         return Response(data, status=status.HTTP_200_OK)
 
+    @method_decorator(cache_page(60))
     @action(detail=False)
     def salted_fish(self, request):
         """
@@ -750,11 +778,12 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
         serializers = self.get_serializer(qs, many=True)
         data = {
             'bool': False,
-            "title":"밥상 위의 별미, 젓갈",
+            "title": "밥상 위의 별미, 젓갈",
             "serializers": serializers.data
         }
         return Response(data, status=status.HTTP_200_OK)
 
+    @method_decorator(cache_page(60))
     @action(detail=False, )
     def chicken_goods(self, request):
         """
@@ -783,11 +812,12 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
         serializer = self.get_serializer(qs_list, many=True)
         data = {
             "bool": False,
-            "title":"닭고기로 맛있는 식사",
+            "title": "닭고기로 맛있는 식사",
             "serializers": serializer.data
         }
         return Response(data, status=status.HTTP_200_OK)
 
+    @method_decorator(cache_page(60 * 60))
     @action(detail=False)
     def new_product(self, request):
         """

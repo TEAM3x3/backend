@@ -6,6 +6,12 @@ from goods.models import Goods
 User = get_user_model()
 
 
+def review_img(instance, filename):
+    import datetime
+    data = datetime.datetime.now().strftime('/%y/%m/%d') + filename
+    return data
+
+
 class Order(models.Model):
     user = models.ForeignKey(
         User,
@@ -44,10 +50,6 @@ class OrderDetail(models.Model):
         DELIVERY_BOX = 2, ('우편함')
         ETC = 3, ('기타')
 
-    class Message_Choice(models.TextChoices):
-        RIGHT_AFTER = '직후', ('직후')
-        AM_7 = '오전7시', ('오전 7시')
-
     class Payment_Type(models.TextChoices):
         KAKAO = '카카오페이', ('카카오페이')
 
@@ -83,7 +85,7 @@ class OrderDetail(models.Model):
 
     # 배송 완료 메세지 전송
 
-    message = models.CharField(choices=Message_Choice.choices, max_length=5, help_text='배송 완료 메세지 전송')
+    message = models.BooleanField(help_text='배송 완료 메세지 전송 True면 직후, False면 오전 7시')
 
     # 결제 정보
     payment_type = models.CharField(choices=Payment_Type.choices, help_text='결제 정보', null=True, max_length=10,
@@ -114,6 +116,7 @@ class OrderReview(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, )
     title = models.CharField(max_length=128)
     content = models.TextField()
+    img = models.ImageField(upload_to=review_img, null=True, help_text='이미지 필드')
     # 회원 탈퇴한 유저라면 null 허용 , default로 해서 탈퇴한 유저 전용 instance 를 만드는게 나은지
     user = models.ForeignKey(
         'members.User',

@@ -150,7 +150,6 @@ EMAIL_HOST_PASSWORD = 's464659!'  # ex) P@ssw0rd
 SERVER_EMAIL = 'sanghee.kim1115@gmail.com'  # ex) bum752@gmail.com
 DEFAULT_FROM_MAIL = 'sanghee.kim1115'  # ex) bum752
 
-
 DEBUG_TOOLBAR_PANELS = [
     'ddt_request_history.panels.request_history.RequestHistoryPanel',
     'debug_toolbar.panels.versions.VersionsPanel',
@@ -178,6 +177,15 @@ INTERNAL_IPS = [
 
 CRONJOBS = [
     # 미국시간 22시 한국시간 7시
-    ('* */7 * * *', 'core.cron.cron_job'),
+    ('* */15 * * *', 'core.cron.cron_job'),
 ]
 
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}

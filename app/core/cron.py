@@ -5,9 +5,9 @@ from datetime import datetime, timedelta
 
 
 def cron_job():
-    qs = CartItem.objects.filter(status='w',
-                                 order__orderdetail__created_at__gt=datetime.now(tz=timezone.utc)
-                                                                    - timedelta(hours=16))
+    qs = CartItem.objects.filter(
+        status='w',
+        order__orderdetail__created_at__gt=datetime.now(tz=timezone.utc) - timedelta(hours=16))
     for ins in qs:
-        ins.status = 'w'
+        ins.status = 'c'
         ins.save()

@@ -48,7 +48,7 @@ class OrderTest(APITestCase):
             "address": "구갈동",
             "receiving_place": "문 앞",
             "entrance_password": "1234",
-            "message": "직후",
+            "message": False,
             "order": f"{test_order.id}"
         }
 

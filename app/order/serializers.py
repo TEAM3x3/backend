@@ -134,7 +134,7 @@ class OrderCreateSerializers(ModelSerializer):
 class ReviewUpdateSerializers(ModelSerializer):
     class Meta:
         model = OrderReview
-        fields = ('title', 'content')
+        fields = ('title', 'content', 'img',)
         examples = {
             "title": "update review title",
             "content": "update review content"
@@ -147,7 +147,7 @@ class ReviewListSerializers(ModelSerializer):
 
     class Meta:
         model = OrderReview
-        fields = ('id', 'user', 'created_at', 'title', 'content', 'goods')
+        fields = ('id', 'user', 'created_at', 'img', 'title', 'content', 'goods')
         examples = [
             {
                 "id": 1,
@@ -178,7 +178,7 @@ class ReviewCreateSerializers(ModelActionSerializer):
         model = OrderReview
         fields = ('id', 'title', 'content', 'goods', 'user')
         action_fields = {
-            'create': {'fields': ('title', 'content', 'user', 'goods', 'cartItem')},
+            'create': {'fields': ('title', 'content', 'img', 'user', 'goods', 'cartItem')},
         }
         examples = {
             "title": "title exam",
