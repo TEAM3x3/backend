@@ -150,5 +150,15 @@ DEFAULT_FROM_MAIL = 'sanghee.kim1115'  # ex) bum752
 
 CRONJOBS = [
     # 미국시간 22시 한국시간 7시
-    ('* */7 * * *', 'core.cron.cron_job'),
+    ('* */8 * * *', 'core.cron.cron_job'),
 ]
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
