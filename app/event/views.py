@@ -25,7 +25,6 @@ class EventAPIView(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
             return EventImageSquareSerializers
         return self.serializer_class
 
-    @method_decorator(cache_page(60 * 60))
     def list(self, request, *args, **kwargs):
         """
         홈 - 이벤트 리스트  API
@@ -82,7 +81,6 @@ class EventAPIView(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
         """
         return super().retrieve(request, *args, **kwargs)
 
-    @method_decorator(cache_page(60 * 60))
     @action(detail=False, )
     def square_event_list(self, request):
         """
@@ -141,7 +139,6 @@ class MainEventAPIView(mixins.RetrieveModelMixin, mixins.ListModelMixin, Generic
             return MainEventRetrieveSerializers
         return self.serializer_class
 
-    @method_decorator(cache_page(60 * 60))
     def list(self, request, *args, **kwargs):
         """
         컬리추천 - 최 상단 이벤트 페이지

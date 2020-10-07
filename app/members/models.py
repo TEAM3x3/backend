@@ -18,7 +18,7 @@ class User(AbstractUser):
         FEMALE = 'F', ('Female')
         NONETYPE = 'N', ('None')
 
-    nickname = models.CharField(max_length=20, )
+    nickname = models.CharField(max_length=20, help_text='본명')
     email = models.EmailField(unique=True)
     phone = models.CharField('핸드폰 번호', max_length=15)
     gender = models.CharField('성별', max_length=1, choices=Gender_Choice.choices, default=Gender_Choice.NONETYPE)
@@ -89,7 +89,6 @@ class KeyWord(models.Model):
 
     def __str__(self):
         return self.name
-
 
 # class AuthPhoneNum(models.Model):
 #     phone_number = models.CharField(max_length=11)
