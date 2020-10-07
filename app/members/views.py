@@ -350,7 +350,8 @@ class UserSearchViewSet(mixins.ListModelMixin, GenericViewSet):
     def get_queryset(self):
         try:
             if self.kwargs['user_pk']:
-                return self.queryset.filter(user_id=self.kwargs['user_pk']).order_by('-keyword__updated_at')
+                return self.queryset.filter(user_id=self.kwargs['user_pk']).order_by(
+                    '-keyword__updated_at').prefetch_related('keyword')
         except KeyError:
             return super().get_queryset()
 
@@ -379,7 +380,6 @@ class UserSearchViewSet(mixins.ListModelMixin, GenericViewSet):
         orderby_word = KeyWord.objects.all().order_by('-count')[:5]
         serializer = PopularSerializer(orderby_word, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-
 
 # class PhoneAuthViewSet(ModelViewSet):
 #     queryset = AuthPhoneNum.objects.all()
