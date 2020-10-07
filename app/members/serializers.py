@@ -4,7 +4,6 @@ from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer, raise_errors_on_nested_writes
 from rest_framework.utils import model_meta
 from rest_framework.validators import UniqueTogetherValidator
-
 from members.models import UserAddress, UserSearch, KeyWord
 
 User = get_user_model()
@@ -191,3 +190,61 @@ class PopularSerializer(ModelActionSerializer):
         model = KeyWord
         fields = ('id', 'name', 'count')
 
+
+class UserOrderSerializers(ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('username',)
+
+# class AuthPhoneNumSerializer(ModelSerializer):
+#     class Meta:
+#         model = AuthPhoneNum
+#         fields = (
+#             'id',
+#             'phone_number',
+#             'auth_number',
+#             'registration_id',
+#         )
+#
+#         read_only_fields = ('auth_number',)
+#
+#     def validate_registration_id(self, attrs):
+#         if not len(attrs) == 7:
+#             raise serializers.ValidationError('생년월일을 입력해주세요.')
+#
+#         if attrs[-1:] in ['1', '2']:
+#             birth = date(int(f'19{attrs[0:2]}'), int(attrs[2:4]), int(attrs[4:6]))
+#             year = (date.today() - birth).days / 365
+#
+#             if year >= 23:
+#                 return attrs
+#             else:
+#                 raise serializers.ValidationError('23세 이하는 가입할수 없습니다.')
+#
+#         elif attrs[-1:] in ['3', '4']:
+#             birth = date(int(f'20{attrs[0:2]}'), int(attrs[2:4]), int(attrs[4:6]))
+#             year = (date.today() - birth).days / 365
+#
+#             if year >= 23:
+#                 return attrs
+#             else:
+#                 raise serializers.ValidationError('23세 이하는 가입할수 없습니다.')
+#
+#
+# class CheckAuthNumberSerializer(ModelSerializer):
+#     check_auth_number = serializers.IntegerField(write_only=True)
+#
+#     class Meta:
+#         model = AuthPhoneNum
+#         fields = (
+#             'id',
+#             'check_auth_number',
+#         )
+#
+#         read_only_fields = ('auth_number',)
+#
+#     def validate_check_auth_number(self, attrs):
+#         if len(str(attrs)) == 6:
+#             return attrs
+#         else:
+#             raise serializers.ValidationError('6자리를 입력해주세요.')

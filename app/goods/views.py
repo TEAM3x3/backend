@@ -192,7 +192,9 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
         ]
         ```
         """
-        main_health = Goods.objects.filter(types__type__category__name='건강식품')
+        main_health = Goods.objects.filter(types__type__category__name='건강식품').prefetch_related('event', 'tagging',
+                                                                                                'stock', 'sales',
+                                                                                                'tagging__tag',)
         serializer = GoodsSaleSerializers(main_health, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -221,7 +223,7 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
             if len(recommend_items) == 8:
                 break
 
-        qs = Goods.objects.filter(id__in=recommend_items)
+        qs = Goods.objects.filter(id__in=recommend_items).prefetch_related('tagging__tag', 'stock', 'sales')
         serializer = self.get_serializer(qs, many=True)
         return Response(serializer.data)
 
@@ -233,7 +235,7 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
         -----
         best endpoint를 제외한, 양식 및 요청 동일
         """
-        qs = self.queryset.filter(sales__discount_rate__isnull=False)
+        qs = self.queryset.filter(sales__discount_rate__isnull=False).prefetch_related('tagging__tag', 'stock', 'sales')
         qs = self.filter_queryset(qs)
         serializers = self.get_serializer(qs, many=True)
         return Response(serializers.data, status=status.HTTP_200_OK)
@@ -338,7 +340,9 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
             serializers.is_valid(raise_exception=True)
             serializers.save()
 
-            qs = self.queryset.filter(title__icontains=key_word)
+            qs = self.queryset.filter(title__icontains=key_word).select_related('sales').prefetch_related('tagging',
+                                                                                                          'stock',
+                                                                                                          'tagging__tag')
             serializer = self.serializer_class(qs, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response({"message": "word에 대한 데이터가 들어오지 않았습니다."}, status=status.HTTP_400_BAD_REQUEST)
@@ -394,7 +398,8 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
                 sales_items.append(random_save)
             if len(sales_items) == max_random_item_count:
                 break
-        save_ins = self.queryset.filter(pk__in=sales_items)
+        save_ins = self.queryset.filter(pk__in=sales_items).prefetch_related('tagging', 'sales', 'stock',
+                                                                             'tagging__tag')
         serializer = GoodsSaleSerializers(save_ins, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -488,7 +493,7 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
         """
         # transfer = request.query_params.get('transfer', None)
         # ordering = request.query_params.get('ordering', None)
-        qs = self.queryset.order_by('-sales_count')[:30]
+        qs = self.queryset.order_by('-sales_count')[:30].prefetch_related('tagging', 'sales', 'stock', 'tagging__tag')
         # transfer_qs = []
         # for obj in qs:
         #     if obj.transfer == transfer:
@@ -526,7 +531,7 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
         ]
         ```
         """
-        qs = self.queryset[:5]
+        qs = self.queryset[:5].prefetch_related('reviews__user__order_set')
         serializers = GoodsReviewSerializers(qs, many=True)
         data = {
             "title": "후기가 좋은 상품",
