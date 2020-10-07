@@ -74,7 +74,7 @@ class UserSearch(models.Model):
 
 class KeyWord(models.Model):
     name = models.CharField(max_length=100, unique=True)
-    count = models.IntegerField(default=0)
+    count = models.IntegerField(default=0, db_index=True)
     updated_at = models.DateField(auto_now=True)
 
     def __str__(self):

@@ -150,5 +150,5 @@ DEFAULT_FROM_MAIL = 'sanghee.kim1115'  # ex) bum752
 
 CRONJOBS = [
     # 미국시간 22시 한국시간 7시
-    ('* */22 * * *', 'core.cron.cron_job'),
+    ('* */7 * * *', 'core.cron.cron_job'),
 ]
