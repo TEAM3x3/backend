@@ -45,10 +45,10 @@ class OrderDetail(models.Model):
         POST = '택배배송', ('택배배송')
 
     class Location_Choice(models.TextChoices):
-        FRONT_DOOR = 0, ('문 앞')
-        SEQURITY_OFFICE = 1, ('경비실')
-        DELIVERY_BOX = 2, ('우편함')
-        ETC = 3, ('기타')
+        FRONT_DOOR = '문 앞', ('문 앞')
+        SEQURITY_OFFICE = '경비실', ('경비실')
+        DELIVERY_BOX = '우편함', ('우편함')
+        ETC = '기타', ('기타')
 
     class Payment_Type(models.TextChoices):
         KAKAO = '카카오페이', ('카카오페이')
