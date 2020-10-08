@@ -1,9 +1,6 @@
 from django.contrib.auth import get_user_model
-# Create your tests here.
-from django.core.files.uploadedfile import SimpleUploadedFile
 from model_bakery import baker
 from rest_framework.test import APITestCase
-from config.settings import dev
 from goods.models import Goods, GoodsExplain, GoodsDetail, Category, Type, GoodsType, SaleInfo
 
 User = get_user_model()

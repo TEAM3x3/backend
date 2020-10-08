@@ -1,5 +1,6 @@
 from action_serializer import ModelActionSerializer
 from django.contrib.auth import get_user_model
+from django.db.models import F
 from rest_framework import serializers, status
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
@@ -49,6 +50,9 @@ class OrderDetailCreateSerializers(ModelSerializer):
         ins.title = f'{ins.order.items.first().goods.title} 외 {ins.order.items.count() - 1}건'
         items = ins.order.items.all()
         for item in items:
+            cart = item.cart
+            cart.quantity_of_goods = F('quantity_of_goods') - 1
+            cart.save()
             item.cart = None
             item.save()
         ins.save()
@@ -130,7 +134,6 @@ class OrderCreateSerializers(ModelSerializer):
             if cart_item.goods.stock.count == 0:
                 raise ValidationError('상품의 재고가 없습니다!')
         return value
-
 
 
 class ReviewUpdateSerializers(ModelSerializer):

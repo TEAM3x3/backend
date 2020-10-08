@@ -47,7 +47,7 @@ class OrderDetail(models.Model):
     class Location_Choice(models.TextChoices):
         FRONT_DOOR = '문 앞', ('문 앞')
         SEQURITY_OFFICE = '경비실', ('경비실')
-        DELIVERY_BOX = '우편함', ('우편함')
+        DELIVERY_BOX = '택배함', ('택배함')
         ETC = '기타', ('기타')
 
     class Payment_Type(models.TextChoices):

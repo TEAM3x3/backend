@@ -34,13 +34,10 @@ class CartTestCase(APITestCase):
         self.client.force_authenticate(user=test_user)
         response = self.client.post(f'/api/cart/{test_user.id}/item', data=data)
 
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 201)
 
         self.assertEqual(data['goods'], response.data['goods'])
         self.assertEqual(data['quantity'], response.data['quantity'])
-
-        self.fail()
-
 
     def test_cart_item_update(self):
         test_user = self.user
