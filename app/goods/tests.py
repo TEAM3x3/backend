@@ -1,9 +1,6 @@
 from django.contrib.auth import get_user_model
-# Create your tests here.
-from django.core.files.uploadedfile import SimpleUploadedFile
 from model_bakery import baker
 from rest_framework.test import APITestCase
-from config.settings import dev
 from goods.models import Goods, GoodsExplain, GoodsDetail, Category, Type, GoodsType, SaleInfo
 
 User = get_user_model()
@@ -26,7 +23,7 @@ class GoodsTest(APITestCase):
         detail.goods = self.g1
         detail.save()
 
-        self.g2 = baker.make('goods.Goods', price=1000)
+        self.g2 = baker.make('goods.Goods', price=1_000)
         baker.make('goods.GoodsExplain', _quantity=1, goods=self.g2)
         baker.make('goods.GoodsDetail', _quantity=1, goods=self.g2)
 
@@ -58,38 +55,6 @@ class GoodsTest(APITestCase):
 
     def test_retrieve(self):
         response = self.client.get('/api/goods/1')
-
-    def test_create(self):
-        image = dev.MEDIA_ROOT + '/tree.jpeg'
-        test_image = SimpleUploadedFile(
-            name='tree.jpeg',
-            content=open(image, "rb").read(),
-            content_type="image/jpeg"
-        )
-        test_image2 = SimpleUploadedFile(
-            name='tree.jpeg',
-            content=open(image, "rb").read(),
-            content_type="image/jpeg"
-        )
-
-        goods_ins = Goods.objects.create(
-            img=test_image,
-            info_img=test_image2,
-            title='testTitle',
-            short_desc='short_desc',
-            price=1,
-        )
-
-        # def test_retrieve_category(self):
-        #     response = self.client.get('/api/goods/?category=채소')
-        #     goods = Goods.objects.filter(category__name='채소')
-        response = self.client.get(f'/api/goods/{goods_ins.pk}')
-        self.assertEqual(response.data['id'], goods_ins.id)
-
-        goods = Goods.objects.first()
-        response = self.client.get(f'/api/goods/{goods.id}')
-        self.assertEqual(200, response.status_code)
-
 
     def test_sale(self):
         sale_ins = SaleInfo.objects.create(discount_rate=5)
@@ -131,6 +96,3 @@ class GoodsTest(APITestCase):
 
         self.assertEqual(goods_name, response.data[0]['title'])
         self.assertTrue(goods_name in response.data[0]['title'])
-        self.fail()
-
-

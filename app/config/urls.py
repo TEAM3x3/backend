@@ -17,9 +17,22 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
+from core.views import index, success, fail
+from .yasg import *
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('core.urls')),
+    path('payment/', index, name='index'),
+    path('success/', success),
+    path('fail', fail)
 ]
+
 urlpatterns += static('settings.base.MEDIA_URL', document_root='settings.base.MEDIA_ROOT')
+urlpatterns += urlpatterns_yasg
+
+if settings.DEBUG:
+    import debug_toolbar
+    urlpatterns = [
+        path('__debug__/', include(debug_toolbar.urls)),
+    ] + urlpatterns

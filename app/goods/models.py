@@ -34,33 +34,34 @@ def delivery_img(instance, filename):
 
 
 def category_img(instance, filename):
-    if 'media/' in filename:
-        filename = filename.split('media/')
-        return filename[1]
-    return filename
+    import datetime
+    data = filename + datetime.datetime.now().strftime('%y/%m/%d')
+    return data
 
 
 class Goods(models.Model):
-    img = models.ImageField('메인이미지', upload_to=goods_img_path)
-    info_img = models.ImageField('상품 이미지', upload_to=goods_info_img_path, null=True)
-    title = models.CharField('상품 명', max_length=60)
-    short_desc = models.CharField('간단 설명', max_length=100)
-    price = models.PositiveIntegerField('가격')
-    each = models.CharField('판매 단위', max_length=64, null=True, )
-    weight = models.CharField('중량/용량', max_length=64, null=True, )
-    transfer = models.CharField('배송 구분', max_length=64, null=True, )
-    packing = models.CharField('포장 타입', max_length=255, null=True, )
-    packing_status = models.CharField('포장 상태', max_length=48, null=True)
-    origin = models.CharField('원산지', max_length=48, null=True, )
-    allergy = models.CharField('알레르기 정보', max_length=512, null=True, )
-    info = models.CharField('제품 정보', max_length=512, null=True, )
-    expiration = models.CharField('유통기한', max_length=512, null=True, )
+    img = models.ImageField(help_text='메인이미지', upload_to=goods_img_path)
+    info_img = models.ImageField(help_text='상품 이미지', upload_to=goods_info_img_path, null=True)
+    title = models.CharField(help_text='상품 명', max_length=60)
+    short_desc = models.CharField(help_text='간단 설명', max_length=100)
+    price = models.PositiveIntegerField(help_text='가격', db_index=True)
+    each = models.CharField(help_text='판매 단위', max_length=64, null=True, )
+    weight = models.CharField(help_text='중량/용량', max_length=64, null=True, )
+    transfer = models.CharField(help_text='배송 구분', max_length=64, null=True, )
+    packing = models.CharField(help_text='포장 타입', max_length=255, null=True, )
+    packing_status = models.CharField(help_text='포장 상태', max_length=48, null=True)
+    origin = models.CharField(help_text='원산지', max_length=48, null=True, )
+    allergy = models.CharField(help_text='알레르기 정보', max_length=512, null=True, )
+    info = models.CharField(help_text='제품 정보', max_length=512, null=True, )
+    expiration = models.CharField(help_text='유통기한', max_length=512, null=True, )
+    sales_count = models.PositiveSmallIntegerField(help_text='판매량', default=0, blank=True, db_index=True)
 
     event = models.ForeignKey(
         'event.Event',
         on_delete=models.CASCADE,
         null=True,
         related_name='goods',
+        help_text='홈-이벤트'
     )
 
     sales = models.ForeignKey(
@@ -68,7 +69,16 @@ class Goods(models.Model):
         on_delete=models.SET_NULL,
         null=True,
         related_name='goods',
+        help_text='세일정보',
     )
+
+    def save(self, *args, **kwargs):
+        created = self.pk
+        if created is None:
+            super().save(*args, **kwargs)
+            Stock.objects.create(goods=self)
+        else:
+            super().save(*args, **kwargs)
 
     @property
     def discount_price(self):
@@ -219,7 +229,7 @@ class Type(models.Model):
 
 class Category(models.Model):
     name = models.CharField(max_length=30)
-    category_img = models.ImageField(upload_to='category_img', null=True)
+    category_img = models.ImageField(upload_to=category_img, null=True)
 
 
 class GoodsType(models.Model):
@@ -237,24 +247,8 @@ class GoodsType(models.Model):
     )
 
 
-class DeliveryInfoImageFile(models.Model):
-    address_img = models.ImageField(upload_to='delivery_img', null=True)
-
-
-class DeliveryInfoImageImageFile(models.Model):
-    image = models.ImageField(
-        upload_to='delivery_img',
-        null=True,
-    )
-    info = models.ForeignKey(
-        'goods.DeliveryInfoImageFile',
-        on_delete=models.CASCADE,
-        related_name='images'
-    )
-
-
 class SaleInfo(models.Model):
-    discount_rate = models.IntegerField(null=True, )
+    discount_rate = models.PositiveSmallIntegerField(null=True, db_index=True)
     contents = models.CharField(max_length=30, null=True, )
 
 
@@ -273,3 +267,9 @@ class Tagging(models.Model):
         on_delete=models.CASCADE,
         related_name='tagging'
     )
+
+
+class Stock(models.Model):
+    count = models.PositiveSmallIntegerField(help_text='상품 재고량', default=0, db_index=True)
+    updated_at = models.DateTimeField(auto_now=True, help_text='입고 날짜')
+    goods = models.OneToOneField('goods.Goods', on_delete=models.CASCADE, )

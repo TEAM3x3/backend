@@ -10,6 +10,9 @@ environ.Env.read_env(env_file=env_file)
 
 SECRET_KEY = 'vr@i_7k(=y!cy_w#@d=oat*!pff8%oow3cuotxch30mgbu+%e-'
 
+# kakaopay test
+TEMPLATES_DIR = os.path.join(os.path.dirname(BASE_DIR), 'templates')
+
 # user model
 AUTH_USER_MODEL = 'members.User'
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -38,6 +41,9 @@ INSTALLED_APPS = [
 
     'django_extensions',
     'django_filters',
+    'drf_yasg',
+    'debug_toolbar',
+    'django_crontab',
 ]
 
 CART_SESSION_ID = 'cart'
@@ -50,6 +56,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -57,7 +64,8 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            TEMPLATES_DIR, ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -127,7 +135,57 @@ AWS_S3_REGION_NAME = 'ap-northeast-2'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.TokenAuthentication',
     ],
-    # 'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',)
+    'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',)
+}
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'sanghee.kim1115@gmail.com'  # ex) bum752@gmail.com
+EMAIL_HOST_PASSWORD = 's464659!'  # ex) P@ssw0rd
+SERVER_EMAIL = 'sanghee.kim1115@gmail.com'  # ex) bum752@gmail.com
+DEFAULT_FROM_MAIL = 'sanghee.kim1115'  # ex) bum752
+
+DEBUG_TOOLBAR_PANELS = [
+    'ddt_request_history.panels.request_history.RequestHistoryPanel',
+    'debug_toolbar.panels.versions.VersionsPanel',
+    'debug_toolbar.panels.timer.TimerPanel',
+    'debug_toolbar.panels.settings.SettingsPanel',
+    'debug_toolbar.panels.headers.HeadersPanel',
+    'debug_toolbar.panels.request.RequestPanel',
+    'debug_toolbar.panels.sql.SQLPanel',
+    'debug_toolbar.panels.staticfiles.StaticFilesPanel',
+    'debug_toolbar.panels.templates.TemplatesPanel',
+    'debug_toolbar.panels.cache.CachePanel',
+    'debug_toolbar.panels.signals.SignalsPanel',
+    'debug_toolbar.panels.logging.LoggingPanel',
+    'debug_toolbar.panels.redirects.RedirectsPanel',
+    'debug_toolbar.panels.profiling.ProfilingPanel',
+]
+
+DEBUG_TOOLBAR_CONFIG = {
+    'RESULTS_STORE_SIZE': 100,
+}
+
+INTERNAL_IPS = [
+    '127.0.0.1',
+]
+
+CRONJOBS = [
+    # 미국시간 22시 한국시간 7시
+    ('* */22 * * *', 'core.cron.cron_job'),
+]
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
 }

@@ -32,14 +32,13 @@ class UserTestCase(APITestCase):
     def test_create(self):
         data = {
             "username": "test3",
-            "user_id": "test3",
+            "nickname": "test3",
             "password": "1111",
             "phone": "010-1111-1111",
             "birthday": "1994-11-15",
             "email": "test@test.com",
             "address": "test",
             "gender": "N",
-            "name": "test"
         }
         response = self.client.post('/api/users', data=data)
 
@@ -123,7 +122,6 @@ class UserAddressTestCase(APITestCase):
         data = {
             "address": "서울시 성동구",
             "detail_address": "드림타워",
-            "require_message": "문 앞에 놔주세요",
             "status": "T",
             "user": test_user.id
         }
@@ -137,7 +135,6 @@ class UserAddressTestCase(APITestCase):
         data2 = {
             "address": "서울시 성동구",
             "detail_address": "드림타워",
-            "require_message": "문 앞에 놔주세요",
             "status": "T",
             "user": test_user.id
         }
@@ -156,7 +153,6 @@ class UserAddressTestCase(APITestCase):
         data1 = {
             "address": "서울시 성동구",
             "detail_address": "드림타워",
-            "require_message": "문 앞에 놔주세요",
             "status": "F",
             "user": test_user.id
         }
@@ -181,7 +177,6 @@ class UserAddressTestCase(APITestCase):
         data = {
             "address": "서울시 성동구",
             "detail_address": "드림타워",
-            "require_message": "문 앞에 놔주세요",
             "status": "T",
             "user": test_user.pk
         }
