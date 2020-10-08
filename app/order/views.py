@@ -161,16 +161,6 @@ class OrderDetailView(mixins.CreateModelMixin, GenericViewSet):
 
         ---
         receiving_place 값 요청에 대한 기준입니다.
-        ```
-        0, ('문 앞')
-
-        1, ('경비실')
-
-        2, ('우편함')
-
-        3, ('기타')
-        ```
-
         """
         return super().create(request, *args, **kwargs)
 
