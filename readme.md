@@ -39,7 +39,7 @@
 - debug_toolbar - **optimizing**
 - django_crontab - **scheduler**
 - django redis - **cache**
-
+- ngrok - **api test**
 
 
 ## Development Tools
@@ -87,7 +87,6 @@ S3_SECRET_ACCESS_KEY=<s3 secret key>
 ## ERD
 ![erd](app/static/erd.png)
 
-
 ## architecture
 ![arch](app/static/architecture.png)
 
@@ -103,16 +102,5 @@ S3_SECRET_ACCESS_KEY=<s3 secret key>
 - 마이페이지, 장바구니
 
 ## API docs
-[link](https://cloudy-comet-1571.postman.co/collections/5847490-3c3e8773-4e53-4ae8-a7f7-8ef4573e218d?version=latest&workspace=3b9e6b96-acb3-4058-a8b6-4d974402650f#introduction)
+[post man link](https://cloudy-comet-1571.postman.co/collections/5847490-3c3e8773-4e53-4ae8-a7f7-8ef4573e218d?version=latest&workspace=3b9e6b96-acb3-4058-a8b6-4d974402650f#introduction)
 
-
-
-
-##### 아쉬운 점
-- mptt를 사용하지 못한 점 ( 어떤 엔티티를 구현할 때 하는게 올바른지에 대한 개념 부족)
-- 크롤링에 대해서 고민을 하지 않은 점 ( 상품 디테일 페이지에서 많은 데이터를 전부 드리지 못한 것)
-- api와 testcode의 싱크를 맞추지 못한 점.
-
-##### 좋았던 점
-- 여러 협업 툴을 사용한 점 ( 팀 적 소통을 위한 트렐로)
-- 팀 케미가 좋았던 것 
