@@ -31,7 +31,7 @@ class OrderView(mixins.CreateModelMixin,
 
     def get_queryset(self):
         try:
-            user_pk = self.kwargs['user_pk']
+            user_pk = self.kwargs.get('user_pk', None)
             if user_pk:
                 return self.queryset.filter(user_id=self.kwargs['user_pk'])
         except KeyError:

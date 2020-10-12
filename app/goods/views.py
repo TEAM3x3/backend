@@ -3,8 +3,6 @@ import secrets
 
 import django_filters
 from django.core.cache import cache
-from django.utils.decorators import method_decorator
-from django.views.decorators.cache import cache_page
 from rest_framework import mixins, status, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -33,6 +31,9 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
             return GoodsSerializers
         else:
             return self.serializer_class
+
+    def get_queryset(self):
+        return self.queryset.prefetch_related('details__detail_title')
 
     def list(self, request, *args, **kwargs):
         """
@@ -129,29 +130,7 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
         ]
         ```
         """
-        category = request.query_params.get('category', None)
-        types = request.query_params.get('type', None)
-        cache_key = None
-        if category:
-            cache_key = category
-        elif types:
-            cache_key = types
-        print(cache_key)
-        cache_qs = cache.get(cache_key, None)
-        if not cache_qs:
-            queryset = self.filter_queryset(self.get_queryset())
-            print(queryset)
-            cache_qs = queryset
-            print(cache_qs)
-            cache.set(cache_key, cache_qs, 60 * 30)
-
-            page = self.paginate_queryset(cache_qs)
-            if page is not None:
-                serializer = self.get_serializer(page, many=True)
-                return self.get_paginated_response(serializer.data)
-
-        serializer = self.get_serializer(cache_qs, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return super().list(request, *args, **kwargs)
 
     def retrieve(self, request, *args, **kwargs):
         """

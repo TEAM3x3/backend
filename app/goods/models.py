@@ -253,7 +253,7 @@ class SaleInfo(models.Model):
 
 
 class Tag(models.Model):
-    name = models.CharField(max_length=36)
+    name = models.CharField(max_length=36, unique=True)
 
 
 class Tagging(models.Model):
