@@ -130,7 +130,22 @@ class GoodsViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericView
         ]
         ```
         """
-        return super().list(request, *args, **kwargs)
+        category = request.query_params.get('category', None)
+        type = request.query_params.get('type', None)
+
+        if category:
+            cache_key = category
+        elif type:
+            cache_key = type
+        data = cache.get(cache_key, None)
+
+        if not data:
+            queryset = self.filter_queryset(self.get_queryset())
+            serializer = self.get_serializer(queryset, many=True)
+            data = serializer.data
+            cache.set(cache_key, data, 60*60)
+
+        return Response(data)
 
     def retrieve(self, request, *args, **kwargs):
         """

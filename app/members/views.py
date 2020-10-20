@@ -7,6 +7,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
+from config.celery import add
 from members.instructors import MyAutoSchema
 from members.models import UserAddress, UserSearch, KeyWord
 from members.serializers import UserSerializer, UserAddressSerializers, UserSearchSerializer, PopularSerializer, \
@@ -34,6 +35,11 @@ class UserViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.Upd
         if self.action in ['partial_update']:
             return UserUpdateSerializers
         return self.serializer_class
+
+    @action(detail=False)
+    def celery(self, request):
+        qs = User.objects.first()
+        return Response({"data": add(qs)})
 
     @action(detail=False)
     def check_username(self, request):

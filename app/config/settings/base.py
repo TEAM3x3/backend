@@ -177,9 +177,8 @@ INTERNAL_IPS = [
 
 CRONJOBS = [
     # 미국시간 22시 한국시간 7시
-    ('* */22 * * *', 'core.cron.cron_job'),
+    ('*/24 * * * *', 'core.cron.cron_job'),
 ]
-
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
