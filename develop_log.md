@@ -201,3 +201,22 @@ ModelActionSerializers는 drf-yasg를 사용할 때 serializers field 표현이 
 
 ### [crontab](https://woongsin94.tistory.com/328)
 ### [crontab2](https://systemtrade.tistory.com/477)
+
+## 배포환경 redis- cache error
+
+본 프로젝트에서는 cache 서버를 이용하기 위해 Redis를 설치했다. 프로젝트에서 Redis를 이용한 경우, ubuntu 서버에 Redis-server가 실행되고 있지 않으면 Internal Server Error를 준다. 그러니 Redis를 설치해 주자.
+ 
+ 
+`Error 111 connecting to 127.0.0.1:6379. Connection refused.` 라는 에러명을 통하여 배포 환경에서 캐싱이 안되는 상황이 발생 하였다.
+
+레디스의 부재로 발생하는 에러라고 판단, 배포 환경에서 도커를 통해서 레디스를 설치 해보려 하였으나 현재 ec2의 설정은 직접 설치하는 방식이라 직접적으로 설치하는 방식을 선택하였다.
+
+1. 운영체제는 Ubuntu이므로 `sudo apt-get install redis-server`를 사용하여 레디스를 설치하려 하였으나 아마존에서는 CentOS 기반이라 apt-get은 사용하지 않으므로 
+2. `sudo amazon-linux-extras install epel`  # CentOS에 redis 를 설치하려면 EPEL Repository가 필요합니다. (Extra Packages for Enterprise Linux)
+3. `sudo yum update` # epel-release를 설치하고 yum을 업데이트해 줍니다.
+4. `sudo yum install redis` # 이제 redis를 설치해 줍니다.
+5. `sudo systemctl start redis` # redis를 시작해 줍니다
+6. `sudo systemctl enable redis` # 이건 재부팅해도 자동으로 시작할 수 있도록!
+
+[redis 설치 출처1](https://dejavuqa.tistory.com/350)
+[redis 동작, 중지](https://stackoverflow.com/questions/6910378/how-can-i-stop-redis-server)
