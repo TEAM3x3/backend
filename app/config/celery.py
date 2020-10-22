@@ -16,10 +16,10 @@ app.autodiscover_tasks()
 
 
 @shared_task
-def add(x, y):
-    return x+y
-
-@shared_task
-def mul(x, y):
-    return x * y
-
+def create_users_send_mail_async(mail, **kwargs):
+    from django.core.mail import EmailMessage
+    email_var = mail
+    subject = 'Django를 통해 발송한 메일'
+    message = 'Django 를 통해 발송한 메일 입니다.'
+    email = EmailMessage(subject, message, to=[email_var])
+    email.send()
