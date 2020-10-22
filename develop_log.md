@@ -202,7 +202,7 @@ ModelActionSerializers는 drf-yasg를 사용할 때 serializers field 표현이 
 ### [crontab](https://woongsin94.tistory.com/328)
 ### [crontab2](https://systemtrade.tistory.com/477)
 
-## 배포환경 redis- cache error
+## 배포환경 redis - cache error
 
 본 프로젝트에서는 cache 서버를 이용하기 위해 Redis를 설치했다. 프로젝트에서 Redis를 이용한 경우, ubuntu 서버에 Redis-server가 실행되고 있지 않으면 Internal Server Error를 준다. 그러니 Redis를 설치해 주자.
  
@@ -220,3 +220,15 @@ ModelActionSerializers는 drf-yasg를 사용할 때 serializers field 표현이 
 
 [redis 설치 출처1](https://dejavuqa.tistory.com/350)
 [redis 동작, 중지](https://stackoverflow.com/questions/6910378/how-can-i-stop-redis-server)
+
+## 배포환경 celery - async
+
+> 비동기 처리를 실행하기 위해서 celery 를 설치하였다. 비동기 사용 예제로는 이메일 전송 api를 작성해보았다. 셀러리 환경은 로컬과 큰 차이가 없었다. 
+
+[셀러리 문서](https://docs.celeryproject.org/en/stable/django/first-steps-with-django.html)
+
+[셀러리 블로그1](https://devlog.jwgo.kr/2019/07/02/using-celery-with-django-1/)
+
+### celery - starting the worker process 
+1. 로컬환경 `celery -A config worker --loglevel=DEBUG` 배포환경 `celery -A config worker --loglevel=INFO`
+2. 태스크 호출 
