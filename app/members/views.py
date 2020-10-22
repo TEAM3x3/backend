@@ -7,7 +7,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
-from config.celery import add
+from config.celery import create_users_send_mail_async
 from members.instructors import MyAutoSchema
 from members.models import UserAddress, UserSearch, KeyWord
 from members.serializers import UserSerializer, UserAddressSerializers, UserSearchSerializer, PopularSerializer, \
@@ -37,9 +37,15 @@ class UserViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.Upd
         return self.serializer_class
 
     @action(detail=False)
-    def celery(self, request):
-        qs = User.objects.first()
-        return Response({"data": add(qs)})
+    def user_create_email(self, request):
+        """
+        유저 회원가입 이메일 전송
+
+        get 요청에서 params : email = request.user.email
+        """
+        mail = request.query_params.get('email', None)
+        create_users_send_mail_async.delay(mail)
+        return Response(status=status.HTTP_200_OK)
 
     @action(detail=False)
     def check_username(self, request):

@@ -141,14 +141,15 @@ REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',)
 }
 
+# django email
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'sanghee.kim1115@gmail.com'  # ex) bum752@gmail.com
-EMAIL_HOST_PASSWORD = 's464659!'  # ex) P@ssw0rd
-SERVER_EMAIL = 'sanghee.kim1115@gmail.com'  # ex) bum752@gmail.com
-DEFAULT_FROM_MAIL = 'sanghee.kim1115'  # ex) bum752
+EMAIL_HOST_USER = os.environ['MAIL_USERNAME']
+EMAIL_HOST_PASSWORD = os.environ['MAIL_PASS']
+SERVER_EMAIL = os.environ['SERVER_EMAIL']
+DEFAULT_FROM_MAIL = os.environ['DEFAULT_FROM_MAIL']
 
 DEBUG_TOOLBAR_PANELS = [
     'ddt_request_history.panels.request_history.RequestHistoryPanel',
