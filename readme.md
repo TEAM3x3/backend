@@ -2,6 +2,7 @@
 
 #### fastcampus python school & ios school collaborate
 
+# [시연 영상](https://www.youtube.com/watch?v=SjLIPUaw-y8&feature=youtu.be)
 
 # [market kulry](https://www.kurly.com/shop/main/index.php) clone project - backend repo
 
